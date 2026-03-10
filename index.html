@@ -1213,7 +1213,7 @@ function copyShareLink(){
   navigator.clipboard.writeText(inp.value).then(()=>toast('Link copied! Share with your client.','success')).catch(()=>{inp.select();document.execCommand('copy');toast('Link copied!','success');});
 }
 
-// CLIENT VIEW from URL
+// CLIENT VIEW from URL — takes over the entire page, hides the app
 function checkShareLink(){
   const params=new URLSearchParams(window.location.search);
   const view=params.get('view');
@@ -1221,41 +1221,197 @@ function checkShareLink(){
   try{
     const {e,s}=JSON.parse(decodeURIComponent(atob(view)));
     const {sub,tax,disc,total}=calcEst(e);
-    document.getElementById('clientview-body').innerHTML=`
-      <div class="preview-doc" id="cv-doc">
-        <div class="ph">
-          <div><div class="co-name">${s.co||'Contractor'}</div><div style="font-size:12px;color:#555">${s.own||''}</div><div style="font-size:12px;color:#555">${s.ph||''} ${s.em?'· '+s.em:''}</div></div>
-          <div style="text-align:right"><div class="lbl">Estimate</div><div class="est-num">Review & Sign</div><div style="font-size:12px;color:#555;margin-top:6px">Date: ${$fd(e.date)}</div></div>
+
+    // Hide the entire app
+    document.querySelector('.app').style.display='none';
+    document.querySelector('.mob-nav') && (document.querySelector('.mob-nav').style.display='none');
+    document.querySelector('.mob-fab') && (document.querySelector('.mob-fab').style.display='none');
+    document.body.style.background='#f5f0e8';
+
+    // Build standalone client page
+    const page=document.createElement('div');
+    page.id='client-page';
+    page.innerHTML=`
+      <style>
+        #client-page{min-height:100vh;background:#f5f0e8;font-family:'IBM Plex Mono',monospace;padding:0 0 60px}
+        #client-page .cp-topbar{background:#1a1611;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+        #client-page .cp-brand{font-family:'Instrument Serif',serif;font-size:17px;color:#e8c97a}
+        #client-page .cp-status{font-size:11px;color:rgba(232,201,122,0.6);letter-spacing:1px;text-transform:uppercase}
+        #client-page .cp-wrap{max-width:720px;margin:32px auto;padding:0 16px}
+        #client-page .cp-doc{background:#fff;border-radius:8px;box-shadow:0 4px 24px rgba(0,0,0,0.12);overflow:hidden}
+        #client-page .cp-header{padding:36px 40px 28px;border-bottom:3px solid #1a1611;display:flex;justify-content:space-between;align-items:flex-start}
+        #client-page .cp-co{font-family:'Instrument Serif',serif;font-size:26px;font-weight:700;color:#1a1611}
+        #client-page .cp-co-sub{font-size:12px;color:#777;margin-top:3px;line-height:1.7}
+        #client-page .cp-est-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#999;margin-bottom:4px;text-align:right}
+        #client-page .cp-est-num{font-family:'Instrument Serif',serif;font-size:30px;font-weight:700;color:#1a1611;text-align:right}
+        #client-page .cp-est-dates{font-size:12px;color:#777;text-align:right;margin-top:4px;line-height:1.7}
+        #client-page .cp-body{padding:28px 40px}
+        #client-page .cp-section-label{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#999;margin-bottom:6px}
+        #client-page .cp-bill-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px}
+        #client-page .cp-name{font-size:15px;font-weight:700;color:#1a1611}
+        #client-page .cp-sub-text{font-size:12px;color:#666;margin-top:2px}
+        #client-page table{width:100%;border-collapse:collapse;margin-bottom:20px}
+        #client-page th{text-align:left;padding:10px 12px;background:#f5f0e8;font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:#666;border-bottom:2px solid #e0d8cc}
+        #client-page td{padding:11px 12px;border-bottom:1px solid #f0ebe0;font-size:13px;color:#333}
+        #client-page .right{text-align:right}
+        #client-page .cp-totals{max-width:260px;margin-left:auto;margin-bottom:28px}
+        #client-page .cp-tot-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;color:#666;border-bottom:1px solid #eee}
+        #client-page .cp-tot-grand{font-family:'Instrument Serif',serif;font-size:22px;font-weight:700;color:#1a1611;border-bottom:none;border-top:2px solid #1a1611;padding-top:10px;margin-top:4px}
+        #client-page .cp-notes{background:#f9f6f0;border-left:3px solid #c9a84c;border-radius:0 6px 6px 0;padding:14px 18px;font-size:13px;color:#555;margin-bottom:28px;line-height:1.7}
+        #client-page .cp-sig-section{background:#f9f6f0;border-radius:8px;padding:24px;margin-bottom:24px}
+        #client-page .cp-sig-title{font-family:'Instrument Serif',serif;font-size:18px;color:#1a1611;margin-bottom:6px}
+        #client-page .cp-sig-sub{font-size:12px;color:#888;margin-bottom:16px}
+        #client-page .cp-sig-canvas{width:100%;height:120px;border:2px dashed #c9a84c;border-radius:6px;cursor:crosshair;display:block;background:#fff;touch-action:none}
+        #client-page .cp-sig-controls{display:flex;gap:10px;margin-top:12px;align-items:center}
+        #client-page .cp-clear{background:#fff;border:1px solid #ddd;border-radius:6px;padding:8px 16px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;color:#666}
+        #client-page .cp-accept{background:#1a1611;color:#e8c97a;border:none;border-radius:6px;padding:12px 28px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace;letter-spacing:0.5px;transition:all 0.15s;flex:1;display:flex;align-items:center;justify-content:center;gap:8px}
+        #client-page .cp-accept:hover{background:#2d2820;transform:translateY(-1px)}
+        #client-page .cp-accept:disabled{background:#ccc;color:#999;transform:none;cursor:not-allowed}
+        #client-page .cp-footer{text-align:center;padding:20px 40px;border-top:1px solid #e8e0d0;font-size:11px;color:#aaa;line-height:1.8}
+        #client-page .cp-accepted-banner{background:#2d6a4f;color:#fff;border-radius:8px;padding:20px 24px;text-align:center;margin-bottom:20px;display:none}
+        #client-page .cp-accepted-banner h3{font-family:'Instrument Serif',serif;font-size:20px;margin-bottom:4px}
+        #client-page .cp-print-btn{background:transparent;border:1px solid #c9a84c;color:#c9a84c;border-radius:6px;padding:8px 18px;font-size:11px;cursor:pointer;font-family:'IBM Plex Mono',monospace;letter-spacing:0.5px}
+        #client-page .cp-print-btn:hover{background:#c9a84c;color:#1a1611}
+        @media(max-width:600px){
+          #client-page .cp-header{flex-direction:column;gap:16px;padding:24px 20px 20px}
+          #client-page .cp-est-label,#client-page .cp-est-num,#client-page .cp-est-dates{text-align:left}
+          #client-page .cp-body{padding:20px}
+          #client-page .cp-bill-grid{grid-template-columns:1fr}
+          #client-page .cp-totals{max-width:100%}
+          #client-page table{font-size:12px}
+          #client-page th,#client-page td{padding:8px}
+          #client-page .cp-wrap{margin:16px auto;padding:0 12px}
+        }
+      </style>
+
+      <div class="cp-topbar">
+        <div class="cp-brand">${s.co||'Estimate'}</div>
+        <div class="cp-status">Estimate for Review</div>
+      </div>
+
+      <div class="cp-wrap">
+        <div class="cp-accepted-banner" id="cp-accepted-banner">
+          <h3>✓ Estimate Accepted!</h3>
+          <p style="font-size:13px;opacity:0.85">Thank you! ${s.own||s.co||'Your contractor'} has been notified.</p>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px">
-          <div><div class="lbl">Prepared For</div><div style="font-weight:700">${e.clientName||'—'}</div></div>
-          <div><div class="lbl">Job</div><div style="font-weight:700">${e.desc||'—'}</div>${e.address?`<div style="color:#555">${e.address}</div>`:''}</div>
-        </div>
-        <table><thead><tr><th>Description</th><th style="text-align:center">Qty</th><th>Unit</th><th class="right">Unit Price</th><th class="right">Total</th></tr></thead>
-        <tbody>${(e.items||[]).map(i=>`<tr><td>${i.desc||'—'}</td><td style="text-align:center">${i.qty}</td><td>${i.unit||'—'}</td><td class="right">${$f(i.price)}</td><td class="right">${$f(i.qty*i.price)}</td></tr>`).join('')}</tbody></table>
-        <div class="totals-wrap">
-          <div class="tot-row"><span>Subtotal</span><span>${$f(sub)}</span></div>
-          ${tax?`<div class="tot-row"><span>Tax (${e.tax}%)</span><span>${$f(tax)}</span></div>`:''}
-          ${disc?`<div class="tot-row"><span>Discount</span><span>-${$f(disc)}</span></div>`:''}
-          <div class="tot-row tot-grand"><span>Total</span><span>${$f(total)}</span></div>
-        </div>
-        ${e.clientNotes?`<div class="notes-box"><strong>Notes:</strong> ${e.clientNotes}</div>`:''}
-        <div style="margin-top:24px;padding:16px;background:#f9f6f0;border-radius:4px">
-          <div class="lbl" style="margin-bottom:8px">Your Signature</div>
-          <canvas class="sig-canvas" id="cv-sig" width="500" height="100"></canvas>
-          <div class="flex-gap" style="margin-top:8px">
-            <button onclick="clearSig('cv-sig')" style="padding:6px 12px;font-size:12px;border:1px solid #ddd;border-radius:4px;cursor:pointer;background:#fff">Clear</button>
-            <button onclick="acceptEstimate()" style="padding:8px 20px;font-size:13px;font-weight:700;background:#2d6a4f;color:#fff;border:none;border-radius:4px;cursor:pointer">✓ Accept & Sign Estimate</button>
+
+        <div class="cp-doc">
+          <div class="cp-header">
+            <div>
+              <div class="cp-co">${s.co||'Your Contractor'}</div>
+              <div class="cp-co-sub">
+                ${s.own?s.own+'<br>':''}
+                ${s.ph?s.ph+'<br>':''}
+                ${s.em?s.em+'<br>':''}
+                ${s.addr?s.addr+'<br>':''}
+                ${s.lic?'License #'+s.lic:''}
+              </div>
+            </div>
+            <div>
+              <div class="cp-est-label">Estimate</div>
+              <div class="cp-est-num">${e.id?'#'+e.id.slice(-4).toUpperCase():'Review'}</div>
+              <div class="cp-est-dates">
+                Date: ${$fd(e.date)}<br>
+                Valid Until: ${$fd(e.validUntil)}
+              </div>
+            </div>
+          </div>
+
+          <div class="cp-body">
+            <div class="cp-bill-grid">
+              <div>
+                <div class="cp-section-label">Prepared For</div>
+                <div class="cp-name">${e.clientName||'—'}</div>
+                ${e.clientEmail?`<div class="cp-sub-text">${e.clientEmail}</div>`:''}
+                ${e.address?`<div class="cp-sub-text">${e.address}</div>`:''}
+              </div>
+              <div>
+                <div class="cp-section-label">Job Description</div>
+                <div class="cp-name">${e.desc||'—'}</div>
+                ${e.address?`<div class="cp-sub-text">${e.address}</div>`:''}
+              </div>
+            </div>
+
+            <table>
+              <thead><tr><th>Description</th><th style="text-align:center">Qty</th><th>Unit</th><th class="right">Price</th><th class="right">Total</th></tr></thead>
+              <tbody>
+                ${(e.items||[]).map(i=>`<tr>
+                  <td>${i.desc||'—'}</td>
+                  <td style="text-align:center">${i.qty}</td>
+                  <td style="color:#999">${i.unit||'—'}</td>
+                  <td class="right">${$f(i.price)}</td>
+                  <td class="right" style="font-weight:600">${$f(i.qty*i.price)}</td>
+                </tr>`).join('')}
+              </tbody>
+            </table>
+
+            <div class="cp-totals">
+              <div class="cp-tot-row"><span>Subtotal</span><span>${$f(sub)}</span></div>
+              ${tax?`<div class="cp-tot-row"><span>Tax (${e.tax}%)</span><span>${$f(tax)}</span></div>`:''}
+              ${disc?`<div class="cp-tot-row"><span>Discount</span><span>-${$f(disc)}</span></div>`:''}
+              <div class="cp-tot-row cp-tot-grand"><span>Total</span><span>${$f(total)}</span></div>
+            </div>
+
+            ${e.clientNotes?`<div class="cp-notes"><strong>Note from ${s.co||'your contractor'}:</strong><br>${e.clientNotes}</div>`:''}
+
+            <div class="cp-sig-section" id="cp-sig-section">
+              <div class="cp-sig-title">Sign to Accept</div>
+              <div class="cp-sig-sub">Draw your signature below to accept this estimate. By signing you agree to the total and terms listed.</div>
+              <canvas class="cp-sig-canvas" id="cp-sig-canvas" width="620" height="120"></canvas>
+              <div class="cp-sig-controls">
+                <button class="cp-clear" onclick="cpClearSig()">Clear</button>
+                <button class="cp-accept" id="cp-accept-btn" onclick="cpAccept()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  Accept & Sign Estimate
+                </button>
+              </div>
+            </div>
+
+            <div class="cp-footer">
+              Payment Terms: ${s.terms||'Due on receipt'}<br>
+              ${s.notes?s.notes+'<br>':''} 
+              ${s.ph?'Questions? Call '+s.ph:''}
+              <br><br>
+              <button class="cp-print-btn" onclick="window.print()">🖨 Print / Save as PDF</button>
+            </div>
           </div>
         </div>
-        <div style="margin-top:20px;font-size:11px;color:#999">Payment Terms: ${s.terms||'Due on receipt'} · ${s.notes||''}</div>
       </div>`;
-    document.getElementById('modal-clientview').style.display='flex';
-    initSigPad('cv-sig');
-  } catch(err){ console.error(err); }
+
+    document.body.appendChild(page);
+    cpInitSig();
+
+  } catch(err){ console.error('Client view error:',err); }
 }
-function clearSig(id){ const c=document.getElementById(id),ctx=c.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height); }
-function acceptEstimate(){ toast('Estimate accepted! Your contractor will be notified.','success'); setTimeout(()=>close$('modal-clientview'),1500); }
+
+function cpInitSig(){
+  const canvas=document.getElementById('cp-sig-canvas'); if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.strokeStyle='#1a1611'; ctx.lineWidth=2.5; ctx.lineCap='round'; ctx.lineJoin='round';
+  let drawing=false, last={x:0,y:0}, hasSig=false;
+  function pt(ev){ const r=canvas.getBoundingClientRect(); const cl=ev.touches?ev.touches[0]:ev; return{x:(cl.clientX-r.left)*(canvas.width/r.width),y:(cl.clientY-r.top)*(canvas.height/r.height)}; }
+  canvas.onmousedown=canvas.ontouchstart=ev=>{ drawing=true; last=pt(ev); ev.preventDefault(); };
+  canvas.onmousemove=canvas.ontouchmove=ev=>{ if(!drawing) return; const p=pt(ev); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p; hasSig=true; ev.preventDefault(); };
+  canvas.onmouseup=canvas.ontouchend=()=>drawing=false;
+  canvas._hasSig=()=>hasSig;
+}
+function cpClearSig(){
+  const c=document.getElementById('cp-sig-canvas'); if(!c) return;
+  const ctx=c.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height);
+  c._hasSig=()=>false;
+}
+function cpAccept(){
+  const c=document.getElementById('cp-sig-canvas');
+  if(!c||!c._hasSig||!c._hasSig()){ alert('Please draw your signature first.'); return; }
+  const btn=document.getElementById('cp-accept-btn');
+  btn.disabled=true; btn.innerHTML='✓ Accepted!';
+  document.getElementById('cp-sig-section').style.opacity='0.5';
+  document.getElementById('cp-sig-section').style.pointerEvents='none';
+  const banner=document.getElementById('cp-accepted-banner');
+  banner.style.display='block';
+  banner.scrollIntoView({behavior:'smooth',block:'center'});
+}
 
 // ──────────────────────────────────────────
 // EMAIL
