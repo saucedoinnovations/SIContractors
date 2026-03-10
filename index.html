@@ -211,13 +211,108 @@ textarea{resize:vertical;min-height:70px}
 .calc-result-row{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;color:var(--text2)}
 .calc-result-row.big{font-family:'Instrument Serif',serif;font-size:20px;color:var(--gold2);padding-top:10px;margin-top:4px;border-top:1px solid var(--gold-border)}
 
-/* RESPONSIVE */
-@media(max-width:900px){
-  .sidebar{width:52px}
-  .logo-text,.logo-sub,.nav-item span,.nav-section,.sidebar-footer{display:none}
-  .main{margin-left:52px}
+/* MOBILE BOTTOM NAV */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:200;padding:0 4px 0;padding-bottom:env(safe-area-inset-bottom)}
+.mob-nav-inner{display:flex;justify-content:space-around;align-items:stretch}
+.mob-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;cursor:pointer;color:var(--text3);transition:color 0.15s;gap:4px;min-width:0}
+.mob-nav-item svg{width:20px;height:20px;flex-shrink:0}
+.mob-nav-item span{font-size:9px;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:52px;text-align:center}
+.mob-nav-item.active{color:var(--gold2)}
+.mob-fab{position:fixed;bottom:74px;right:16px;z-index:190;background:var(--gold);color:#0e0e0e;border:none;border-radius:50%;width:52px;height:52px;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(201,168,76,0.4);transition:transform 0.15s}
+.mob-fab:active{transform:scale(0.93)}
+.mob-fab svg{width:22px;height:22px}
+
+/* DESKTOP RESPONSIVE */
+@media(max-width:1100px){
   .stats-grid{grid-template-columns:1fr 1fr}
 }
+
+/* TABLET */
+@media(max-width:900px){
+  .sidebar{width:56px}
+  .logo-sub,.nav-item span,.nav-section,.sidebar-footer{display:none}
+  .logo-text{font-size:14px}
+  .logo{padding:16px 12px}
+  .main{margin-left:56px}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .cols-3{grid-template-columns:1fr 1fr}
+  .cols-4{grid-template-columns:1fr 1fr}
+}
+
+/* MOBILE */
+@media(max-width:640px){
+  html{font-size:14px}
+  .sidebar{display:none}
+  .main{margin-left:0;padding-bottom:64px}
+  .mob-nav{display:flex}
+  .mob-fab{display:flex}
+
+  /* topbar mobile */
+  .topbar{padding:0 14px;height:50px}
+  .page-title{font-size:17px}
+  .topbar-right .btn span,.topbar-right .btn-text{display:none}
+  .topbar-right input,.topbar-right select{display:none}
+  .topbar-right .btn{padding:7px 9px}
+
+  /* content */
+  .content{padding:14px}
+
+  /* stats - single col on very small */
+  .stats-grid{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+  .stat{padding:14px}
+  .stat-value{font-size:22px}
+
+  /* forms */
+  .cols-2,.cols-3,.cols-4{grid-template-columns:1fr}
+  .form-row.cols-2,.form-row.cols-3,.form-row.cols-4{grid-template-columns:1fr}
+
+  /* modal full screen on mobile */
+  .overlay{padding:0;align-items:flex-end}
+  .modal{border-radius:16px 16px 0 0;max-height:92vh;max-width:100%;width:100%}
+  .modal-sm,.modal-md{max-width:100%}
+  .modal-hd{padding:14px 16px}
+  .modal-body{padding:16px}
+  .modal-ft{padding:12px 16px;gap:8px}
+  .modal-ft .btn{flex:1;justify-content:center}
+
+  /* tables on mobile - card style */
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{min-width:500px}
+
+  /* cards */
+  .card-header{padding:12px 14px}
+  .card-body{padding:14px}
+
+  /* line items */
+  .li-table{min-width:480px}
+
+  /* calculator grid */
+  #page-calculators .content > div:first-child{grid-template-columns:1fr !important}
+  #page-calculators .content > div:last-child{grid-template-columns:1fr !important}
+
+  /* preview doc */
+  .preview-doc{padding:20px !important}
+  .preview-doc .ph{flex-direction:column;gap:16px}
+  .preview-doc .sig-grid{grid-template-columns:1fr !important}
+
+  /* topbar search hidden - show filter bar below topbar */
+  .mobile-search-bar{display:flex !important}
+
+  /* totals box */
+  .totals-box{max-width:100%;margin-top:12px}
+
+  /* estimate modal footer - wrap */
+  #modal-estimate .modal-ft{flex-wrap:wrap}
+  #modal-estimate .modal-ft .btn{font-size:11px;padding:8px 10px}
+}
+
+@media(max-width:380px){
+  .stats-grid{grid-template-columns:1fr}
+}
+
+/* Mobile search bar (hidden on desktop) */
+.mobile-search-bar{display:none;padding:8px 14px;background:var(--surface);border-bottom:1px solid var(--border);gap:8px}
+.mobile-search-bar input,.mobile-search-bar select{flex:1;margin-bottom:0}
 </style>
 </head>
 <body>
@@ -265,6 +360,36 @@ textarea{resize:vertical;min-height:70px}
   <div class="sidebar-footer"><span class="version-badge">Free</span> No fees ever</div>
 </aside>
 
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mob-nav">
+  <div class="mob-nav-inner">
+    <div class="mob-nav-item active" id="mob-dashboard" onclick="go('dashboard')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="mob-nav-item" id="mob-estimates" onclick="go('estimates')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span>Estimates</span>
+    </div>
+    <div class="mob-nav-item" id="mob-clients" onclick="go('clients')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      <span>Clients</span>
+    </div>
+    <div class="mob-nav-item" id="mob-calculators" onclick="go('calculators')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
+      <span>Calc</span>
+    </div>
+    <div class="mob-nav-item" id="mob-settings" onclick="go('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span>More</span>
+    </div>
+  </div>
+</nav>
+<!-- MOBILE FAB -->
+<button class="mob-fab" onclick="openNewEstimate()" title="New Estimate">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+
 <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
 <div class="main">
 
@@ -305,7 +430,10 @@ textarea{resize:vertical;min-height:70px}
     </div>
   </div>
   <div class="content">
-    <div class="card"><div class="table-wrap"><table><thead><tr><th>#</th><th>Client</th><th>Description</th><th>Total</th><th>Status</th><th>Follow-Up</th><th>Date</th><th>Actions</th></tr></thead><tbody id="est-list"></tbody></table></div></div>
+    <!-- Desktop table -->
+    <div class="card" id="est-desktop-card"><div class="table-wrap"><table><thead><tr><th>#</th><th>Client</th><th>Description</th><th>Total</th><th>Status</th><th>Follow-Up</th><th>Date</th><th>Actions</th></tr></thead><tbody id="est-list"></tbody></table></div></div>
+    <!-- Mobile cards -->
+    <div id="est-list-mobile" style="display:none"></div>
   </div>
 </div>
 
@@ -671,8 +799,14 @@ function toast(msg,type=''){
 function go(p){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.mob-nav-item').forEach(x=>x.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
-  document.getElementById('nav-'+p).classList.add('active');
+  const sideNav=document.getElementById('nav-'+p);
+  if(sideNav) sideNav.classList.add('active');
+  const mobNav=document.getElementById('mob-'+p);
+  if(mobNav) mobNav.classList.add('active');
+  // scroll to top on mobile
+  window.scrollTo({top:0,behavior:'smooth'});
   const renders = {dashboard:renderDash,estimates:renderEstList,clients:renderClients,catalog:renderCatalog,calculators:initCalcs,email:loadEmailSettings,settings:loadSettings};
   if(renders[p]) renders[p]();
 }
@@ -732,6 +866,40 @@ function renderEstList(){
   if(q) es=es.filter(e=>(e.clientName+e.desc+e.address).toLowerCase().includes(q));
   if(f) es=es.filter(e=>e.status===f);
   const now = new Date();
+  const isMob = window.innerWidth <= 640;
+
+  if(isMob){
+    // Mobile card view
+    const container = document.getElementById('est-list-mobile');
+    if(container){
+      container.innerHTML = es.length ? es.map(e=>{
+        const {total}=calcEst(e);
+        const n=estNum(e);
+        const fuDue = e.followUpDate && new Date(e.followUpDate)<=now && !['Signed','Declined'].includes(e.status);
+        return`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+            <div>
+              <div style="font-weight:600;font-size:13px">${e.clientName||'—'}</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">${e.desc||'—'} · ${n}</div>
+            </div>
+            <span class="badge b-${(e.status||'draft').toLowerCase()}">${e.status||'Draft'}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <span style="font-family:'Instrument Serif',serif;font-size:20px;color:var(--gold2)">${$f(total)}</span>
+            <span style="font-size:11px;color:var(--text3)">${$fd(e.date)}</span>
+          </div>
+          ${fuDue?`<div style="font-size:11px;color:var(--amber);margin-bottom:8px"><span class="followup-dot"></span>Follow-up due ${$fd(e.followUpDate)}</div>`:''}
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost btn-sm" style="flex:1;justify-content:center" onclick="editEst('${e.id}')">Edit</button>
+            <button class="btn btn-green btn-sm" style="flex:1;justify-content:center" onclick="openEmailModal('${e.id}')">Email</button>
+            <button class="btn btn-ghost btn-sm" style="flex:1;justify-content:center" onclick="previewById('${e.id}')">View</button>
+          </div>
+        </div>`;
+      }).join('') : '<div style="text-align:center;padding:40px;color:var(--text3)">No estimates found.</div>';
+    }
+    return;
+  }
+
   document.getElementById('est-list').innerHTML = es.length ? es.map(e=>{
     const {total}=calcEst(e);
     const n=estNum(e);
@@ -1034,8 +1202,9 @@ function genShareLink(){
   const estId=document.getElementById('modal-preview').dataset.estId;
   const e=db.estimates.find(x=>x.id===estId);
   if(!e){ toast('Save the estimate first to generate a link.'); return; }
+  const baseUrl = 'https://saucedoinnovations.github.io/SIContractors/';
   const data=btoa(encodeURIComponent(JSON.stringify({e,s:db.settings})));
-  const url=window.location.href.split('?')[0]+'?view='+data;
+  const url = baseUrl + '?view=' + data;
   document.getElementById('share-link-input').value=url;
   document.getElementById('share-link-area').style.display='flex';
 }
@@ -1123,8 +1292,9 @@ async function doSendEmail(){
   const e=db.estimates.find(x=>x.id===estId);
   const {total}=calcEst(e);
   // generate share link
+  const baseUrl = 'https://saucedoinnovations.github.io/SIContractors/';
   const data=btoa(encodeURIComponent(JSON.stringify({e,s:db.settings})));
-  const link=window.location.href.split('?')[0]+'?view='+data;
+  const link = baseUrl + '?view=' + data;
   const params={
     to_email:document.getElementById('em-to').value,
     to_name:document.getElementById('em-name').value,
@@ -1330,9 +1500,22 @@ function importData(e){ const f=e.target.files[0]; if(!f) return; const r=new Fi
 function nukeData(){ if(!confirm('Delete ALL data? This cannot be undone.')) return; localStorage.removeItem(DB_KEY); location.reload(); }
 
 // ──────────────────────────────────────────
+// MOBILE / DESKTOP TOGGLE
+// ──────────────────────────────────────────
+function applyMobileLayout(){
+  const mob = window.innerWidth <= 640;
+  const desktopCard = document.getElementById('est-desktop-card');
+  const mobileCards = document.getElementById('est-list-mobile');
+  if(desktopCard) desktopCard.style.display = mob ? 'none' : 'block';
+  if(mobileCards) mobileCards.style.display = mob ? 'block' : 'none';
+}
+window.addEventListener('resize', ()=>{ applyMobileLayout(); renderEstList(); });
+
+// ──────────────────────────────────────────
 // INIT
 // ──────────────────────────────────────────
 load();
+applyMobileLayout();
 renderDash();
 checkShareLink(); // handle client view links
 </script>
