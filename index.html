@@ -309,6 +309,9 @@ textarea{resize:vertical;min-height:70px}
 @media(max-width:380px){
   .stats-grid{grid-template-columns:1fr}
 }
+@media(max-width:900px){
+  #page-dashboard .content > div:last-child{grid-template-columns:1fr !important}
+}
 
 /* Mobile search bar (hidden on desktop) */
 .mobile-search-bar{display:none;padding:8px 14px;background:var(--surface);border-bottom:1px solid var(--border);gap:8px}
@@ -406,9 +409,20 @@ textarea{resize:vertical;min-height:70px}
   </div>
   <div class="content">
     <div class="stats-grid" id="dash-stats"></div>
-    <div class="card">
-      <div class="card-header"><h3>Recent Estimates</h3><button class="btn btn-ghost btn-sm" onclick="go('estimates')">View All →</button></div>
-      <div class="table-wrap"><table><thead><tr><th>#</th><th>Client</th><th>Description</th><th>Total</th><th>Status</th><th>Date</th><th></th></tr></thead><tbody id="dash-table"></tbody></table></div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:18px;align-items:start">
+      <div class="card">
+        <div class="card-header"><h3>Recent Estimates</h3><button class="btn btn-ghost btn-sm" onclick="go('estimates')">View All →</button></div>
+        <div class="table-wrap"><table><thead><tr><th>#</th><th>Client</th><th>Description</th><th>Total</th><th>Status</th><th>Date</th><th></th></tr></thead><tbody id="dash-table"></tbody></table></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Activity Feed</h3>
+          <span style="font-size:10px;color:var(--text3);letter-spacing:0.5px">Live Updates</span>
+        </div>
+        <div class="card-body" style="padding:0 18px" id="dash-activity">
+          <div style="text-align:center;padding:24px;color:var(--text3);font-size:12px">No activity yet.</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -555,6 +569,19 @@ textarea{resize:vertical;min-height:70px}
         </div>
         <div class="form-group"><label>Default Email Message</label><textarea id="ej-message" rows="3" placeholder="Please find your estimate attached. Let me know if you have any questions!"></textarea></div>
         <button class="btn btn-secondary" onclick="testEmail()" style="margin-top:4px">Send Test Email to Yourself</button>
+      </div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <div class="card-header"><h3>📡 View Tracking (Pipedream)</h3></div>
+      <div class="card-body">
+        <p style="font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.8">When a client opens their estimate link, EstimatePro pings your Pipedream webhook — automatically marking the estimate as <strong style="color:var(--amber)">Viewed</strong> on your dashboard and sending you a notification email.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center"><div style="font-size:20px;margin-bottom:5px">1️⃣</div><div style="font-size:11px;color:var(--text2)">Go to <strong style="color:var(--gold2)">pipedream.com</strong> → create free account</div></div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center"><div style="font-size:20px;margin-bottom:5px">2️⃣</div><div style="font-size:11px;color:var(--text2)">New Workflow → trigger: <strong style="color:var(--gold2)">HTTP / Webhook</strong> → copy the URL</div></div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-align:center"><div style="font-size:20px;margin-bottom:5px">3️⃣</div><div style="font-size:11px;color:var(--text2)">Add <strong style="color:var(--gold2)">Send Email</strong> step to notify yourself → paste URL below</div></div>
+        </div>
+        <div class="form-group"><label>Pipedream Webhook URL</label><input id="ej-webhook" placeholder="https://eoxxxxxxxxx.m.pipedream.net"></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">Leave blank to disable view tracking.</div>
       </div>
     </div>
   </div>
@@ -854,6 +881,32 @@ function renderDash(){
       </div></td>
     </tr>`;
   }).join('') : '<tr><td colspan="7" class="empty">No estimates yet. Create your first one!</td></tr>';
+
+  // Activity feed
+  const acts = (db.activity||[]).slice().reverse().slice(0,10);
+  const actEl = document.getElementById('dash-activity');
+  if(actEl){
+    actEl.innerHTML = acts.length ? acts.map(a=>`
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--amber-bg);border:1px solid rgba(240,160,64,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px">${a.type==='viewed'?'👁':'✓'}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;color:var(--text)"><strong>${a.clientName||'Client'}</strong> ${a.type==='viewed'?'viewed':'signed'} <span style="color:var(--gold2)">${a.desc||'an estimate'}</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${fmtTimeAgo(a.ts)}</div>
+        </div>
+        <span class="badge ${a.type==='viewed'?'b-viewed':'b-signed'}">${a.type==='viewed'?'Viewed':'Signed'}</span>
+      </div>`).join('') : '<div style="text-align:center;padding:24px;color:var(--text3);font-size:12px">No activity yet. Send estimates to clients to see when they view them.</div>';
+  }
+}
+
+function fmtTimeAgo(ts){
+  if(!ts) return '—';
+  const diff=Date.now()-new Date(ts).getTime();
+  const m=Math.floor(diff/60000);
+  if(m<1) return 'just now';
+  if(m<60) return m+'m ago';
+  const h=Math.floor(m/60);
+  if(h<24) return h+'h ago';
+  return Math.floor(h/24)+'d ago';
 }
 
 // ──────────────────────────────────────────
@@ -1203,7 +1256,8 @@ function genShareLink(){
   const e=db.estimates.find(x=>x.id===estId);
   if(!e){ toast('Save the estimate first to generate a link.'); return; }
   const baseUrl = 'https://saucedoinnovations.github.io/SIContractors/';
-  const data=btoa(encodeURIComponent(JSON.stringify({e,s:db.settings})));
+  const wh=db.emailjs.webhook||'';
+  const data=btoa(encodeURIComponent(JSON.stringify({e,s:db.settings,wh})));
   const url = baseUrl + '?view=' + data;
   document.getElementById('share-link-input').value=url;
   document.getElementById('share-link-area').style.display='flex';
@@ -1219,8 +1273,17 @@ function checkShareLink(){
   const view=params.get('view');
   if(!view) return;
   try{
-    const {e,s}=JSON.parse(decodeURIComponent(atob(view)));
+    const {e,s,wh}=JSON.parse(decodeURIComponent(atob(view)));
     const {sub,tax,disc,total}=calcEst(e);
+
+    // Fire view tracking webhook + log to cross-tab localStorage
+    const viewEvent={type:'viewed',estimateId:e.id,clientName:e.clientName,desc:e.desc,ts:new Date().toISOString()};
+    try{ localStorage.setItem('ep2_incoming_event',JSON.stringify(viewEvent)); }catch(ex){}
+    if(wh){
+      fetch(wh,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({event:'estimate_viewed',estimateId:e.id,clientName:e.clientName,desc:e.desc,total:calcEst(e).total,viewedAt:new Date().toISOString()})
+      }).catch(()=>{});
+    }
 
     // Hide the entire app
     document.querySelector('.app').style.display='none';
@@ -1449,7 +1512,8 @@ async function doSendEmail(){
   const {total}=calcEst(e);
   // generate share link
   const baseUrl = 'https://saucedoinnovations.github.io/SIContractors/';
-  const data=btoa(encodeURIComponent(JSON.stringify({e,s:db.settings})));
+  const wh=db.emailjs.webhook||'';
+  const data=btoa(encodeURIComponent(JSON.stringify({e,s:db.settings,wh})));
   const link = baseUrl + '?view=' + data;
   const params={
     to_email:document.getElementById('em-to').value,
@@ -1642,9 +1706,10 @@ function loadEmailSettings(){
   document.getElementById('ej-service').value=ej.service||'';
   document.getElementById('ej-template').value=ej.template||'';
   document.getElementById('ej-message').value=ej.message||'';
+  document.getElementById('ej-webhook').value=ej.webhook||'';
 }
 function saveEmailSettings(){
-  db.emailjs={pubkey:document.getElementById('ej-pubkey').value,service:document.getElementById('ej-service').value,template:document.getElementById('ej-template').value,message:document.getElementById('ej-message').value};
+  db.emailjs={pubkey:document.getElementById('ej-pubkey').value,service:document.getElementById('ej-service').value,template:document.getElementById('ej-template').value,message:document.getElementById('ej-message').value,webhook:document.getElementById('ej-webhook').value};
   save(); toast('Email settings saved!','success');
 }
 
@@ -1654,6 +1719,45 @@ function saveEmailSettings(){
 function exportData(){ const a=document.createElement('a'); a.href='data:application/json,'+encodeURIComponent(JSON.stringify(db,null,2)); a.download='estimatepro-backup.json'; a.click(); toast('Exported!','success'); }
 function importData(e){ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>{ try{ db=JSON.parse(ev.target.result); save(); renderDash(); toast('Data imported!','success'); }catch(err){ toast('Invalid file.','error'); } }; r.readAsText(f); }
 function nukeData(){ if(!confirm('Delete ALL data? This cannot be undone.')) return; localStorage.removeItem(DB_KEY); location.reload(); }
+
+// ──────────────────────────────────────────
+// ACTIVITY FEED & VIEW TRACKING
+// ──────────────────────────────────────────
+function logActivity(event){
+  if(!db.activity) db.activity=[];
+  // Avoid duplicate events for same estimate within 60s
+  const recent=db.activity.find(a=>a.estimateId===event.estimateId&&a.type===event.type&&(Date.now()-new Date(a.ts).getTime())<60000);
+  if(recent) return;
+  db.activity.unshift(event);
+  if(db.activity.length>50) db.activity=db.activity.slice(0,50);
+  // Update estimate status if still Sent
+  const est=db.estimates.find(x=>x.id===event.estimateId);
+  if(est && event.type==='viewed' && est.status==='Sent'){
+    est.status='Viewed';
+    est.viewedAt=event.ts;
+  }
+  save();
+  renderDash();
+  // Show toast notification
+  toast(`👁 ${event.clientName||'Client'} just viewed their estimate!`,'success');
+}
+
+// Poll for cross-tab events (client opened link in same browser)
+let _lastEvent='';
+function pollForViewEvents(){
+  try{
+    const raw=localStorage.getItem('ep2_incoming_event');
+    if(raw && raw!==_lastEvent){
+      _lastEvent=raw;
+      const ev=JSON.parse(raw);
+      if(ev && ev.ts && (Date.now()-new Date(ev.ts).getTime())<30000){
+        logActivity(ev);
+        localStorage.removeItem('ep2_incoming_event');
+      }
+    }
+  }catch(ex){}
+}
+setInterval(pollForViewEvents, 2000);
 
 // ──────────────────────────────────────────
 // MOBILE / DESKTOP TOGGLE
