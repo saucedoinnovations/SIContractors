@@ -257,11 +257,12 @@ input[type=checkbox]{width:auto;accent-color:var(--gold)}
     <div style="text-align:center;margin-top:16px;font-size:11px;color:#3a3a3a">
       Free forever · Your data stays private · No subscription
     </div>
-    <div id="supabase-setup-hint" style="display:none;margin-top:16px;background:#161616;border:1px solid #2e2e2e;border-radius:8px;padding:16px;font-size:11px;color:#5a5550;line-height:1.9">
-      <strong style="color:#a09890">⚙️ First-time setup:</strong><br>
-      Supabase URL and Key are not configured yet.<br>
-      See the setup guide below or use offline mode.<br>
-      <button onclick="useOfflineMode()" style="margin-top:10px;background:transparent;border:1px solid #2e2e2e;color:#a09890;border-radius:6px;padding:7px 14px;font-size:11px;cursor:pointer;font-family:'IBM Plex Mono',monospace">Continue Offline (this device only)</button>
+    <div id="supabase-setup-hint" style="margin-top:16px;background:#161616;border:1px solid #2e2e2e;border-radius:8px;padding:16px;font-size:12px;color:#a09890;line-height:1.9">
+      <strong style="color:#e8c97a">First time here?</strong> Connect a free Supabase database to sync across all your devices, or skip it and use the app on this device only.<br>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        <button onclick="openSupabaseSetup()" style="flex:1;background:#c9a84c;color:#0e0e0e;border:none;border-radius:6px;padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace">⚙️ Connect Supabase</button>
+        <button onclick="useOfflineMode()" style="flex:1;background:transparent;border:1px solid #2e2e2e;color:#a09890;border-radius:6px;padding:9px 14px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace">Use Offline (this device)</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2271,15 +2272,10 @@ function saveSupabaseConfig(){
   const hasSupabase = initSupabase();
 
   if(!hasSupabase){
-    // Show setup hint + offline option on login screen
-    document.getElementById('supabase-setup-hint').style.display = 'block';
-    // Add setup button
-    document.querySelector('#login-screen > div').insertAdjacentHTML('beforeend',
-      `<div style="text-align:center;margin-top:12px">
-        <button onclick="openSupabaseSetup()" style="background:transparent;border:1px solid #2e2e2e;color:#a09890;border-radius:6px;padding:8px 18px;font-size:11px;cursor:pointer;font-family:'IBM Plex Mono',monospace">⚙️ Configure Supabase</button>
-      </div>`
-    );
+    // Supabase not configured — hint is always visible on login screen
   } else {
+    // Supabase configured — hide the setup hint, show normal login
+    document.getElementById('supabase-setup-hint').style.display = 'none';
     // Check if already logged in (session persisted)
     const {data:{session}} = await supabase.auth.getSession();
     if(session?.user){
