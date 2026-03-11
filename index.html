@@ -6,7 +6,7 @@
 <title>EstimatePro — Contractor Software</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="window.supabase=null"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -1995,6 +1995,7 @@ let supabase = null;
 let currentUser = null;
 
 function initSupabase(){
+  if(!window.supabase) return false;
   const url = localStorage.getItem(SUPA_URL_KEY)||'';
   const key = localStorage.getItem(SUPA_ANON_KEY)||'';
   if(url && key){
@@ -2085,6 +2086,7 @@ function signOut(){
 }
 
 // ── INIT ───────────────────────────────────────────────────────────────
+try{
 load();
 checkShareLink();
 if(!window.location.search.includes('view=')){
@@ -2098,6 +2100,11 @@ if(!window.location.search.includes('view=')){
   } else {
     renderDash();
   }
+}
+} catch(err) {
+  console.error('EstimatePro init error:', err);
+  // Still try to render the dashboard even if something failed
+  try { load(); renderDash(); } catch(e) {}
 }
 </script>
 </body>
