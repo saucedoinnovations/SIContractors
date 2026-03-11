@@ -3,52 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EstimatePro — Contractor Software</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<title>SI EstimatePro — Saucedo Innovations</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="window.supabase=null"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#0e0e0e;--surface:#161616;--surface2:#1f1f1f;--surface3:#272727;
-  --border:#2e2e2e;--border2:#3a3a3a;
-  --text:#f0ede8;--text2:#a09890;--text3:#5a5550;
-  --gold:#c9a84c;--gold2:#e8c97a;--gold-bg:rgba(201,168,76,0.08);--gold-border:rgba(201,168,76,0.25);
-  --green:#4caf7d;--green-bg:rgba(76,175,125,0.08);
-  --red:#e05252;--red-bg:rgba(224,82,82,0.08);
-  --blue:#5b9cf6;--blue-bg:rgba(91,156,246,0.08);
-  --amber:#f0a040;--amber-bg:rgba(240,160,64,0.08);
-  --purple:#a78bfa;--purple-bg:rgba(167,139,250,0.08);
-  --r:6px;--shadow:0 4px 20px rgba(0,0,0,0.4);
+  --bg:#f4f4f5;--surface:#ffffff;--surface2:#f8f8f9;--surface3:#efefef;
+  --border:#e2e2e5;--border2:#d0d0d5;
+  --text:#1a1a1a;--text2:#555558;--text3:#909095;
+  --gold:#e31e24;--gold2:#ff3b41;--gold-bg:rgba(227,30,36,0.07);--gold-border:rgba(227,30,36,0.25);
+  --green:#16a34a;--green-bg:rgba(22,163,74,0.08);
+  --red:#e31e24;--red-bg:rgba(227,30,36,0.08);
+  --blue:#2563eb;--blue-bg:rgba(37,99,235,0.08);
+  --amber:#d97706;--amber-bg:rgba(217,119,6,0.08);
+  --purple:#7c3aed;--purple-bg:rgba(124,58,237,0.08);
+  --gray:#646464;--gray2:#909090;
+  --r:8px;--shadow:0 2px 12px rgba(0,0,0,0.08);
+  --brand:#e31e24;--brand2:#ff3b41;--brand-dark:#b91419;
+  --sidebar-bg:#1c1c1e;--sidebar-text:#f5f5f7;--sidebar-text2:#8e8e93;--sidebar-border:#2c2c2e;
 }
 html{font-size:13px}
-body{font-family:'IBM Plex Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh}
-h1,h2,h3,.serif{font-family:'Instrument Serif',serif}
+body{font-family:'DM Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh}
+h1,h2,h3,.serif{font-family:'Sora',sans-serif}
+*{-webkit-font-smoothing:antialiased}
 .app{display:flex;min-height:100vh}
-.sidebar{width:230px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:transform 0.2s}
+.sidebar{width:230px;background:var(--sidebar-bg);border-right:1px solid var(--sidebar-border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:transform 0.2s}
 .main{margin-left:230px;flex:1}
 .logo{padding:22px 20px 18px;border-bottom:1px solid var(--border)}
-.logo-text{font-family:'Instrument Serif',serif;font-size:22px;color:var(--gold2)}
+.logo-text{font-family:'Sora',sans-serif;font-size:22px;color:var(--gold2)}
 .logo-sub{font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px}
 .nav{flex:1;padding:10px 0;overflow-y:auto}
-.nav-section{padding:16px 16px 6px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;color:var(--text2);transition:all 0.15s;border-left:2px solid transparent;font-size:12px}
-.nav-item:hover{color:var(--text);background:var(--surface2)}
-.nav-item.active{color:var(--gold2);background:var(--gold-bg);border-left-color:var(--gold)}
-.nav-item svg{width:15px;height:15px;flex-shrink:0;opacity:0.7}
-.nav-item.active svg{opacity:1}
-.sidebar-footer{padding:14px 16px;border-top:1px solid var(--border);font-size:10px;color:var(--text3)}
-.version-badge{display:inline-block;padding:2px 8px;background:var(--green-bg);color:var(--green);border-radius:20px;font-size:10px;border:1px solid rgba(76,175,125,0.2)}
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.nav-section{padding:16px 16px 6px;font-size:9px;color:var(--sidebar-text2);text-transform:uppercase;letter-spacing:2px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;color:var(--sidebar-text2);transition:all 0.15s;border-left:3px solid transparent;font-size:12px;border-radius:0 6px 6px 0;margin-right:8px}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,0.06)}
+.nav-item.active{color:#fff;background:rgba(227,30,36,0.15);border-left-color:var(--brand)}
+.nav-item svg{width:15px;height:15px;flex-shrink:0;opacity:0.6}
+.nav-item.active svg{opacity:1;color:var(--brand2)}
+.sidebar-footer{padding:14px 16px;border-top:1px solid var(--sidebar-border);font-size:10px;color:var(--sidebar-text2)}
+.version-badge{display:inline-block;padding:2px 8px;background:rgba(227,30,36,0.15);color:var(--brand2);border-radius:20px;font-size:10px;border:1px solid rgba(227,30,36,0.3)}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 1px 0 var(--border)}
 .topbar-left{display:flex;align-items:center;gap:12px}
-.page-title{font-family:'Instrument Serif',serif;font-size:19px;color:var(--text)}
+.page-title{font-family:'Sora',sans-serif;font-size:19px;color:var(--text)}
 .topbar-right{display:flex;gap:8px;align-items:center}
 .page{display:none}
 .page.active{display:block}
 .content{padding:24px 28px;max-width:1200px}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:18px}
 .card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.card-header h3{font-size:14px;font-family:'Instrument Serif',serif}
+.card-header h3{font-size:14px;font-family:'Sora',sans-serif}
 .card-body{padding:18px}
 .mb-20{margin-bottom:20px}
 .mb-14{margin-bottom:14px}
@@ -58,7 +62,7 @@ h1,h2,h3,.serif{font-family:'Instrument Serif',serif}
 .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden}
 .stat-accent{position:absolute;top:0;left:0;width:3px;height:100%;border-radius:var(--r) 0 0 var(--r)}
 .stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
-.stat-value{font-family:'Instrument Serif',serif;font-size:26px;color:var(--text)}
+.stat-value{font-family:'Sora',sans-serif;font-size:26px;color:var(--text)}
 .stat-sub{font-size:11px;color:var(--text3);margin-top:4px}
 @media(max-width:780px){.stats-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:380px){.stats-grid{grid-template-columns:1fr}}
@@ -87,10 +91,10 @@ tr.clickable:hover td{background:var(--surface2)}
 .b-partial{background:var(--purple-bg);color:var(--purple);border:1px solid rgba(167,139,250,0.2)}
 
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);border:none;cursor:pointer;font-size:12px;font-family:'IBM Plex Mono',monospace;font-weight:500;transition:all 0.15s;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);border:none;cursor:pointer;font-size:12px;font-family:'DM Mono',monospace;font-weight:500;transition:all 0.15s;white-space:nowrap}
 .btn:disabled{opacity:0.5;cursor:not-allowed}
-.btn-primary{background:var(--gold);color:#0e0e0e}
-.btn-primary:hover{background:var(--gold2)}
+.btn-primary{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(227,30,36,0.3)}
+.btn-primary:hover{background:var(--brand-dark);box-shadow:0 4px 12px rgba(227,30,36,0.4)}
 .btn-secondary{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
 .btn-secondary:hover{color:var(--text);border-color:var(--border2)}
 .btn-green{background:var(--green-bg);color:var(--green);border:1px solid rgba(76,175,125,0.2)}
@@ -105,7 +109,7 @@ tr.clickable:hover td{background:var(--surface2)}
 /* FORMS */
 .form-group{margin-bottom:14px}
 .form-group label{display:block;font-size:11px;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px}
-input,select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:'IBM Plex Mono',monospace;font-size:12px;padding:8px 10px;transition:border-color 0.15s}
+input,select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:8px 10px;transition:border-color 0.15s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);background:var(--surface3)}
 textarea{resize:vertical;min-height:70px}
 input[type=number]{-moz-appearance:textfield}
@@ -115,14 +119,14 @@ input[type=checkbox]{width:auto;accent-color:var(--gold)}
 .cols-2{grid-template-columns:1fr 1fr;display:grid}
 .cols-3{grid-template-columns:1fr 1fr 1fr;display:grid}
 .flex-gap{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.text-gold{color:var(--gold2)}
+.text-gold{color:var(--brand);font-weight:600}
 .text-muted{color:var(--text3)}
 
 /* MODALS */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:10px;width:100%;max-width:640px;max-height:90vh;display:flex;flex-direction:column;box-shadow:var(--shadow)}
 .modal-hd{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.modal-hd h2{font-size:16px;font-family:'Instrument Serif',serif}
+.modal-hd h2{font-size:16px;font-family:'Sora',sans-serif}
 .modal-body{padding:20px;overflow-y:auto;flex:1}
 .modal-ft{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0}
 .x-btn{background:none;border:none;cursor:pointer;color:var(--text3);padding:4px;border-radius:4px;transition:color 0.15s;display:flex;align-items:center}
@@ -139,18 +143,18 @@ input[type=checkbox]{width:auto;accent-color:var(--gold)}
 .sig-canvas{border:1px solid var(--border2);border-radius:4px;width:100%;cursor:crosshair;display:block;background:#fff;touch-action:none}
 
 /* PRINT DOC */
-.preview-doc{background:#fff;color:#1a1a1a;border-radius:6px;padding:36px 40px;font-family:'IBM Plex Mono',monospace;font-size:12px}
+.preview-doc{background:#fff;color:#1a1a1a;border-radius:6px;padding:36px 40px;font-family:'DM Mono',monospace;font-size:12px}
 .preview-doc .ph{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:3px solid #1a1a1a;margin-bottom:24px}
-.preview-doc .co-name{font-family:'Instrument Serif',serif;font-size:24px;font-weight:700;color:#1a1a1a}
+.preview-doc .co-name{font-family:'Sora',sans-serif;font-size:24px;font-weight:700;color:#1a1a1a}
 .preview-doc .lbl{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:3px}
-.preview-doc .est-num{font-family:'Instrument Serif',serif;font-size:28px;font-weight:700;color:#1a1a1a;text-align:right}
+.preview-doc .est-num{font-family:'Sora',sans-serif;font-size:28px;font-weight:700;color:#1a1a1a;text-align:right}
 .preview-doc table{width:100%;border-collapse:collapse;margin-bottom:18px}
 .preview-doc th{background:#f5f0e8;padding:9px 12px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#888;border-bottom:2px solid #e0d8cc;text-align:left}
 .preview-doc td{padding:9px 12px;border-bottom:1px solid #eee;color:#333;font-size:12px}
 .preview-doc .right{text-align:right}
 .preview-doc .totals-wrap{max-width:240px;margin-left:auto;margin-bottom:20px}
 .preview-doc .tot-row{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;color:#666;border-bottom:1px solid #eee}
-.preview-doc .tot-grand{font-family:'Instrument Serif',serif;font-size:20px;font-weight:700;color:#1a1a1a;border-bottom:none;border-top:2px solid #1a1a1a;padding-top:8px}
+.preview-doc .tot-grand{font-family:'Sora',sans-serif;font-size:20px;font-weight:700;color:#1a1a1a;border-bottom:none;border-top:2px solid #1a1a1a;padding-top:8px}
 .preview-doc .notes-box{background:#f9f6f0;border-left:3px solid #c9a84c;padding:12px 16px;font-size:12px;color:#555;margin-bottom:20px;line-height:1.7;border-radius:0 4px 4px 0}
 .preview-doc .sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px;padding-top:20px;border-top:1px solid #ddd}
 
@@ -167,7 +171,7 @@ input[type=checkbox]{width:auto;accent-color:var(--gold)}
 /* CALCULATORS */
 .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .calc-result{background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:var(--r);padding:14px;margin-top:12px;text-align:center}
-.calc-result-val{font-family:'Instrument Serif',serif;font-size:26px;color:var(--gold2)}
+.calc-result-val{font-family:'Sora',sans-serif;font-size:26px;color:var(--gold2)}
 .calc-result-label{font-size:11px;color:var(--text3);margin-top:2px}
 
 /* FOLLOW-UP DOT */
@@ -190,12 +194,12 @@ input[type=checkbox]{width:auto;accent-color:var(--gold)}
 @media(max-width:900px){.dash-grid{grid-template-columns:1fr}}
 
 /* MOBILE NAV */
-.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--sidebar-bg);border-top:1px solid var(--sidebar-border);z-index:100;padding-bottom:env(safe-area-inset-bottom)}
 .mob-nav-inner{display:flex;justify-content:space-around}
-.mob-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 8px;cursor:pointer;color:var(--text3);font-size:10px;flex:1;transition:color 0.15s}
-.mob-nav-item.active{color:var(--gold2)}
+.mob-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 8px;cursor:pointer;color:var(--sidebar-text2);font-size:10px;flex:1;transition:color 0.15s}
+.mob-nav-item.active{color:var(--brand2)}
 .mob-nav-item svg{width:20px;height:20px}
-.mob-fab{display:none;position:fixed;bottom:72px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;z-index:101;box-shadow:0 4px 16px rgba(201,168,76,0.4);align-items:center;justify-content:center;color:#0e0e0e;font-size:22px;transition:transform 0.15s}
+.mob-fab{display:none;position:fixed;bottom:72px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--brand);border:none;cursor:pointer;z-index:101;box-shadow:0 4px 20px rgba(227,30,36,0.5);align-items:center;justify-content:center;color:#fff;font-size:22px;transition:transform 0.15s}
 .mob-fab:hover{transform:scale(1.05)}
 
 @media(max-width:768px){
@@ -216,6 +220,25 @@ input[type=checkbox]{width:auto;accent-color:var(--gold)}
   .overlay{align-items:flex-end;padding:0}
 }
 
+
+/* SI Brand Polish */
+.page-title{color:var(--text);font-weight:700;font-size:18px}
+.stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;font-weight:500}
+.stat-value{font-family:'Sora',sans-serif;font-size:26px;font-weight:700;color:var(--text);line-height:1}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:5px}
+.badge{font-size:10px;padding:3px 8px;border-radius:20px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase}
+.b-draft{background:#f4f4f5;color:#646464;border:1px solid #e0e0e0}
+.b-sent{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe}
+.b-viewed{background:#fffbeb;color:#d97706;border:1px solid #fde68a}
+.b-signed{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+.b-declined{background:#fef2f2;color:#e31e24;border:1px solid #fecaca}
+.b-paid{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+.b-unpaid{background:#fef2f2;color:#e31e24;border:1px solid #fecaca}
+.b-overdue{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+input,select,textarea{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:9px 12px;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;width:100%;transition:border-color 0.15s,box-shadow 0.15s}
+label{font-size:11px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px}
+.share-box{display:flex;gap:8px;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px}
+.share-box input{border:none;background:transparent;padding:0;font-size:11px;color:var(--text2)}
 /* PRINT */
 @media print{
   .sidebar,.topbar,.mob-nav,.mob-fab,.btn,.x-btn,.overlay,.toast{display:none!important}
@@ -231,8 +254,11 @@ input[type=checkbox]{width:auto;accent-color:var(--gold)}
 <!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
   <div class="logo">
-    <div class="logo-text">EstimatePro</div>
-    <div class="logo-sub">Contractor Software</div>
+    <div class="logo-icon">SI</div>
+    <div>
+      <div class="logo-text">Saucedo</div>
+      <div class="logo-sub">Innovations</div>
+    </div>
   </div>
   <nav class="nav">
     <div class="nav-section">Main</div>
@@ -295,7 +321,8 @@ input[type=checkbox]{width:auto;accent-color:var(--gold)}
 
 <!-- DASHBOARD -->
 <div class="page active" id="page-dashboard">
-  <div class="topbar">
+  <div style="height:3px;background:linear-gradient(90deg,var(--brand) 0%,var(--brand2) 50%,var(--brand) 100%);position:sticky;top:0;z-index:51"></div>
+  <div class="topbar" style="top:3px">
     <div class="topbar-left"><span class="page-title">Dashboard</span></div>
     <div class="topbar-right">
       <button class="btn btn-primary" onclick="go('estimates');setTimeout(newEst,100)">+ New Estimate</button>
@@ -666,7 +693,7 @@ input[type=checkbox]{width:auto;accent-color:var(--gold)}
       <div class="form-group"><label>Discount ($)</label><input type="number" id="e-disc" value="0" step="0.01" oninput="calcPreview()"></div>
       <div style="padding-top:20px;text-align:right">
         <div style="font-size:11px;color:var(--text3)">Total</div>
-        <div style="font-family:'Instrument Serif',serif;font-size:22px;color:var(--gold2)" id="e-total-preview">$0.00</div>
+        <div style="font-family:'Sora',sans-serif;font-size:22px;color:var(--gold2)" id="e-total-preview">$0.00</div>
       </div>
     </div>
     <div class="form-group"><label>Notes for Client</label><textarea id="e-notes" rows="2" placeholder="Any notes, payment instructions, or terms…"></textarea></div>
@@ -896,7 +923,7 @@ function renderDash(){
   const outstanding=unpaidInvs.reduce((s,x)=>s+(+x.amount||0),0);
 
   document.getElementById('dash-stats').innerHTML=`
-    <div class="stat"><div class="stat-accent" style="background:var(--gold)"></div><div class="stat-label">Total Estimated</div><div class="stat-value">${$f(total)}</div><div class="stat-sub">${es.length} estimate${es.length!==1?'s':''}</div></div>
+    <div class="stat"><div class="stat-accent" style="background:var(--brand)"></div><div class="stat-label">Total Estimated</div><div class="stat-value">${$f(total)}</div><div class="stat-sub">${es.length} estimate${es.length!==1?'s':''}</div></div>
     <div class="stat"><div class="stat-accent" style="background:var(--green)"></div><div class="stat-label">Revenue Collected</div><div class="stat-value">${$f(revenue)}</div><div class="stat-sub">${paidInvs.length} paid invoice${paidInvs.length!==1?'s':''}</div></div>
     <div class="stat"><div class="stat-accent" style="background:var(--blue)"></div><div class="stat-label">Outstanding</div><div class="stat-value">${$f(outstanding)}</div><div class="stat-sub">${unpaidInvs.length} unpaid</div></div>
     <div class="stat"><div class="stat-accent" style="background:var(--amber)"></div><div class="stat-label">Follow-Ups Due</div><div class="stat-value">${due.length}</div><div class="stat-sub">${due.length?'action needed':'all clear'}</div></div>`;
@@ -1174,14 +1201,14 @@ function printPreview(){
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><title>Estimate</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif&display=swap" rel="stylesheet">
-  <style>*{margin:0;padding:0;box-sizing:border-box}body{background:#fff;padding:40px;font-family:'IBM Plex Mono',monospace}
+  <style>*{margin:0;padding:0;box-sizing:border-box}body{background:#fff;padding:40px;font-family:'DM Mono',monospace}
   .preview-doc{color:#1a1a1a;font-size:12px}.preview-doc .ph{display:flex;justify-content:space-between;padding-bottom:20px;border-bottom:3px solid #1a1a1a;margin-bottom:24px}
-  .preview-doc .co-name{font-family:'Instrument Serif',serif;font-size:24px;font-weight:700}.preview-doc .lbl{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:3px}
-  .preview-doc .est-num{font-family:'Instrument Serif',serif;font-size:28px;font-weight:700;text-align:right}
+  .preview-doc .co-name{font-family:'Sora',sans-serif;font-size:24px;font-weight:700}.preview-doc .lbl{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:3px}
+  .preview-doc .est-num{font-family:'Sora',sans-serif;font-size:28px;font-weight:700;text-align:right}
   .preview-doc table{width:100%;border-collapse:collapse;margin-bottom:18px}.preview-doc th{background:#f5f0e8;padding:8px 12px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#888;border-bottom:2px solid #e0d8cc;text-align:left}
   .preview-doc td{padding:8px 12px;border-bottom:1px solid #eee;font-size:12px}.right{text-align:right}
   .preview-doc .totals-wrap{max-width:220px;margin-left:auto;margin-bottom:18px}.preview-doc .tot-row{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;color:#666;border-bottom:1px solid #eee}
-  .preview-doc .tot-grand{font-family:'Instrument Serif',serif;font-size:20px;font-weight:700;color:#1a1a1a;border-bottom:none;border-top:2px solid #1a1a1a;padding-top:6px}
+  .preview-doc .tot-grand{font-family:'Sora',sans-serif;font-size:20px;font-weight:700;color:#1a1a1a;border-bottom:none;border-top:2px solid #1a1a1a;padding-top:6px}
   .preview-doc .notes-box{background:#f9f6f0;border-left:3px solid #c9a84c;padding:12px 16px;font-size:12px;color:#555;margin-bottom:18px;line-height:1.7}
   .preview-doc .sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:20px;padding-top:16px;border-top:1px solid #ddd}
   .sig-canvas{border:1px solid #ccc;border-radius:4px;width:100%;height:70px;background:#fff}
@@ -1359,13 +1386,13 @@ function printInvoice(id){
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><title>Invoice ${num}</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif&display=swap" rel="stylesheet">
-  <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'IBM Plex Mono',monospace;padding:48px;color:#1a1a1a;font-size:13px}
+  <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'DM Mono',monospace;padding:48px;color:#1a1a1a;font-size:13px}
   .hd{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:3px solid #1a1a1a;margin-bottom:28px}
-  .co{font-family:'Instrument Serif',serif;font-size:26px;font-weight:700}.num{font-family:'Instrument Serif',serif;font-size:32px;font-weight:700;text-align:right}
+  .co{font-family:'Sora',sans-serif;font-size:26px;font-weight:700}.num{font-family:'Sora',sans-serif;font-size:32px;font-weight:700;text-align:right}
   .lbl{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:3px}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
   .amt-box{background:#f5f0e8;border-radius:6px;padding:24px;text-align:center;margin-bottom:28px}
-  .amt-val{font-family:'Instrument Serif',serif;font-size:40px;font-weight:700;color:#1a1a1a}
+  .amt-val{font-family:'Sora',sans-serif;font-size:40px;font-weight:700;color:#1a1a1a}
   .status{display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600;margin-top:8px;background:${statusBg};color:${statusColor}}
   .footer{margin-top:32px;padding-top:18px;border-top:1px solid #ddd;font-size:11px;color:#999}
   @media print{body{padding:24px}}</style></head><body>
@@ -1694,7 +1721,7 @@ function renderTeam(){
   el.innerHTML=db.team.map(m=>`
     <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)">
       <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:36px;height:36px;border-radius:50%;background:var(--gold-bg);border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-family:'Instrument Serif',serif;font-size:16px;color:var(--gold2)">${m.name[0].toUpperCase()}</div>
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--gold-bg);border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-size:16px;color:var(--gold2)">${m.name[0].toUpperCase()}</div>
         <div>
           <div style="font-size:13px;font-weight:500">${m.name}</div>
           <div style="font-size:11px;color:var(--text3)">${m.role||'Team Member'} · PIN: ${'•'.repeat(m.pin.length)}</div>
@@ -1824,17 +1851,17 @@ function checkShareLink(){
     const photos=(wh===undefined?[]:[]); // no photos in share link for privacy
     page.innerHTML=`
 <style>
-#client-page{min-height:100vh;background:#f5f0e8;font-family:'IBM Plex Mono',monospace;padding-bottom:60px}
+#client-page{min-height:100vh;background:#f5f0e8;font-family:'DM Mono',monospace;padding-bottom:60px}
 #client-page .cp-bar{background:#1a1611;padding:14px 24px;display:flex;justify-content:space-between;align-items:center}
-#client-page .cp-brand{font-family:'Instrument Serif',serif;font-size:17px;color:#e8c97a}
+#client-page .cp-brand{font-family:'Sora',sans-serif;font-size:17px;color:#e8c97a}
 #client-page .cp-sub{font-size:11px;color:rgba(232,201,122,0.5);letter-spacing:1px;text-transform:uppercase}
 #client-page .cp-wrap{max-width:720px;margin:32px auto;padding:0 16px}
 #client-page .cp-doc{background:#fff;border-radius:10px;box-shadow:0 6px 32px rgba(0,0,0,0.12);overflow:hidden}
-#client-page .cp-hd{padding:36px 40px 28px;border-bottom:3px solid #1a1611;display:flex;justify-content:space-between;align-items:flex-start}
-#client-page .cp-co{font-family:'Instrument Serif',serif;font-size:26px;font-weight:700;color:#1a1611}
+#client-page .cp-hd{padding:36px 40px 28px;border-bottom:3px solid var(--brand);display:flex;justify-content:space-between;align-items:flex-start}
+#client-page .cp-co{font-family:'Sora',sans-serif;font-size:26px;font-weight:700;color:#1a1611}
 #client-page .cp-co-info{font-size:12px;color:#777;margin-top:3px;line-height:1.8}
 #client-page .cp-est-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#999;text-align:right;margin-bottom:4px}
-#client-page .cp-est-num{font-family:'Instrument Serif',serif;font-size:30px;font-weight:700;color:#1a1611;text-align:right}
+#client-page .cp-est-num{font-family:'Sora',sans-serif;font-size:30px;font-weight:700;color:#1a1611;text-align:right}
 #client-page .cp-dates{font-size:12px;color:#777;text-align:right;margin-top:4px;line-height:1.8}
 #client-page .cp-body{padding:28px 40px}
 #client-page .sec-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#999;margin-bottom:5px}
@@ -1847,21 +1874,21 @@ function checkShareLink(){
 #client-page .rt{text-align:right}
 #client-page .cp-totals{max-width:260px;margin-left:auto;margin-bottom:28px}
 #client-page .cp-tot-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;color:#666;border-bottom:1px solid #eee}
-#client-page .cp-grand{font-family:'Instrument Serif',serif;font-size:24px;font-weight:700;color:#1a1611;border-top:2px solid #1a1611;border-bottom:none;padding-top:10px;margin-top:4px}
+#client-page .cp-grand{font-family:'Sora',sans-serif;font-size:24px;font-weight:700;color:#1a1611;border-top:2px solid #1a1611;border-bottom:none;padding-top:10px;margin-top:4px}
 #client-page .cp-note{background:#f9f6f0;border-left:3px solid #c9a84c;border-radius:0 6px 6px 0;padding:14px 18px;font-size:13px;color:#555;margin-bottom:28px;line-height:1.7}
 #client-page .cp-sig-box{background:#f9f6f0;border-radius:8px;padding:24px;margin-bottom:24px}
-#client-page .cp-sig-title{font-family:'Instrument Serif',serif;font-size:19px;color:#1a1611;margin-bottom:5px}
+#client-page .cp-sig-title{font-family:'Sora',sans-serif;font-size:19px;color:#1a1611;margin-bottom:5px}
 #client-page .cp-sig-sub{font-size:12px;color:#888;margin-bottom:14px;line-height:1.7}
 #client-page canvas{width:100%;height:120px;border:2px dashed #c9a84c;border-radius:6px;cursor:crosshair;display:block;background:#fff;touch-action:none}
 #client-page .cp-sig-actions{display:flex;gap:10px;margin-top:12px}
-#client-page .cp-clear{background:#fff;border:1px solid #ddd;border-radius:6px;padding:8px 16px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;color:#666}
-#client-page .cp-accept{background:#1a1611;color:#e8c97a;border:none;border-radius:6px;padding:12px 28px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace;flex:1;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:8px}
+#client-page .cp-clear{background:#fff;border:1px solid #ddd;border-radius:6px;padding:8px 16px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;color:#666}
+#client-page .cp-accept{background:var(--brand);color:#fff;border:none;border-radius:6px;padding:12px 28px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Mono',monospace;flex:1;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:8px}
 #client-page .cp-accept:hover{background:#2d2820}
 #client-page .cp-accept:disabled{background:#ccc;color:#999;cursor:not-allowed}
 #client-page .cp-footer{text-align:center;padding:20px 40px;border-top:1px solid #e8e0d0;font-size:11px;color:#aaa;line-height:1.9}
 #client-page .cp-done{background:#2d6a4f;color:#fff;border-radius:8px;padding:20px 24px;text-align:center;margin-bottom:20px;display:none}
-#client-page .cp-done h3{font-family:'Instrument Serif',serif;font-size:20px;margin-bottom:4px}
-#client-page .cp-print-btn{background:transparent;border:1px solid #c9a84c;color:#c9a84c;border-radius:6px;padding:8px 18px;font-size:11px;cursor:pointer;font-family:'IBM Plex Mono',monospace;margin-top:8px}
+#client-page .cp-done h3{font-family:'Sora',sans-serif;font-size:20px;margin-bottom:4px}
+#client-page .cp-print-btn{background:transparent;border:1px solid #c9a84c;color:#c9a84c;border-radius:6px;padding:8px 18px;font-size:11px;cursor:pointer;font-family:'DM Mono',monospace;margin-top:8px}
 #client-page .cp-print-btn:hover{background:#c9a84c;color:#1a1611}
 @media(max-width:600px){
   #client-page .cp-hd{flex-direction:column;gap:14px;padding:20px}
@@ -2010,13 +2037,13 @@ function updateSyncStatus(status,email){
     el.innerHTML=`<div style="display:flex;align-items:center;gap:6px;padding:10px 16px;background:rgba(76,175,125,0.08);border-top:1px solid rgba(76,175,125,0.15)">
       <div style="width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0"></div>
       <div style="font-size:10px;color:var(--green);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${email||'Synced'}</div>
-      <button onclick="signOut()" style="background:transparent;border:none;color:var(--text3);font-size:10px;cursor:pointer;font-family:'IBM Plex Mono',monospace;padding:0;white-space:nowrap">Sign Out</button>
+      <button onclick="signOut()" style="background:transparent;border:none;color:var(--text3);font-size:10px;cursor:pointer;font-family:'DM Mono',monospace;padding:0;white-space:nowrap">Sign Out</button>
     </div>`;
   } else {
     el.innerHTML=`<div style="display:flex;align-items:center;gap:6px;padding:10px 16px;background:var(--surface2);border-top:1px solid var(--border)">
       <div style="width:7px;height:7px;border-radius:50%;background:var(--text3);flex-shrink:0"></div>
       <div style="font-size:10px;color:var(--text3);flex:1">Offline mode</div>
-      <button onclick="openSupabaseSetup()" style="background:transparent;border:none;color:var(--gold2);font-size:10px;cursor:pointer;font-family:'IBM Plex Mono',monospace;padding:0;white-space:nowrap">Connect ↗</button>
+      <button onclick="openSupabaseSetup()" style="background:transparent;border:none;color:var(--gold2);font-size:10px;cursor:pointer;font-family:'DM Mono',monospace;padding:0;white-space:nowrap">Connect ↗</button>
     </div>`;
   }
 }
@@ -2052,14 +2079,14 @@ create policy "own" on estimatepro_data
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);`;
 
-  const html=`<div style="position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;font-family:'IBM Plex Mono',monospace" id="supa-modal" onclick="if(event.target===this)this.remove()">
+  const html=`<div style="position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;font-family:'DM Mono',monospace" id="supa-modal" onclick="if(event.target===this)this.remove()">
   <div style="background:#161616;border:1px solid #2e2e2e;border-radius:10px;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.6)">
 
     <!-- Tabs -->
     <div style="display:flex;border-bottom:1px solid #2e2e2e">
-      <button id="tab-setup" onclick="supaTab('setup')" style="flex:1;padding:14px;background:transparent;border:none;color:var(--gold2);font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;border-bottom:2px solid var(--gold);font-weight:600">⚙️ Setup</button>
-      <button id="tab-signin" onclick="supaTab('signin')" style="flex:1;padding:14px;background:transparent;border:none;color:var(--text3);font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;border-bottom:2px solid transparent">🔑 Sign In</button>
-      <button id="tab-signup" onclick="supaTab('signup')" style="flex:1;padding:14px;background:transparent;border:none;color:var(--text3);font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;border-bottom:2px solid transparent">✨ Create Account</button>
+      <button id="tab-setup" onclick="supaTab('setup')" style="flex:1;padding:14px;background:transparent;border:none;color:var(--gold2);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;border-bottom:2px solid var(--gold);font-weight:600">⚙️ Setup</button>
+      <button id="tab-signin" onclick="supaTab('signin')" style="flex:1;padding:14px;background:transparent;border:none;color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;border-bottom:2px solid transparent">🔑 Sign In</button>
+      <button id="tab-signup" onclick="supaTab('signup')" style="flex:1;padding:14px;background:transparent;border:none;color:var(--text3);font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;border-bottom:2px solid transparent">✨ Create Account</button>
       <button onclick="document.getElementById('supa-modal').remove()" style="padding:14px 18px;background:transparent;border:none;color:var(--text3);font-size:18px;cursor:pointer">×</button>
     </div>
 
@@ -2071,19 +2098,19 @@ create policy "own" on estimatepro_data
         <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px;text-align:center"><div style="font-size:18px;margin-bottom:4px">2️⃣</div><div style="font-size:10px;color:var(--text2)">Project Settings<br>→ API → copy keys</div></div>
         <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px;text-align:center"><div style="font-size:18px;margin-bottom:4px">3️⃣</div><div style="font-size:10px;color:var(--text2)">SQL Editor → run<br>query below → paste keys</div></div>
       </div>
-      <div style="background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:12px;margin-bottom:16px;font-size:11px;color:var(--text3);line-height:1.9;font-family:'IBM Plex Mono',monospace;white-space:pre-wrap">${sql}<br><button onclick="navigator.clipboard.writeText(document.getElementById('sql-block').textContent).then(()=>toast('SQL copied!','success'))" style="margin-top:8px;background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:4px;padding:4px 10px;font-size:10px;cursor:pointer;font-family:'IBM Plex Mono',monospace">📋 Copy SQL</button><span id="sql-block" style="display:none">${sql}</span></div>
+      <div style="background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:12px;margin-bottom:16px;font-size:11px;color:var(--text3);line-height:1.9;font-family:'DM Mono',monospace;white-space:pre-wrap">${sql}<br><button onclick="navigator.clipboard.writeText(document.getElementById('sql-block').textContent).then(()=>toast('SQL copied!','success'))" style="margin-top:8px;background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:4px;padding:4px 10px;font-size:10px;cursor:pointer;font-family:'DM Mono',monospace">📋 Copy SQL</button><span id="sql-block" style="display:none">${sql}</span></div>
       <div style="margin-bottom:12px">
         <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Project URL</label>
-        <input id="si-url" value="${url}" placeholder="https://xxxxxxxxxxx.supabase.co" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:12px;font-family:'IBM Plex Mono',monospace;outline:none">
+        <input id="si-url" value="${url}" placeholder="https://xxxxxxxxxxx.supabase.co" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:12px;font-family:'DM Mono',monospace;outline:none">
       </div>
       <div style="margin-bottom:20px">
         <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Anon Public Key</label>
-        <input id="si-key" value="${key}" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:12px;font-family:'IBM Plex Mono',monospace;outline:none">
+        <input id="si-key" value="${key}" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:12px;font-family:'DM Mono',monospace;outline:none">
       </div>
       <div id="si-msg" style="font-size:12px;margin-bottom:12px;padding:10px 14px;border-radius:6px;display:none"></div>
       <div style="display:flex;gap:8px">
-        <button onclick="saveSupabaseKeys()" style="flex:1;background:var(--gold);color:#0e0e0e;border:none;border-radius:6px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace">Save Keys</button>
-        <button onclick="document.getElementById('supa-modal').remove()" style="background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:6px;padding:11px 16px;cursor:pointer;font-size:12px;font-family:'IBM Plex Mono',monospace">Cancel</button>
+        <button onclick="saveSupabaseKeys()" style="flex:1;background:var(--gold);color:#0e0e0e;border:none;border-radius:6px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Mono',monospace">Save Keys</button>
+        <button onclick="document.getElementById('supa-modal').remove()" style="background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:6px;padding:11px 16px;cursor:pointer;font-size:12px;font-family:'DM Mono',monospace">Cancel</button>
       </div>
       ${configured?'<div style="margin-top:12px;font-size:11px;color:var(--green);text-align:center">✓ Keys saved — switch to Sign In tab to log in</div>':''}
     </div>
@@ -2093,15 +2120,15 @@ create policy "own" on estimatepro_data
       <p style="font-size:12px;color:var(--text2);margin-bottom:20px;line-height:1.8">Sign in to sync your data across all devices.</p>
       <div style="margin-bottom:12px">
         <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Email</label>
-        <input id="login-email" type="email" placeholder="you@email.com" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'IBM Plex Mono',monospace;outline:none">
+        <input id="login-email" type="email" placeholder="you@email.com" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'DM Mono',monospace;outline:none">
       </div>
       <div style="margin-bottom:20px">
         <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Password</label>
-        <input id="login-pass" type="password" placeholder="••••••••" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'IBM Plex Mono',monospace;outline:none" onkeydown="if(event.key==='Enter')supaSignIn()">
+        <input id="login-pass" type="password" placeholder="••••••••" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'DM Mono',monospace;outline:none" onkeydown="if(event.key==='Enter')supaSignIn()">
       </div>
       <div id="login-msg" style="font-size:12px;margin-bottom:12px;padding:10px 14px;border-radius:6px;display:none"></div>
-      <button onclick="supaSignIn()" id="signin-btn" style="width:100%;background:var(--gold);color:#0e0e0e;border:none;border-radius:6px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace;margin-bottom:10px">Sign In</button>
-      <button onclick="supaForgot()" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text3);border-radius:6px;padding:10px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace">Forgot password?</button>
+      <button onclick="supaSignIn()" id="signin-btn" style="width:100%;background:var(--gold);color:#0e0e0e;border:none;border-radius:6px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Mono',monospace;margin-bottom:10px">Sign In</button>
+      <button onclick="supaForgot()" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text3);border-radius:6px;padding:10px;font-size:12px;cursor:pointer;font-family:'DM Mono',monospace">Forgot password?</button>
       ${!configured?'<div style="margin-top:12px;font-size:11px;color:var(--amber);text-align:center">⚠ Set up your Supabase keys first in the Setup tab</div>':''}
     </div>
 
@@ -2110,14 +2137,14 @@ create policy "own" on estimatepro_data
       <p style="font-size:12px;color:var(--text2);margin-bottom:20px;line-height:1.8">Create your account. Make sure you've set up Supabase keys in the Setup tab first.</p>
       <div style="margin-bottom:12px">
         <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Email</label>
-        <input id="reg-email" type="email" placeholder="you@email.com" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'IBM Plex Mono',monospace;outline:none">
+        <input id="reg-email" type="email" placeholder="you@email.com" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'DM Mono',monospace;outline:none">
       </div>
       <div style="margin-bottom:20px">
         <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Password (min 6 characters)</label>
-        <input id="reg-pass" type="password" placeholder="Choose a strong password" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'IBM Plex Mono',monospace;outline:none" onkeydown="if(event.key==='Enter')supaSignUp()">
+        <input id="reg-pass" type="password" placeholder="Choose a strong password" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'DM Mono',monospace;outline:none" onkeydown="if(event.key==='Enter')supaSignUp()">
       </div>
       <div id="reg-msg" style="font-size:12px;margin-bottom:12px;padding:10px 14px;border-radius:6px;display:none"></div>
-      <button onclick="supaSignUp()" id="signup-btn" style="width:100%;background:var(--gold);color:#0e0e0e;border:none;border-radius:6px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace">Create Account</button>
+      <button onclick="supaSignUp()" id="signup-btn" style="width:100%;background:var(--gold);color:#0e0e0e;border:none;border-radius:6px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Mono',monospace">Create Account</button>
       ${!configured?'<div style="margin-top:12px;font-size:11px;color:var(--amber);text-align:center">⚠ Set up your Supabase keys first in the Setup tab</div>':''}
     </div>
 
