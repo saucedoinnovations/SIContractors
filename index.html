@@ -1784,9 +1784,12 @@ function checkPinLock(page){
   const protected_pages=['settings','email','team'];
   if(!protected_pages.includes(page)) return true;
   if(!db.settings.ownerPin) return true;
-  // Check if already unlocked this session
+  // Owner logged in via Supabase — never block them
+  if(currentUser) return true;
+  // Already unlocked this session (team member entered PIN)
   if(sessionStorage.getItem('ep_unlocked')==='1') return true;
-  const entered=prompt('Enter your owner PIN to access this page:');
+  const entered=prompt('Enter the owner PIN to access this page:');
+  if(entered===null) return false; // cancelled
   if(entered===db.settings.ownerPin){ sessionStorage.setItem('ep_unlocked','1'); return true; }
   toast('Incorrect PIN.','error'); return false;
 }
