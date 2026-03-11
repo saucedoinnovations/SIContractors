@@ -5,7 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SI EstimatePro — Saucedo Innovations</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+// ── TOPBAR ACTION ALIASES ──
+function newClientModal(){ openClient(); }
+function newCatItem(){ openCat(); }
+function newTeamMember(){ openAddMember(); }
+function uploadPhoto(){ document.getElementById('photo-file-input')?.click(); }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="window.supabase=null"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -282,26 +288,25 @@ tr:last-child td{border-bottom:none}
 
 <!-- MAIN -->
 <div class="main">
+  <div class="topbar" id="shared-topbar">
+    <div class="topbar-top">
+      <div>
+        <div class="page-title" id="topbar-title">Dashboard</div>
+        <div class="page-subtitle" id="topbar-sub">Your business at a glance</div>
+      </div>
+      <div class="topbar-right" id="topbar-actions">
+        <button class="btn btn-primary" onclick="go('estimates');newEst()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Estimate
+        </button>
+      </div>
+    </div>
+  </div>
+
 
 <!-- DASHBOARD -->
 <div class="page active" id="page-dashboard">
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="page-title">Dashboard</div>
-      <div class="page-subtitle">Your business at a glance</div>
-    </div>
-    <div class="topbar-right">
-      <button class="btn btn-primary" onclick="newEst()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        New Estimate
-      </button>
-    </div>
-  </div>
-    <div class="topbar-right">
-      <button class="btn btn-primary" onclick="go('estimates');setTimeout(newEst,100)">+ New Estimate</button>
-    </div>
-  </div>
-  <div class="content">
+<div class="content">
     <div id="dash-stats" class="stats-grid"></div>
     <div class="dash-grid">
       <div class="card">
@@ -318,14 +323,7 @@ tr:last-child td{border-bottom:none}
 
 <!-- TEAM ACCESS -->
 <div class="page" id="page-team">
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="page-title">Team Access</div>
-      <div class="page-subtitle">Manage your team members and permissions</div>
-    </div>
-    <div class="topbar-right"></div>
-  </div></div>
-  <div class="content" style="max-width:640px">
+<div class="content" style="max-width:640px">
     <div class="card mb-20">
       <div class="card-header"><h3>👥 Team Members</h3><button class="btn btn-primary btn-sm" onclick="openAddMember()">+ Add Member</button></div>
       <div class="card-body">
@@ -350,22 +348,7 @@ tr:last-child td{border-bottom:none}
 
 <!-- ESTIMATES -->
 <div class="page" id="page-estimates">
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="page-title">Estimates</div>
-      <div class="page-subtitle">Create and manage your estimates</div>
-    </div>
-    <div class="topbar-right"><button class="btn btn-primary" onclick="newEst()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Estimate</button></div>
-  </div>
-    <div class="topbar-right">
-      <select id="est-filter" onchange="renderEstList()" style="width:auto;padding:6px 10px;font-size:11px">
-        <option value="">All Statuses</option>
-        <option>Draft</option><option>Sent</option><option>Viewed</option><option>Signed</option><option>Declined</option>
-      </select>
-      <button class="btn btn-primary" onclick="newEst()">+ New Estimate</button>
-    </div>
-  </div>
-  <div class="content">
+<div class="content">
     <div class="card">
       <div class="table-wrap">
         <table><thead><tr><th>#</th><th>Client</th><th>Description</th><th>Total</th><th>Status</th><th>Follow-Up</th><th>Date</th><th>Actions</th></tr></thead>
@@ -377,21 +360,7 @@ tr:last-child td{border-bottom:none}
 
 <!-- INVOICES -->
 <div class="page" id="page-invoices">
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="page-title">Invoices</div>
-      <div class="page-subtitle">Track payments and outstanding balances</div>
-    </div>
-    <div class="topbar-right"></div>
-  </div>
-    <div class="topbar-right">
-      <select id="inv-filter" onchange="renderInvoices()" style="width:auto;padding:6px 10px;font-size:11px">
-        <option value="">All</option><option>Unpaid</option><option>Paid</option><option>Overdue</option><option>Partial</option>
-      </select>
-      <button class="btn btn-primary" onclick="openNewInvoice()">+ New Invoice</button>
-    </div>
-  </div>
-  <div class="content">
+<div class="content">
     <div style="background:var(--blue-bg);border:1px solid rgba(91,156,246,0.2);border-radius:var(--r);padding:12px 16px;margin-bottom:18px;font-size:12px;color:var(--blue)">
       💡 Convert any estimate into an invoice using the <strong>→ Invoice</strong> button on your Estimates page.
     </div>
@@ -406,16 +375,7 @@ tr:last-child td{border-bottom:none}
 
 <!-- CLIENTS -->
 <div class="page" id="page-clients">
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="page-title">Clients</div>
-      <div class="page-subtitle">Manage your client relationships</div>
-    </div>
-    <div class="topbar-right"><button class="btn btn-primary" onclick="openClientModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Client</button></div>
-  </div>
-    <div class="topbar-right"><button class="btn btn-primary" onclick="openClient()">+ Add Client</button></div>
-  </div>
-  <div class="content">
+<div class="content">
     <div class="card">
       <div class="table-wrap">
         <table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Type</th><th>Address</th><th>Actions</th></tr></thead>
@@ -427,19 +387,7 @@ tr:last-child td{border-bottom:none}
 
 <!-- PHOTOS -->
 <div class="page" id="page-photos">
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="page-title">Job Photos</div>
-      <div class="page-subtitle">Attach photos to your estimates</div>
-    </div>
-    <div class="topbar-right"></div>
-  </div>
-    <div class="topbar-right">
-      <button class="btn btn-primary" onclick="document.getElementById('photo-file-input').click()">+ Upload Photos</button>
-      <input type="file" id="photo-file-input" multiple accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
-    </div>
-  </div>
-  <div class="content">
+<div class="content">
     <div class="card mb-20">
       <div class="card-header"><h3>Attach Photos to Estimate</h3></div>
       <div class="card-body">
@@ -460,16 +408,7 @@ tr:last-child td{border-bottom:none}
 
 <!-- CATALOG -->
 <div class="page" id="page-catalog">
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="page-title">Item Catalog</div>
-      <div class="page-subtitle">Your saved services and materials</div>
-    </div>
-    <div class="topbar-right"><button class="btn btn-primary" onclick="openCatModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Item</button></div>
-  </div>
-    <div class="topbar-right"><button class="btn btn-primary" onclick="openCatalogItem()">+ Add Item</button></div>
-  </div>
-  <div class="content">
+<div class="content">
     <div class="card">
       <div class="table-wrap">
         <table><thead><tr><th>Description</th><th>Unit</th><th>Default Price</th><th>Actions</th></tr></thead>
@@ -481,14 +420,7 @@ tr:last-child td{border-bottom:none}
 
 <!-- CALCULATORS -->
 <div class="page" id="page-calculators">
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="page-title">Calculators</div>
-      <div class="page-subtitle">Markup, margin and overhead tools</div>
-    </div>
-    <div class="topbar-right"></div>
-  </div></div>
-  <div class="content">
+<div class="content">
     <div class="calc-grid">
       <div class="card"><div class="card-header"><h3>Markup Calculator</h3></div><div class="card-body">
         <div class="form-group"><label>Cost ($)</label><input id="c-markup-cost" type="number" oninput="calcMarkup()" placeholder="0.00"></div>
@@ -518,16 +450,7 @@ tr:last-child td{border-bottom:none}
 
 <!-- EMAIL SETUP -->
 <div class="page" id="page-email">
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="page-title">Email Setup</div>
-      <div class="page-subtitle">Configure email and notifications</div>
-    </div>
-    <div class="topbar-right"><button class="btn btn-primary" onclick="saveEmailSettings()">Save Settings</button></div>
-  </div>
-    <div class="topbar-right"><button class="btn btn-primary" onclick="saveEmailSettings()">Save Settings</button></div>
-  </div>
-  <div class="content" style="max-width:680px">
+<div class="content" style="max-width:680px">
     <div class="card mb-20">
       <div class="card-header"><h3>How to Set Up EmailJS (Free — 200 emails/month)</h3></div>
       <div class="card-body">
@@ -579,16 +502,7 @@ tr:last-child td{border-bottom:none}
 
 <!-- SETTINGS -->
 <div class="page" id="page-settings">
-  <div class="topbar">
-    <div class="topbar-left">
-      <div class="page-title">Settings</div>
-      <div class="page-subtitle">Company info and preferences</div>
-    </div>
-    <div class="topbar-right"><button class="btn btn-primary" onclick="saveSettings()">Save Settings</button></div>
-  </div>
-    <div class="topbar-right"><button class="btn btn-primary" onclick="saveSettings()">Save Settings</button></div>
-  </div>
-  <div class="content" style="max-width:620px">
+<div class="content" style="max-width:620px">
     <div class="card mb-20">
       <div class="card-header"><h3>Company Info</h3></div>
       <div class="card-body">
@@ -926,6 +840,27 @@ function go(page){
   if(mobEl) mobEl.classList.add('active');
   const renders={dashboard:renderDash,estimates:renderEstList,invoices:renderInvoices,clients:renderClients,photos:renderPhotos,catalog:renderCatalog,email:loadEmailSettings,settings:loadSettings,team:renderTeam};
   if(renders[page]) renders[page]();
+  const pageMeta={
+    'dashboard':{title:'Dashboard',sub:'Your business at a glance',actions:'<button class="btn btn-primary" onclick="go(\'estimates\');newEst()">+ New Estimate</button>'},
+    'estimates':{title:'Estimates',sub:'Create and manage your estimates',actions:'<button class="btn btn-primary" onclick="newEst()">+ New Estimate</button>'},
+    'invoices':{title:'Invoices',sub:'Manage and track all your invoices',actions:'<button class="btn btn-primary" onclick="newInvoiceModal()">+ Create Invoice</button>'},
+    'clients':{title:'Clients',sub:'Manage your client contacts',actions:'<button class="btn btn-primary" onclick="newClientModal()">+ Add Client</button>'},
+    'catalog':{title:'Line Item Catalog',sub:'Reusable line items for estimates',actions:'<button class="btn btn-primary" onclick="newCatItem()">+ Add Item</button>'},
+    'calculators':{title:'Calculators',sub:'Business and pricing calculators',actions:''},
+    'photos':{title:'Job Photos',sub:'Attach photos to your jobs',actions:'<button class="btn btn-primary" onclick="uploadPhoto()">+ Upload Photo</button>'},
+    'team':{title:'Team Access',sub:'Manage team members and PINs',actions:'<button class="btn btn-primary" onclick="newTeamMember()">+ Add Member</button>'},
+    'email':{title:'Email & Notifications',sub:'Configure email sending and webhooks',actions:''},
+    'settings':{title:'Settings',sub:'Configure your business profile',actions:'<button class="btn btn-ghost" onclick="save();toast(\'Settings saved\')">&#x2713; Save Settings</button>'},
+  };
+  const m=pageMeta[page];
+  if(m){
+    const t=document.getElementById('topbar-title');
+    const s=document.getElementById('topbar-sub');
+    const a=document.getElementById('topbar-actions');
+    if(t) t.textContent=m.title;
+    if(s) s.textContent=m.sub;
+    if(a) a.innerHTML=m.actions;
+  }
   window.scrollTo(0,0);
 }
 
@@ -1331,31 +1266,46 @@ async function testEmail(){
 }
 
 // ── INVOICES ───────────────────────────────────────────────────────────
+function newInvoiceModal(){toast("Convert an estimate to invoice using → Invoice on Estimates page")}
 function renderInvoices(){
-  const filter=document.getElementById('inv-filter')?.value||'';
   const now=new Date();
-  let list=(db.invoices||[]).slice();
-  list.forEach(inv=>{ if(inv.status==='Unpaid'&&inv.due&&new Date(inv.due)<now) inv.status='Overdue'; });
-  if(filter) list=list.filter(x=>x.status===filter);
-  list.reverse();
+  let all=(db.invoices||[]).slice();
+  all.forEach(inv=>{ if(inv.status==='Unpaid'&&inv.due&&new Date(inv.due)<now) inv.status='Overdue'; });
+  all.reverse();
+  // update tab amounts
+  const sum=s=>all.filter(x=>x.status===s).reduce((t,x)=>t+(+x.amount||0),0);
+  const allAmt=all.reduce((t,x)=>t+(+x.amount||0),0);
+  const el=id=>document.getElementById(id);
+  if(el('inv-tab-all-amt')) el('inv-tab-all-amt').textContent=$f(allAmt);
+  if(el('inv-tab-unpaid-amt')) el('inv-tab-unpaid-amt').textContent=$f(sum('Unpaid'));
+  if(el('inv-tab-paid-amt')) el('inv-tab-paid-amt').textContent=$f(sum('Paid'));
+  if(el('inv-tab-overdue-amt')) el('inv-tab-overdue-amt').textContent=$f(sum('Overdue'));
+  // filter
+  const activeTab=document.querySelector('.inv-tab.active');
+  const filter=activeTab?activeTab.id.replace('inv-tab-',''):'all';
+  let list=filter==='all'?all:all.filter(x=>x.status===filter.charAt(0).toUpperCase()+filter.slice(1));
   document.getElementById('inv-list').innerHTML=list.length?list.map(inv=>{
     const num='INV-'+String((db.invoices||[]).findIndex(x=>x.id===inv.id)+1).padStart(4,'0');
     const sc='b-'+inv.status.toLowerCase();
     return`<tr>
-      <td class="text-muted">${num}</td>
-      <td style="font-weight:500;color:var(--text)">${inv.client||'—'}</td>
-      <td>${inv.desc||'—'}</td>
-      <td class="text-gold">${$f(inv.amount)}</td>
+      <td style="color:var(--text);font-weight:600">${num}</td>
+      <td>${inv.client||'—'}</td>
+      <td>${inv.desc||inv.estDesc||'—'}</td>
+      <td style="font-weight:600;color:var(--text)">${$f(+inv.amount||0)}</td>
       <td><span class="badge ${sc}">${inv.status}</span></td>
-      <td>${$fd(inv.due)}</td>
+      <td class="text-muted">${inv.due||'—'}</td>
       <td><div class="flex-gap">
-        <button class="btn btn-ghost btn-sm" onclick="editInvoice('${inv.id}')">Edit</button>
-        ${inv.status!=='Paid'?`<button class="btn btn-green btn-sm" onclick="markPaid('${inv.id}')">Mark Paid</button>`:''}
-        <button class="btn btn-primary btn-sm" onclick="printInvoice('${inv.id}')">Print</button>
-        <button class="btn btn-danger btn-sm" onclick="delInvoice('${inv.id}')">Del</button>
+        ${inv.status!=='Paid'?`<button class="btn btn-green btn-sm" onclick="markInvPaid('${inv.id}')">✓ Paid</button>`:''}
+        <button class="btn btn-ghost btn-sm" onclick="deleteInv('${inv.id}')">Delete</button>
       </div></td>
     </tr>`;
-  }).join(''):'<tr><td colspan="7" class="empty">No invoices yet. Convert a signed estimate to get started.</td></tr>';
+  }).join(''):`<tr><td colspan="7" class="empty">No invoices${filter!=='all'?' in this category':''} yet</td></tr>`;
+}
+function filterInvTab(status){
+  document.querySelectorAll('.inv-tab').forEach(t=>t.classList.remove('active'));
+  const tabEl=document.getElementById('inv-tab-'+(status==='all'?'all':status.toLowerCase()));
+  if(tabEl) tabEl.classList.add('active');
+  renderInvoices();
 }
 
 function openNewInvoice(){
