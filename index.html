@@ -283,9 +283,10 @@ input[type=checkbox]{width:auto;accent-color:var(--gold)}
       <span>Settings</span>
     </div>
   </nav>
+  <div id="sync-status-bar"></div>
   <div class="sidebar-footer">
     <span class="version-badge">v2.0 Free</span>
-    <div style="margin-top:6px;line-height:1.6">No subscription<br>Your data stays local</div>
+    <div style="margin-top:6px;line-height:1.6">No subscription · No fees</div>
   </div>
 </div>
 
@@ -1998,90 +1999,230 @@ function initSupabase(){
   if(!window.supabase) return false;
   const url = localStorage.getItem(SUPA_URL_KEY)||'';
   const key = localStorage.getItem(SUPA_ANON_KEY)||'';
-  if(url && key){
-    try{ sbClient = window.supabase.createClient(url,key); return true; }catch(e){ return false; }
+  if(!url||!key) return false;
+  try{ sbClient = window.supabase.createClient(url,key); return true; }catch(e){ return false; }
+}
+
+function updateSyncStatus(status,email){
+  const el=document.getElementById('sync-status-bar');
+  if(!el) return;
+  if(status==='connected'){
+    el.innerHTML=`<div style="display:flex;align-items:center;gap:6px;padding:10px 16px;background:rgba(76,175,125,0.08);border-top:1px solid rgba(76,175,125,0.15)">
+      <div style="width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0"></div>
+      <div style="font-size:10px;color:var(--green);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${email||'Synced'}</div>
+      <button onclick="signOut()" style="background:transparent;border:none;color:var(--text3);font-size:10px;cursor:pointer;font-family:'IBM Plex Mono',monospace;padding:0;white-space:nowrap">Sign Out</button>
+    </div>`;
+  } else {
+    el.innerHTML=`<div style="display:flex;align-items:center;gap:6px;padding:10px 16px;background:var(--surface2);border-top:1px solid var(--border)">
+      <div style="width:7px;height:7px;border-radius:50%;background:var(--text3);flex-shrink:0"></div>
+      <div style="font-size:10px;color:var(--text3);flex:1">Offline mode</div>
+      <button onclick="openSupabaseSetup()" style="background:transparent;border:none;color:var(--gold2);font-size:10px;cursor:pointer;font-family:'IBM Plex Mono',monospace;padding:0;white-space:nowrap">Connect ↗</button>
+    </div>`;
   }
-  return false;
 }
 
 async function saveToSupabase(){
   if(!sbClient||!currentUser) return;
   try{
     await sbClient.from('estimatepro_data').upsert({user_id:currentUser.id,data:JSON.stringify(db),updated_at:new Date().toISOString()},{onConflict:'user_id'});
-  }catch(e){}
+  }catch(e){ console.warn('Sync failed:',e.message); }
 }
 
 async function loadFromSupabase(){
   if(!sbClient||!currentUser) return;
   try{
-    const {data}=await sbClient.from('estimatepro_data').select('data').eq('user_id',currentUser.id).single();
+    const {data,error}=await sbClient.from('estimatepro_data').select('data').eq('user_id',currentUser.id).single();
     if(data?.data){ db=Object.assign(db,JSON.parse(data.data)); localStorage.setItem(DBKEY,JSON.stringify(db)); }
     else load();
   }catch(e){ load(); }
 }
 
 function openSupabaseSetup(){
+  document.getElementById('supa-modal')?.remove();
   const url=localStorage.getItem(SUPA_URL_KEY)||'';
   const key=localStorage.getItem(SUPA_ANON_KEY)||'';
-  const html=`<div style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace" id="supa-modal">
-  <div style="background:#161616;border:1px solid #2e2e2e;border-radius:8px;padding:28px;width:100%;max-width:520px;margin:16px;max-height:90vh;overflow-y:auto">
-    <h2 style="font-family:'Instrument Serif',serif;color:#f0ede8;margin-bottom:6px">☁️ Cloud Sync Setup</h2>
-    <p style="font-size:12px;color:#a09890;margin-bottom:16px;line-height:1.8">Connect Supabase to access your data from any device. Free forever.</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
-      <div style="background:#1f1f1f;border:1px solid #2e2e2e;border-radius:6px;padding:10px;text-align:center"><div style="font-size:16px;margin-bottom:3px">1️⃣</div><div style="font-size:10px;color:#a09890"><strong style="color:#e8c97a">supabase.com</strong><br>New project (free)</div></div>
-      <div style="background:#1f1f1f;border:1px solid #2e2e2e;border-radius:6px;padding:10px;text-align:center"><div style="font-size:16px;margin-bottom:3px">2️⃣</div><div style="font-size:10px;color:#a09890">Settings → API<br>Copy <strong style="color:#e8c97a">URL + anon key</strong></div></div>
-      <div style="background:#1f1f1f;border:1px solid #2e2e2e;border-radius:6px;padding:10px;text-align:center"><div style="font-size:16px;margin-bottom:3px">3️⃣</div><div style="font-size:10px;color:#a09890">SQL Editor → run<br><strong style="color:#e8c97a">the query below</strong></div></div>
+  const configured=!!(url&&key);
+  const sql=`create table if not exists estimatepro_data (
+  user_id uuid references auth.users primary key,
+  data text,
+  updated_at timestamptz default now()
+);
+alter table estimatepro_data enable row level security;
+create policy "own" on estimatepro_data
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);`;
+
+  const html=`<div style="position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;font-family:'IBM Plex Mono',monospace" id="supa-modal" onclick="if(event.target===this)this.remove()">
+  <div style="background:#161616;border:1px solid #2e2e2e;border-radius:10px;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.6)">
+
+    <!-- Tabs -->
+    <div style="display:flex;border-bottom:1px solid #2e2e2e">
+      <button id="tab-setup" onclick="supaTab('setup')" style="flex:1;padding:14px;background:transparent;border:none;color:var(--gold2);font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;border-bottom:2px solid var(--gold);font-weight:600">⚙️ Setup</button>
+      <button id="tab-signin" onclick="supaTab('signin')" style="flex:1;padding:14px;background:transparent;border:none;color:var(--text3);font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;border-bottom:2px solid transparent">🔑 Sign In</button>
+      <button id="tab-signup" onclick="supaTab('signup')" style="flex:1;padding:14px;background:transparent;border:none;color:var(--text3);font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;border-bottom:2px solid transparent">✨ Create Account</button>
+      <button onclick="document.getElementById('supa-modal').remove()" style="padding:14px 18px;background:transparent;border:none;color:var(--text3);font-size:18px;cursor:pointer">×</button>
     </div>
-    <div style="background:#0e0e0e;border:1px solid #2e2e2e;border-radius:6px;padding:12px;margin-bottom:14px;font-size:11px;color:#a09890;line-height:1.8">
-      create table if not exists estimatepro_data (user_id uuid references auth.users primary key, data text, updated_at timestamptz default now());<br>
-      alter table estimatepro_data enable row level security;<br>
-      create policy "own" on estimatepro_data using (auth.uid()=user_id) with check (auth.uid()=user_id);
-      <br><button onclick="navigator.clipboard.writeText('create table if not exists estimatepro_data (user_id uuid references auth.users primary key, data text, updated_at timestamptz default now()); alter table estimatepro_data enable row level security; create policy \"own\" on estimatepro_data using (auth.uid()=user_id) with check (auth.uid()=user_id);').then(()=>alert('Copied!'))" style="margin-top:8px;background:transparent;border:1px solid #2e2e2e;color:#a09890;border-radius:4px;padding:4px 10px;font-size:10px;cursor:pointer;font-family:'IBM Plex Mono',monospace">📋 Copy SQL</button>
+
+    <!-- SETUP TAB -->
+    <div id="supa-tab-setup" style="padding:24px">
+      <p style="font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.8">Connect a free Supabase database so your estimates sync across every device automatically.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px;text-align:center"><div style="font-size:18px;margin-bottom:4px">1️⃣</div><div style="font-size:10px;color:var(--text2)"><a href="https://supabase.com" target="_blank" style="color:var(--gold2);text-decoration:none">supabase.com</a><br>New project → free</div></div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px;text-align:center"><div style="font-size:18px;margin-bottom:4px">2️⃣</div><div style="font-size:10px;color:var(--text2)">Project Settings<br>→ API → copy keys</div></div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px;text-align:center"><div style="font-size:18px;margin-bottom:4px">3️⃣</div><div style="font-size:10px;color:var(--text2)">SQL Editor → run<br>query below → paste keys</div></div>
+      </div>
+      <div style="background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:12px;margin-bottom:16px;font-size:11px;color:var(--text3);line-height:1.9;font-family:'IBM Plex Mono',monospace;white-space:pre-wrap">${sql}<br><button onclick="navigator.clipboard.writeText(document.getElementById('sql-block').textContent).then(()=>toast('SQL copied!','success'))" style="margin-top:8px;background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:4px;padding:4px 10px;font-size:10px;cursor:pointer;font-family:'IBM Plex Mono',monospace">📋 Copy SQL</button><span id="sql-block" style="display:none">${sql}</span></div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Project URL</label>
+        <input id="si-url" value="${url}" placeholder="https://xxxxxxxxxxx.supabase.co" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:12px;font-family:'IBM Plex Mono',monospace;outline:none">
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Anon Public Key</label>
+        <input id="si-key" value="${key}" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:12px;font-family:'IBM Plex Mono',monospace;outline:none">
+      </div>
+      <div id="si-msg" style="font-size:12px;margin-bottom:12px;padding:10px 14px;border-radius:6px;display:none"></div>
+      <div style="display:flex;gap:8px">
+        <button onclick="saveSupabaseKeys()" style="flex:1;background:var(--gold);color:#0e0e0e;border:none;border-radius:6px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace">Save Keys</button>
+        <button onclick="document.getElementById('supa-modal').remove()" style="background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:6px;padding:11px 16px;cursor:pointer;font-size:12px;font-family:'IBM Plex Mono',monospace">Cancel</button>
+      </div>
+      ${configured?'<div style="margin-top:12px;font-size:11px;color:var(--green);text-align:center">✓ Keys saved — switch to Sign In tab to log in</div>':''}
     </div>
-    <div style="margin-bottom:12px"><label style="font-size:11px;color:#a09890;display:block;margin-bottom:4px">Project URL</label>
-    <input id="si-url" value="${url}" placeholder="https://xxx.supabase.co" style="width:100%;background:#0e0e0e;border:1px solid #2e2e2e;border-radius:6px;padding:9px 12px;color:#f0ede8;font-size:12px;font-family:'IBM Plex Mono',monospace"></div>
-    <div style="margin-bottom:16px"><label style="font-size:11px;color:#a09890;display:block;margin-bottom:4px">Anon Key</label>
-    <input id="si-key" value="${key}" placeholder="eyJhbGci..." style="width:100%;background:#0e0e0e;border:1px solid #2e2e2e;border-radius:6px;padding:9px 12px;color:#f0ede8;font-size:12px;font-family:'IBM Plex Mono',monospace"></div>
-    <div style="margin-bottom:16px;padding:14px;background:#1f1f1f;border:1px solid #2e2e2e;border-radius:6px">
-      <div style="font-size:11px;color:#a09890;margin-bottom:10px;font-weight:600">Create your account</div>
-      <input id="si-email" type="email" placeholder="your@email.com" style="width:100%;background:#0e0e0e;border:1px solid #2e2e2e;border-radius:6px;padding:9px 12px;color:#f0ede8;font-size:12px;font-family:'IBM Plex Mono',monospace;margin-bottom:8px">
-      <input id="si-pass" type="password" placeholder="Choose a password" style="width:100%;background:#0e0e0e;border:1px solid #2e2e2e;border-radius:6px;padding:9px 12px;color:#f0ede8;font-size:12px;font-family:'IBM Plex Mono',monospace">
-      <div id="si-msg" style="font-size:11px;margin-top:8px;color:#4caf7d;display:none"></div>
+
+    <!-- SIGN IN TAB -->
+    <div id="supa-tab-signin" style="padding:24px;display:none">
+      <p style="font-size:12px;color:var(--text2);margin-bottom:20px;line-height:1.8">Sign in to sync your data across all devices.</p>
+      <div style="margin-bottom:12px">
+        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Email</label>
+        <input id="login-email" type="email" placeholder="you@email.com" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'IBM Plex Mono',monospace;outline:none">
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Password</label>
+        <input id="login-pass" type="password" placeholder="••••••••" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'IBM Plex Mono',monospace;outline:none" onkeydown="if(event.key==='Enter')supaSignIn()">
+      </div>
+      <div id="login-msg" style="font-size:12px;margin-bottom:12px;padding:10px 14px;border-radius:6px;display:none"></div>
+      <button onclick="supaSignIn()" id="signin-btn" style="width:100%;background:var(--gold);color:#0e0e0e;border:none;border-radius:6px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace;margin-bottom:10px">Sign In</button>
+      <button onclick="supaForgot()" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text3);border-radius:6px;padding:10px;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace">Forgot password?</button>
+      ${!configured?'<div style="margin-top:12px;font-size:11px;color:var(--amber);text-align:center">⚠ Set up your Supabase keys first in the Setup tab</div>':''}
     </div>
-    <div style="display:flex;gap:8px">
-      <button onclick="saveSupabaseConfig()" style="flex:1;background:#c9a84c;color:#0e0e0e;border:none;border-radius:6px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace">Save & Create Account</button>
-      <button onclick="document.getElementById('supa-modal').remove()" style="background:transparent;border:1px solid #2e2e2e;color:#a09890;border-radius:6px;padding:11px 16px;cursor:pointer;font-size:12px;font-family:'IBM Plex Mono',monospace">Cancel</button>
+
+    <!-- SIGN UP TAB -->
+    <div id="supa-tab-signup" style="padding:24px;display:none">
+      <p style="font-size:12px;color:var(--text2);margin-bottom:20px;line-height:1.8">Create your account. Make sure you've set up Supabase keys in the Setup tab first.</p>
+      <div style="margin-bottom:12px">
+        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Email</label>
+        <input id="reg-email" type="email" placeholder="you@email.com" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'IBM Plex Mono',monospace;outline:none">
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Password (min 6 characters)</label>
+        <input id="reg-pass" type="password" placeholder="Choose a strong password" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'IBM Plex Mono',monospace;outline:none" onkeydown="if(event.key==='Enter')supaSignUp()">
+      </div>
+      <div id="reg-msg" style="font-size:12px;margin-bottom:12px;padding:10px 14px;border-radius:6px;display:none"></div>
+      <button onclick="supaSignUp()" id="signup-btn" style="width:100%;background:var(--gold);color:#0e0e0e;border:none;border-radius:6px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace">Create Account</button>
+      ${!configured?'<div style="margin-top:12px;font-size:11px;color:var(--amber);text-align:center">⚠ Set up your Supabase keys first in the Setup tab</div>':''}
     </div>
+
   </div></div>`;
   document.body.insertAdjacentHTML('beforeend',html);
 }
 
-async function saveSupabaseConfig(){
+function supaTab(tab){
+  ['setup','signin','signup'].forEach(t=>{
+    const panel=document.getElementById('supa-tab-'+t);
+    const btn=document.getElementById('tab-'+t);
+    if(panel) panel.style.display=t===tab?'block':'none';
+    if(btn){
+      btn.style.color=t===tab?'var(--gold2)':'var(--text3)';
+      btn.style.borderBottom=t===tab?'2px solid var(--gold)':'2px solid transparent';
+    }
+  });
+}
+
+function supaMsg(id,msg,ok){
+  const el=document.getElementById(id); if(!el) return;
+  el.style.display='block';
+  el.style.background=ok?'rgba(76,175,125,0.1)':'rgba(224,82,82,0.1)';
+  el.style.border='1px solid '+(ok?'rgba(76,175,125,0.3)':'rgba(224,82,82,0.3)');
+  el.style.color=ok?'var(--green)':'var(--red)';
+  el.textContent=msg;
+}
+
+function saveSupabaseKeys(){
   const url=document.getElementById('si-url').value.trim();
   const key=document.getElementById('si-key').value.trim();
-  const email=document.getElementById('si-email').value.trim();
-  const pass=document.getElementById('si-pass').value;
-  if(!url||!key){alert('Enter your Supabase URL and anon key first.');return;}
+  if(!url||!key){ supaMsg('si-msg','Enter both the Project URL and Anon Key.',false); return; }
+  if(!url.includes('supabase.co')){ supaMsg('si-msg','URL should look like https://xxx.supabase.co',false); return; }
   localStorage.setItem(SUPA_URL_KEY,url);
   localStorage.setItem(SUPA_ANON_KEY,key);
-  initSupabase();
-  if(email&&pass){
-    const msg=document.getElementById('si-msg');
-    try{
-      const {error}=await sbClient.auth.signUp({email,password:pass});
-      if(error) throw error;
-      msg.style.display='block'; msg.textContent='✓ Account created! You can now log in next time.';
-      setTimeout(()=>{document.getElementById('supa-modal')?.remove();},2000);
-    }catch(e){ msg.style.display='block'; msg.style.color='#e05252'; msg.textContent=e.message; }
+  const ok=initSupabase();
+  if(ok){
+    supaMsg('si-msg','✓ Keys saved! Go to the Sign In or Create Account tab.',true);
+    setTimeout(()=>supaTab('signup'),1200);
   } else {
-    document.getElementById('supa-modal')?.remove();
-    toast('Supabase connected!','success');
+    supaMsg('si-msg','Could not connect — double check your URL and key.',false);
   }
 }
 
-function signOut(){
-  if(sbClient) sbClient.auth.signOut();
+async function supaSignIn(){
+  if(!sbClient){ supaMsg('login-msg','Set up your Supabase keys in the Setup tab first.',false); return; }
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  if(!email||!pass){ supaMsg('login-msg','Enter your email and password.',false); return; }
+  const btn=document.getElementById('signin-btn');
+  btn.textContent='Signing in…'; btn.disabled=true;
+  try{
+    const {data,error}=await sbClient.auth.signInWithPassword({email,password:pass});
+    if(error) throw error;
+    currentUser=data.user;
+    document.getElementById('supa-modal')?.remove();
+    toast('Signed in! Loading your data…','success');
+    await loadFromSupabase();
+    updateSyncStatus('connected',email);
+    renderDash();
+  }catch(e){
+    supaMsg('login-msg',e.message||'Sign in failed. Check your email and password.',false);
+  }finally{ btn.textContent='Sign In'; btn.disabled=false; }
+}
+
+async function supaSignUp(){
+  if(!sbClient){ supaMsg('reg-msg','Set up your Supabase keys in the Setup tab first.',false); return; }
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-pass').value;
+  if(!email||!pass){ supaMsg('reg-msg','Enter your email and password.',false); return; }
+  if(pass.length<6){ supaMsg('reg-msg','Password must be at least 6 characters.',false); return; }
+  const btn=document.getElementById('signup-btn');
+  btn.textContent='Creating account…'; btn.disabled=true;
+  try{
+    const {data,error}=await sbClient.auth.signUp({email,password:pass});
+    if(error) throw error;
+    if(data.user&&data.session){
+      // Auto confirmed
+      currentUser=data.user;
+      document.getElementById('supa-modal')?.remove();
+      toast('Account created and signed in!','success');
+      await saveToSupabase();
+      updateSyncStatus('connected',email);
+      renderDash();
+    } else {
+      supaMsg('reg-msg','✓ Account created! Check your email to confirm, then sign in.',true);
+    }
+  }catch(e){
+    supaMsg('reg-msg',e.message||'Sign up failed.',false);
+  }finally{ btn.textContent='Create Account'; btn.disabled=false; }
+}
+
+async function supaForgot(){
+  if(!sbClient){ supaMsg('login-msg','Set up Supabase keys first.',false); return; }
+  const email=document.getElementById('login-email').value.trim();
+  if(!email){ supaMsg('login-msg','Enter your email address first.',false); return; }
+  const {error}=await sbClient.auth.resetPasswordForEmail(email);
+  if(error) supaMsg('login-msg',error.message,false);
+  else supaMsg('login-msg','✓ Password reset email sent! Check your inbox.',true);
+}
+
+async function signOut(){
+  if(sbClient) await sbClient.auth.signOut();
   currentUser=null;
+  updateSyncStatus('offline');
   toast('Signed out.','');
 }
 
@@ -2091,13 +2232,19 @@ load();
 checkShareLink();
 if(!window.location.search.includes('view=')){
   initSupabase();
-  // Try auto-login if session exists
   if(sbClient){
     sbClient.auth.getSession().then(({data:{session}})=>{
-      if(session?.user){ currentUser=session.user; loadFromSupabase().then(()=>renderDash()); }
-      else renderDash();
+      if(session?.user){
+        currentUser=session.user;
+        updateSyncStatus('connected', session.user.email);
+        loadFromSupabase().then(()=>renderDash());
+      } else {
+        updateSyncStatus('offline');
+        renderDash();
+      }
     });
   } else {
+    updateSyncStatus('offline');
     renderDash();
   }
 }
