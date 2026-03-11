@@ -6,6 +6,7 @@
 <title>EstimatePro — Contractor Software</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -225,7 +226,47 @@ input[type=checkbox]{width:auto;accent-color:var(--gold)}
 </style>
 </head>
 <body>
-<div class="app">
+<!-- LOGIN SCREEN -->
+<div id="login-screen" style="display:none;position:fixed;inset:0;background:#0e0e0e;z-index:9999;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace">
+  <div style="width:100%;max-width:400px;padding:24px">
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="font-family:'Instrument Serif',serif;font-size:32px;color:#e8c97a;margin-bottom:4px">EstimatePro</div>
+      <div style="font-size:11px;color:#5a5550;letter-spacing:1.5px;text-transform:uppercase">Contractor Software</div>
+    </div>
+    <div style="background:#161616;border:1px solid #2e2e2e;border-radius:8px;padding:28px">
+      <div id="login-title" style="font-family:'Instrument Serif',serif;font-size:20px;color:#f0ede8;margin-bottom:20px">Sign In</div>
+      <div id="login-error" style="display:none;background:rgba(224,82,82,0.1);border:1px solid rgba(224,82,82,0.3);border-radius:6px;padding:10px 14px;font-size:12px;color:#e05252;margin-bottom:14px"></div>
+      <div id="login-success" style="display:none;background:rgba(76,175,125,0.1);border:1px solid rgba(76,175,125,0.3);border-radius:6px;padding:10px 14px;font-size:12px;color:#4caf7d;margin-bottom:14px"></div>
+      <div style="margin-bottom:14px">
+        <label style="font-size:11px;color:#a09890;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Email</label>
+        <input id="auth-email" type="email" placeholder="you@email.com" style="width:100%;background:#0e0e0e;border:1px solid #2e2e2e;border-radius:6px;padding:10px 14px;color:#f0ede8;font-family:'IBM Plex Mono',monospace;font-size:13px;outline:none">
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="font-size:11px;color:#a09890;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Password</label>
+        <input id="auth-pass" type="password" placeholder="••••••••" style="width:100%;background:#0e0e0e;border:1px solid #2e2e2e;border-radius:6px;padding:10px 14px;color:#f0ede8;font-family:'IBM Plex Mono',monospace;font-size:13px;outline:none" onkeydown="if(event.key==='Enter')authSubmit()">
+      </div>
+      <button id="auth-btn" onclick="authSubmit()" style="width:100%;background:#c9a84c;color:#0e0e0e;border:none;border-radius:6px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace;letter-spacing:0.5px;margin-bottom:14px">Sign In</button>
+      <div style="text-align:center;font-size:12px;color:#5a5550">
+        <span id="auth-toggle-text">Don't have an account?</span>
+        <a id="auth-toggle" onclick="toggleAuthMode()" style="color:#c9a84c;cursor:pointer;margin-left:4px;text-decoration:underline">Create Account</a>
+      </div>
+      <div style="text-align:center;margin-top:10px">
+        <a id="auth-forgot" onclick="authForgot()" style="color:#5a5550;cursor:pointer;font-size:11px;text-decoration:underline">Forgot password?</a>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:16px;font-size:11px;color:#3a3a3a">
+      Free forever · Your data stays private · No subscription
+    </div>
+    <div id="supabase-setup-hint" style="display:none;margin-top:16px;background:#161616;border:1px solid #2e2e2e;border-radius:8px;padding:16px;font-size:11px;color:#5a5550;line-height:1.9">
+      <strong style="color:#a09890">⚙️ First-time setup:</strong><br>
+      Supabase URL and Key are not configured yet.<br>
+      See the setup guide below or use offline mode.<br>
+      <button onclick="useOfflineMode()" style="margin-top:10px;background:transparent;border:1px solid #2e2e2e;color:#a09890;border-radius:6px;padding:7px 14px;font-size:11px;cursor:pointer;font-family:'IBM Plex Mono',monospace">Continue Offline (this device only)</button>
+    </div>
+  </div>
+</div>
+
+<div class="app" id="main-app" style="display:none">
 
 <!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
@@ -272,6 +313,10 @@ input[type=checkbox]{width:auto;accent-color:var(--gold)}
     <div class="nav-item" id="nav-email" onclick="go('email')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
       <span>Email Setup</span>
+    </div>
+    <div class="nav-item" id="nav-cloud" onclick="openSupabaseSetup()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+      <span>Cloud Sync</span>
     </div>
     <div class="nav-item" id="nav-settings" onclick="go('settings')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -1988,12 +2033,260 @@ function checkShareLink(){
   }catch(err){ console.error('Client view error:',err); }
 }
 
-// ── INIT ───────────────────────────────────────────────────────────────
-load();
-checkShareLink();
-if(!window.location.search.includes('view=')){
-  renderDash();
+// ── SUPABASE AUTH & SYNC ───────────────────────────────────────────────
+const SUPA_URL_KEY = 'ep2_supa_url';
+const SUPA_ANON_KEY = 'ep2_supa_anon';
+let supabase = null;
+let currentUser = null;
+let authMode = 'signin'; // 'signin' | 'signup'
+
+function initSupabase(){
+  const url = localStorage.getItem(SUPA_URL_KEY) || '';
+  const key = localStorage.getItem(SUPA_ANON_KEY) || '';
+  if(url && key){
+    try{
+      supabase = window.supabase.createClient(url, key);
+      return true;
+    }catch(e){ return false; }
+  }
+  return false;
 }
+
+function toggleAuthMode(){
+  authMode = authMode === 'signin' ? 'signup' : 'signin';
+  document.getElementById('login-title').textContent = authMode === 'signup' ? 'Create Account' : 'Sign In';
+  document.getElementById('auth-btn').textContent = authMode === 'signup' ? 'Create Account' : 'Sign In';
+  document.getElementById('auth-toggle-text').textContent = authMode === 'signup' ? 'Already have an account?' : "Don't have an account?";
+  document.getElementById('auth-toggle').textContent = authMode === 'signup' ? 'Sign In' : 'Create Account';
+  document.getElementById('auth-forgot').style.display = authMode === 'signin' ? 'inline' : 'none';
+  clearAuthMessages();
+}
+
+function showAuthError(msg){ 
+  const el=document.getElementById('login-error'); 
+  el.textContent=msg; el.style.display='block';
+  document.getElementById('login-success').style.display='none';
+}
+function showAuthSuccess(msg){ 
+  const el=document.getElementById('login-success'); 
+  el.textContent=msg; el.style.display='block';
+  document.getElementById('login-error').style.display='none';
+}
+function clearAuthMessages(){
+  document.getElementById('login-error').style.display='none';
+  document.getElementById('login-success').style.display='none';
+}
+
+async function authSubmit(){
+  if(!supabase){ useOfflineMode(); return; }
+  const email = document.getElementById('auth-email').value.trim();
+  const pass = document.getElementById('auth-pass').value;
+  if(!email || !pass){ showAuthError('Please enter your email and password.'); return; }
+  const btn = document.getElementById('auth-btn');
+  btn.textContent = 'Please wait…'; btn.disabled = true;
+  clearAuthMessages();
+  try{
+    let result;
+    if(authMode === 'signup'){
+      result = await supabase.auth.signUp({email, password:pass});
+      if(result.error) throw result.error;
+      if(result.data?.user?.identities?.length === 0){
+        showAuthError('An account with this email already exists. Please sign in.');
+      } else {
+        showAuthSuccess('Account created! Check your email to confirm, then sign in.');
+        setTimeout(()=>toggleAuthMode(), 2000);
+      }
+    } else {
+      result = await supabase.auth.signInWithPassword({email, password:pass});
+      if(result.error) throw result.error;
+      currentUser = result.data.user;
+      await loadFromSupabase();
+      launchApp();
+    }
+  }catch(err){
+    showAuthError(err.message || 'Authentication failed. Check your credentials.');
+  }finally{
+    btn.textContent = authMode === 'signup' ? 'Create Account' : 'Sign In';
+    btn.disabled = false;
+  }
+}
+
+async function authForgot(){
+  if(!supabase){ return; }
+  const email = document.getElementById('auth-email').value.trim();
+  if(!email){ showAuthError('Enter your email address first.'); return; }
+  const {error} = await supabase.auth.resetPasswordForEmail(email);
+  if(error) showAuthError(error.message);
+  else showAuthSuccess('Password reset email sent! Check your inbox.');
+}
+
+function useOfflineMode(){
+  currentUser = null;
+  load();
+  launchApp();
+}
+
+function launchApp(){
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'flex';
+  // Add user indicator to sidebar
+  if(currentUser){
+    const footer = document.querySelector('.sidebar-footer');
+    if(footer){
+      footer.innerHTML = `<span class="version-badge">v2.0</span>
+        <div style="margin-top:8px;font-size:11px;color:var(--text3);word-break:break-all">${currentUser.email}</div>
+        <button onclick="signOut()" style="margin-top:6px;background:transparent;border:1px solid var(--border);color:var(--text3);border-radius:4px;padding:4px 8px;font-size:10px;cursor:pointer;font-family:'IBM Plex Mono',monospace">Sign Out</button>`;
+    }
+  }
+  checkShareLink();
+  if(!window.location.search.includes('view=')){
+    renderDash();
+  }
+}
+
+async function signOut(){
+  if(supabase) await supabase.auth.signOut();
+  currentUser = null;
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('auth-email').value = '';
+  document.getElementById('auth-pass').value = '';
+  clearAuthMessages();
+}
+
+// ── SUPABASE DATA SYNC ─────────────────────────────────────────────────
+async function saveToSupabase(){
+  if(!supabase || !currentUser) return;
+  try{
+    const payload = {
+      user_id: currentUser.id,
+      data: JSON.stringify(db),
+      updated_at: new Date().toISOString()
+    };
+    await supabase.from('estimatepro_data').upsert(payload, {onConflict:'user_id'});
+  }catch(e){ console.warn('Supabase sync failed (will retry):', e.message); }
+}
+
+async function loadFromSupabase(){
+  if(!supabase || !currentUser) return;
+  try{
+    const {data, error} = await supabase
+      .from('estimatepro_data')
+      .select('data')
+      .eq('user_id', currentUser.id)
+      .single();
+    if(error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows
+    if(data?.data){
+      const remote = JSON.parse(data.data);
+      db = Object.assign(db, remote);
+      // Also cache locally for offline fallback
+      try{ localStorage.setItem(DBKEY, JSON.stringify(db)); }catch(e){}
+    } else {
+      // New user — load local if any
+      load();
+    }
+  }catch(e){ 
+    console.warn('Could not load from Supabase, using local:', e.message);
+    load();
+  }
+}
+
+// Override save() to also sync to Supabase
+const _origSave = save;
+function save(){
+  try{ localStorage.setItem(DBKEY,JSON.stringify(db)); }catch(e){ toast('Storage full!','error'); }
+  cloudBackup(false);
+  saveToSupabase();
+}
+
+// ── SUPABASE SETTINGS PAGE ─────────────────────────────────────────────
+function openSupabaseSetup(){
+  const url = localStorage.getItem(SUPA_URL_KEY)||'';
+  const key = localStorage.getItem(SUPA_ANON_KEY)||'';
+  const html = `
+    <div style="position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:99999;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace" id="supa-setup-modal">
+    <div style="background:#161616;border:1px solid #2e2e2e;border-radius:8px;padding:28px;width:100%;max-width:500px;margin:16px">
+      <h2 style="font-family:'Instrument Serif',serif;color:#f0ede8;margin-bottom:6px">⚙️ Supabase Setup</h2>
+      <p style="font-size:12px;color:#a09890;margin-bottom:20px;line-height:1.8">Connect your free Supabase database so your data syncs across all devices.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
+        <div style="background:#1f1f1f;border:1px solid #2e2e2e;border-radius:6px;padding:12px;text-align:center"><div style="font-size:18px;margin-bottom:4px">1️⃣</div><div style="font-size:11px;color:#a09890"><strong style="color:#e8c97a">supabase.com</strong> → New project (free)</div></div>
+        <div style="background:#1f1f1f;border:1px solid #2e2e2e;border-radius:6px;padding:12px;text-align:center"><div style="font-size:18px;margin-bottom:4px">2️⃣</div><div style="font-size:11px;color:#a09890">Project Settings → API → copy <strong style="color:#e8c97a">URL</strong> and <strong style="color:#e8c97a">anon key</strong></div></div>
+        <div style="background:#1f1f1f;border:1px solid #2e2e2e;border-radius:6px;padding:12px;text-align:center"><div style="font-size:18px;margin-bottom:4px">3️⃣</div><div style="font-size:11px;color:#a09890">Run the SQL below in <strong style="color:#e8c97a">SQL Editor</strong> to create the table</div></div>
+      </div>
+      <div style="background:#0e0e0e;border:1px solid #2e2e2e;border-radius:6px;padding:12px;margin-bottom:16px;font-size:11px;color:#a09890;font-family:'IBM Plex Mono',monospace;line-height:1.8">
+        <div style="color:#5a5550;margin-bottom:4px">-- Run this in Supabase SQL Editor:</div>
+        create table if not exists estimatepro_data (<br>
+        &nbsp;&nbsp;user_id uuid references auth.users primary key,<br>
+        &nbsp;&nbsp;data text,<br>
+        &nbsp;&nbsp;updated_at timestamptz default now()<br>
+        );<br>
+        alter table estimatepro_data enable row level security;<br>
+        create policy "own data" on estimatepro_data<br>
+        &nbsp;&nbsp;using (auth.uid() = user_id)<br>
+        &nbsp;&nbsp;with check (auth.uid() = user_id);
+        <button onclick="navigator.clipboard.writeText('create table if not exists estimatepro_data (user_id uuid references auth.users primary key, data text, updated_at timestamptz default now()); alter table estimatepro_data enable row level security; create policy \"own data\" on estimatepro_data using (auth.uid() = user_id) with check (auth.uid() = user_id);')" style="display:block;margin-top:8px;background:transparent;border:1px solid #2e2e2e;color:#a09890;border-radius:4px;padding:4px 10px;font-size:10px;cursor:pointer;font-family:'IBM Plex Mono',monospace">Copy SQL</button>
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:11px;color:#a09890;display:block;margin-bottom:5px">Supabase Project URL</label>
+        <input id="supa-url-inp" value="${url}" placeholder="https://xxxxxxxxxxx.supabase.co" style="width:100%;background:#0e0e0e;border:1px solid #2e2e2e;border-radius:6px;padding:9px 12px;color:#f0ede8;font-family:'IBM Plex Mono',monospace;font-size:12px">
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="font-size:11px;color:#a09890;display:block;margin-bottom:5px">Supabase Anon Key</label>
+        <input id="supa-key-inp" value="${key}" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="width:100%;background:#0e0e0e;border:1px solid #2e2e2e;border-radius:6px;padding:9px 12px;color:#f0ede8;font-family:'IBM Plex Mono',monospace;font-size:12px">
+      </div>
+      <div style="display:flex;gap:10px">
+        <button onclick="saveSupabaseConfig()" style="flex:1;background:#c9a84c;color:#0e0e0e;border:none;border-radius:6px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:'IBM Plex Mono',monospace">Save & Connect</button>
+        <button onclick="document.getElementById('supa-setup-modal').remove()" style="background:transparent;border:1px solid #2e2e2e;color:#a09890;border-radius:6px;padding:11px 18px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:12px">Cancel</button>
+      </div>
+    </div></div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function saveSupabaseConfig(){
+  const url = document.getElementById('supa-url-inp').value.trim();
+  const key = document.getElementById('supa-key-inp').value.trim();
+  if(!url || !key){ alert('Please enter both URL and Anon Key.'); return; }
+  localStorage.setItem(SUPA_URL_KEY, url);
+  localStorage.setItem(SUPA_ANON_KEY, key);
+  document.getElementById('supa-setup-modal')?.remove();
+  location.reload();
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────
+(async function init(){
+  // If client share link — skip auth entirely
+  if(window.location.search.includes('view=')){
+    load();
+    checkShareLink();
+    return;
+  }
+
+  // Show login screen
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('main-app').style.display = 'none';
+
+  const hasSupabase = initSupabase();
+
+  if(!hasSupabase){
+    // Show setup hint + offline option on login screen
+    document.getElementById('supabase-setup-hint').style.display = 'block';
+    // Add setup button
+    document.querySelector('#login-screen > div').insertAdjacentHTML('beforeend',
+      `<div style="text-align:center;margin-top:12px">
+        <button onclick="openSupabaseSetup()" style="background:transparent;border:1px solid #2e2e2e;color:#a09890;border-radius:6px;padding:8px 18px;font-size:11px;cursor:pointer;font-family:'IBM Plex Mono',monospace">⚙️ Configure Supabase</button>
+      </div>`
+    );
+  } else {
+    // Check if already logged in (session persisted)
+    const {data:{session}} = await supabase.auth.getSession();
+    if(session?.user){
+      currentUser = session.user;
+      await loadFromSupabase();
+      launchApp();
+      return;
+    }
+  }
+})();
 </script>
 </body>
 </html>
