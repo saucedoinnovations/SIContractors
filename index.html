@@ -1991,7 +1991,7 @@ function checkShareLink(){
 // ── SUPABASE SYNC (background only) ───────────────────────────────────
 const SUPA_URL_KEY = 'ep2_supa_url';
 const SUPA_ANON_KEY = 'ep2_supa_anon';
-let supabase = null;
+let sbClient = null;
 let currentUser = null;
 
 function initSupabase(){
@@ -1999,22 +1999,22 @@ function initSupabase(){
   const url = localStorage.getItem(SUPA_URL_KEY)||'';
   const key = localStorage.getItem(SUPA_ANON_KEY)||'';
   if(url && key){
-    try{ supabase = window.supabase.createClient(url,key); return true; }catch(e){ return false; }
+    try{ sbClient = window.supabase.createClient(url,key); return true; }catch(e){ return false; }
   }
   return false;
 }
 
 async function saveToSupabase(){
-  if(!supabase||!currentUser) return;
+  if(!sbClient||!currentUser) return;
   try{
-    await supabase.from('estimatepro_data').upsert({user_id:currentUser.id,data:JSON.stringify(db),updated_at:new Date().toISOString()},{onConflict:'user_id'});
+    await sbClient.from('estimatepro_data').upsert({user_id:currentUser.id,data:JSON.stringify(db),updated_at:new Date().toISOString()},{onConflict:'user_id'});
   }catch(e){}
 }
 
 async function loadFromSupabase(){
-  if(!supabase||!currentUser) return;
+  if(!sbClient||!currentUser) return;
   try{
-    const {data}=await supabase.from('estimatepro_data').select('data').eq('user_id',currentUser.id).single();
+    const {data}=await sbClient.from('estimatepro_data').select('data').eq('user_id',currentUser.id).single();
     if(data?.data){ db=Object.assign(db,JSON.parse(data.data)); localStorage.setItem(DBKEY,JSON.stringify(db)); }
     else load();
   }catch(e){ load(); }
@@ -2068,7 +2068,7 @@ async function saveSupabaseConfig(){
   if(email&&pass){
     const msg=document.getElementById('si-msg');
     try{
-      const {error}=await supabase.auth.signUp({email,password:pass});
+      const {error}=await sbClient.auth.signUp({email,password:pass});
       if(error) throw error;
       msg.style.display='block'; msg.textContent='✓ Account created! You can now log in next time.';
       setTimeout(()=>{document.getElementById('supa-modal')?.remove();},2000);
@@ -2080,7 +2080,7 @@ async function saveSupabaseConfig(){
 }
 
 function signOut(){
-  if(supabase) supabase.auth.signOut();
+  if(sbClient) sbClient.auth.signOut();
   currentUser=null;
   toast('Signed out.','');
 }
@@ -2092,8 +2092,8 @@ checkShareLink();
 if(!window.location.search.includes('view=')){
   initSupabase();
   // Try auto-login if session exists
-  if(supabase){
-    supabase.auth.getSession().then(({data:{session}})=>{
+  if(sbClient){
+    sbClient.auth.getSession().then(({data:{session}})=>{
       if(session?.user){ currentUser=session.user; loadFromSupabase().then(()=>renderDash()); }
       else renderDash();
     });
