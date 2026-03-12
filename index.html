@@ -82,7 +82,7 @@ nav.nav .nav-section,.nav-section{padding:14px 10px 5px;font-size:10px;color:var
 
 /* ── STATS ── */
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:20px;position:relative;overflow:hidden;transition:border-color 0.15s}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:20px;position:relative;overflow:hidden;transition:border-color 0.15s}.stat.clickable{cursor:pointer}.stat.clickable:hover{border-color:var(--brand);background:var(--surface2)}
 .stat:hover{border-color:var(--border2)}
 .stat-accent{position:absolute;top:0;left:0;right:0;height:2px}
 .stat-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:18px}
@@ -261,6 +261,38 @@ tr:last-child td{border-bottom:none}
   .pipeline-cols{grid-template-columns:1fr}
 }
 
+
+/* ── DASHBOARD ── */
+.dash-charts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.dash-bottom{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.dash-chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:18px}
+.dash-chart-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.dash-chart-sub{font-size:11px;color:var(--text3);margin-bottom:14px}
+
+/* ── OVERHEAD HERO ── */
+.overhead-hero{background:linear-gradient(135deg,#1a0505 0%,#2d0a0a 100%);border:1px solid rgba(227,30,36,0.3);border-radius:var(--r2);padding:24px 28px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.overhead-hero-rate{display:flex;align-items:center;gap:18px}
+.overhead-hero-icon{width:52px;height:52px;background:rgba(227,30,36,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;font-weight:700;flex-shrink:0}
+.overhead-hero-label{font-size:12px;color:#fca5a5;margin-bottom:4px}
+.overhead-hero-value{font-size:36px;font-weight:800;color:#fff;letter-spacing:-1px;line-height:1}
+.overhead-hero-sub{font-size:12px;color:#fca5a5;margin-top:4px}
+.overhead-hero-stats{display:flex;gap:12px}
+.overhead-hero-stat{background:rgba(255,255,255,0.08);border-radius:8px;padding:12px 20px;text-align:center}
+.overhead-hero-stat-val{font-size:20px;font-weight:700;color:#fff}
+.overhead-hero-stat-lbl{font-size:10px;color:#fca5a5;margin-top:2px}
+
+/* ── SECTION CARD ── */
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:14px;overflow:hidden}
+.section-card-hd{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.section-card-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.section-card-title{font-size:14px;font-weight:600;color:var(--text)}
+.section-card-sub{font-size:12px;color:var(--text3);margin-top:1px}
+.section-card-body{padding:18px 20px}
+
+@media(max-width:900px){
+  .dash-charts,.dash-bottom{grid-template-columns:1fr}
+  .overhead-hero{flex-direction:column;align-items:flex-start}
+}
 @media print{
   .sidebar,.mob-nav,.mob-fab,.btn,.x-btn,.overlay,.toast,.topbar{display:none!important}
   .main{margin-left:0}
@@ -369,9 +401,9 @@ tr:last-child td{border-bottom:none}
 <div class="page active" id="page-dashboard">
 <div class="content">
   <div id="dash-stats" class="stats-grid"></div>
-  <div id="dash-stats-2" class="stats-grid" style="margin-top:0;margin-bottom:14px;grid-template-columns:1fr 1fr 2fr"></div>
-  <div id="dash-charts" class="dash-grid-2"></div>
-  <div id="dash-bottom" class="dash-grid-2"></div>
+  <div id="dash-charts" class="dash-charts"></div>
+  <div id="dash-bottom" class="dash-bottom"></div>
+</div>
 </div>
 
 <!-- TEAM ACCESS -->
@@ -696,6 +728,7 @@ tr:last-child td{border-bottom:none}
       </div>
     </div>
   </div>
+</div>
 </div>
 
 <!-- EMAIL SETUP -->
@@ -1141,25 +1174,25 @@ function renderDash(){
 
   // ── ROW 1 STATS ──
   document.getElementById('dash-stats').innerHTML=`
-    <div class="stat">
+    <div class="stat clickable" onclick="go('invoices')" title="View paid invoices">
       <div class="stat-icon" style="background:var(--green-bg)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3fb950" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
       <div class="stat-label">Revenue (Paid)</div><div class="stat-value">${$f(revenue)}</div>
-      <div class="stat-sub">${paidInvs.length} paid invoice${paidInvs.length!==1?'s':''}</div>
+      <div class="stat-sub">${paidInvs.length} paid invoice${paidInvs.length!==1?'s':''} →</div>
     </div>
-    <div class="stat">
+    <div class="stat clickable" onclick="go('invoices')" title="View outstanding invoices">
       <div class="stat-icon" style="background:var(--amber-bg)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e3b341" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
       <div class="stat-label">Outstanding</div><div class="stat-value">${$f(outstanding)}</div>
-      <div class="stat-sub">${unpaidInvs.length} unpaid</div>
+      <div class="stat-sub">${unpaidInvs.length} unpaid →</div>
     </div>
-    <div class="stat">
+    <div class="stat clickable" onclick="go('estimates')" title="View all estimates">
       <div class="stat-icon" style="background:var(--blue-bg)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#58a6ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
       <div class="stat-label">Estimates</div><div class="stat-value">${es.length}</div>
-      <div class="stat-sub">${signed.length} signed</div>
+      <div class="stat-sub">${signed.length} signed · view all →</div>
     </div>
-    <div class="stat">
-      <div class="stat-icon" style="background:var(--brand-dim)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e31e24" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+    <div class="stat clickable" onclick="go('estimates')" title="View estimates">
+      <div class="stat-icon" style="background:rgba(227,30,36,0.12)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e31e24" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
       <div class="stat-label">Close Rate</div><div class="stat-value">${closeRate}%</div>
-      <div class="stat-sub">${signed.length} won · ${es.filter(e=>e.status==='Declined').length} lost</div>
+      <div class="stat-sub">${signed.length} won · ${es.filter(e=>e.status==='Declined').length} lost →</div>
     </div>`;
 
   // ── ROW 2 STATS (profit row like GrowZbl) ──
@@ -1504,7 +1537,12 @@ function printPreview(){
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><title>Estimate</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif&display=swap" rel="stylesheet">
-  <!-- print styles moved inline --></head><body>${body}</body></html>`);
+  <style>
+  .preview-doc{color:#1a1a1a;font-size:12px}.preview-doc .ph{display:flex;justify-content:space-between;padding-bottom:20px;border-bottom:3px solid #1a1a1a;margin-bottom:24px}
+  .preview-doc .co-name{font-family:'Inter',sans-serif;font-size:24px;font-weight:700}.preview-doc .lbl{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:3px}
+  .preview-doc table{width:100%;border-collapse:collapse;margin:16px 0}.preview-doc th{background:#f5f5f5;padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#666}
+  .preview-doc td{padding:8px 10px;border-bottom:1px solid #eee;font-size:12px}.preview-doc .total-row td{font-weight:700;font-size:13px;border-bottom:none;padding-top:12px}
+  .sig-block{margin-top:40px;padding-top:20px;border-top:1px solid #ddd}.sig-line{width:260px;border-bottom:1px solid #333;margin:30px 0 6px}.preview-doc img{max-width:120px}</style></head><body>${body}</body></html>`);
   w.document.close(); setTimeout(()=>w.print(),700);
 }
 function emailFromPreview(){
@@ -1698,7 +1736,15 @@ function printInvoice(id){
   const w=window.open('','_blank');
   w.document.write(`<!DOCTYPE html><html><head><title>Invoice ${num}</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif&display=swap" rel="stylesheet">
-  <!-- duplicate styles removed --></head><body>
+  <style>
+  .hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:24px;border-bottom:2px solid #1a1a1a}
+  .co{font-size:22px;font-weight:700}.lbl{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:4px;margin-top:16px}
+  .val{font-size:13px;font-weight:500}table{width:100%;border-collapse:collapse;margin:24px 0}
+  th{padding:8px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#666;background:#f7f7f7}
+  td{padding:10px 12px;border-bottom:1px solid #eee}.total-sec{margin-left:auto;width:260px;margin-top:8px}
+  .total-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px}.total-row.grand{font-weight:700;font-size:15px;border-top:2px solid #1a1a1a;padding-top:10px;margin-top:6px}
+  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+  .paid{background:#d1fae5;color:#065f46}.unpaid{background:#fee2e2;color:#991b1b}.overdue{background:#fef3c7;color:#92400e}</style></head><body>
   <div class="hd">
     <div><div class="co">${s.co||'Your Company'}</div><div style="font-size:12px;color:#555;margin-top:5px;line-height:1.8">${s.own||''}<br>${s.ph||''}<br>${s.em||''}<br>${s.addr||''}</div></div>
     <div><div class="lbl">Invoice</div><div class="num">${num}</div><div style="font-size:12px;color:#555;text-align:right;margin-top:5px">Issued: ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}<br>Due: ${inv.due?new Date(inv.due+'T12:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):'—'}</div></div>
@@ -2291,7 +2337,7 @@ function checkShareLink(){
 #client-page .cp-est-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#999;text-align:right;margin-bottom:4px}
 #client-page .cp-est-num{font-family:'Inter',sans-serif;font-size:30px;font-weight:700;color:#1a1611;text-align:right}
 #client-page .cp-dates{font-size:12px;color:#777;text-align:right;margin-top:4px;line-height:1.8}
-#client-page .cp-body{padding:28px 40px}
+#client-page .cp-#client-page{padding:28px 40px}
 #client-page .sec-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#999;margin-bottom:5px}
 #client-page .cp-bill-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px}
 #client-page .cp-name{font-size:15px;font-weight:700;color:#1a1611}
@@ -2321,7 +2367,7 @@ function checkShareLink(){
 @media(max-width:600px){
   #client-page .cp-hd{flex-direction:column;gap:14px;padding:20px}
   #client-page .cp-est-lbl,#client-page .cp-est-num,#client-page .cp-dates{text-align:left}
-  #client-page .cp-body{padding:20px}
+  #client-page .cp-#client-page{padding:20px}
   #client-page .cp-bill-grid{grid-template-columns:1fr}
   #client-page .cp-totals{max-width:100%}
   #client-page table{font-size:12px}
@@ -2346,7 +2392,7 @@ function checkShareLink(){
 .pipeline-item:hover{background:var(--surface3);border-color:var(--border2)}
 .pipeline-item-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.3}
 .pipeline-item-sub{font-size:11px;color:var(--text3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pipeline-body{display:flex;flex-direction:column;gap:8px;margin-top:2px}
+.pipeline-#client-page{display:flex;flex-direction:column;gap:8px;margin-top:2px}
 .pipeline-empty{text-align:center;padding:24px 12px;color:var(--text3);font-size:12px;background:var(--surface2);border:1px dashed var(--border2);border-radius:8px}
 
 /* ── DASHBOARD CHARTS ── */
@@ -2374,6 +2420,38 @@ function checkShareLink(){
   .pipeline-cols{grid-template-columns:1fr}
 }
 
+
+/* ── DASHBOARD ── */
+.dash-charts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.dash-bottom{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.dash-chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:18px}
+.dash-chart-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.dash-chart-sub{font-size:11px;color:var(--text3);margin-bottom:14px}
+
+/* ── OVERHEAD HERO ── */
+.overhead-hero{background:linear-gradient(135deg,#1a0505 0%,#2d0a0a 100%);border:1px solid rgba(227,30,36,0.3);border-radius:var(--r2);padding:24px 28px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.overhead-hero-rate{display:flex;align-items:center;gap:18px}
+.overhead-hero-icon{width:52px;height:52px;background:rgba(227,30,36,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;font-weight:700;flex-shrink:0}
+.overhead-hero-label{font-size:12px;color:#fca5a5;margin-bottom:4px}
+.overhead-hero-value{font-size:36px;font-weight:800;color:#fff;letter-spacing:-1px;line-height:1}
+.overhead-hero-sub{font-size:12px;color:#fca5a5;margin-top:4px}
+.overhead-hero-stats{display:flex;gap:12px}
+.overhead-hero-stat{background:rgba(255,255,255,0.08);border-radius:8px;padding:12px 20px;text-align:center}
+.overhead-hero-stat-val{font-size:20px;font-weight:700;color:#fff}
+.overhead-hero-stat-lbl{font-size:10px;color:#fca5a5;margin-top:2px}
+
+/* ── SECTION CARD ── */
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:14px;overflow:hidden}
+.section-card-hd{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.section-card-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.section-card-title{font-size:14px;font-weight:600;color:var(--text)}
+.section-card-sub{font-size:12px;color:var(--text3);margin-top:1px}
+.section-card-body{padding:18px 20px}
+
+@media(max-width:900px){
+  .dash-charts,.dash-bottom{grid-template-columns:1fr}
+  .overhead-hero{flex-direction:column;align-items:flex-start}
+}
 @media print{
   #client-page .cp-bar,#client-page .cp-sig-box,#client-page .cp-print-btn{display:none!important}
   #client-page .cp-doc{box-shadow:none}
@@ -2748,6 +2826,8 @@ load();
 checkShareLink();
 if(!window.location.search.includes('view=')){
   initSupabase();
+  // Debug: force immediate render regardless of Supabase
+  try{ renderDash(); }catch(debugErr){ console.error('immediate renderDash error:', debugErr); }
   if(sbClient){
     // Restore session on load (stays logged in across browser refreshes)
     sbClient.auth.getSession().then(({data:{session}})=>{
@@ -2783,8 +2863,14 @@ if(!window.location.search.includes('view=')){
 }
 } catch(err) {
   console.error('EstimatePro init error:', err);
-  // Still try to render the dashboard even if something failed
-  try { load(); renderDash(); } catch(e) {}
+  // Show error visibly on page
+  const errDiv = document.createElement('div');
+  errDiv.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#7f1d1d;color:white;padding:16px 24px;border-radius:8px;z-index:9999;font-family:monospace;font-size:13px;max-width:600px;word-break:break-all';
+  errDiv.textContent = 'Init Error: ' + err.message + ' | ' + err.stack;
+  document.body.appendChild(errDiv);
+  try { load(); renderDash(); } catch(e) {
+    errDiv.textContent += ' | renderDash: ' + e.message;
+  }
 }
 </script>
 </body>
