@@ -293,6 +293,59 @@ tr:last-child td{border-bottom:none}
   .dash-charts,.dash-bottom{grid-template-columns:1fr}
   .overhead-hero{flex-direction:column;align-items:flex-start}
 }
+
+/* ── ESTIMATOR PAGE ── */
+.est-builder-wrap{display:grid;grid-template-columns:1fr 280px;gap:14px;align-items:start}
+.est-builder-main{}
+.est-builder-side{}
+.eb-item-row td{padding:8px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+.eb-item-row input{background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;width:100%}
+.eb-item-row input:focus{outline:none;border-color:var(--brand)}
+.eb-item-total{font-size:13px;font-weight:600;color:var(--text);text-align:right;white-space:nowrap}
+.client-dropdown{position:absolute;z-index:200;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.4);max-height:200px;overflow-y:auto;width:100%}
+.client-dropdown-item{padding:10px 14px;cursor:pointer;font-size:13px;color:var(--text);border-bottom:1px solid var(--border)}
+.client-dropdown-item:hover{background:var(--surface3)}
+.client-dropdown-item:last-child{border-bottom:none}
+
+/* ── CALENDAR PAGE ── */
+.cal-wrap{display:flex;height:calc(100vh - 56px);overflow:hidden}
+.cal-queue{width:260px;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;background:var(--surface)}
+.cal-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.cal-controls{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.cal-grid-month{display:grid;grid-template-columns:repeat(7,1fr);flex:1}
+.cal-day-header{padding:8px;text-align:center;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;background:var(--surface);border-bottom:1px solid var(--border)}
+.cal-day{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px;min-height:90px;cursor:pointer;transition:background 0.1s;position:relative}
+.cal-day:hover{background:var(--surface2)}
+.cal-day.today{background:rgba(227,30,36,0.06)}
+.cal-day.other-month{opacity:0.35}
+.cal-day-num{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px}
+.cal-day.today .cal-day-num{background:var(--brand);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px}
+.cal-event{background:var(--brand);color:#fff;font-size:10px;border-radius:4px;padding:2px 6px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.cal-event.green{background:var(--green)}
+.cal-event.blue{background:var(--blue)}
+.cal-queue-item{padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.1s}
+.cal-queue-item:hover{background:var(--surface2)}
+.cal-queue-empty{text-align:center;padding:32px 16px;color:var(--text3);font-size:12px}
+
+/* ── CATALOG EMPTY STATE ── */
+.catalog-empty{text-align:center;padding:60px 20px;color:var(--text3)}
+.catalog-empty-icon{font-size:48px;margin-bottom:12px;opacity:0.4}
+.catalog-search{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.catalog-search input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;font-size:13px}
+
+@media(max-width:900px){
+  .est-builder-wrap{grid-template-columns:1fr}
+  .est-builder-side{display:none}
+  .cal-queue{display:none}
+}
+
+/* ── DASHBOARD PERIOD FILTER ── */
+.dash-period-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.dash-period-btns{display:flex;gap:4px;flex-wrap:wrap}
+.dash-period-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border2);background:none;color:var(--text2);font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;transition:all 0.12s}
+.dash-period-btn:hover{background:var(--surface2);color:var(--text)}
+.dash-period-btn.active{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+.stats-grid-3{grid-template-columns:repeat(3,1fr)!important}
 @media print{
   .sidebar,.mob-nav,.mob-fab,.btn,.x-btn,.overlay,.toast,.topbar{display:none!important}
   .main{margin-left:0}
@@ -318,6 +371,10 @@ tr:last-child td{border-bottom:none}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       <span>Dashboard</span>
     </div>
+    <div class="nav-item" id="nav-estimator" onclick="go('estimator')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      <span>Estimator</span>
+    </div>
     <div class="nav-item" id="nav-estimates" onclick="go('estimates')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       <span>Estimator</span>
@@ -338,6 +395,10 @@ tr:last-child td{border-bottom:none}
     <div class="nav-item" id="nav-invoices" onclick="go('invoices')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
       <span>Invoices</span>
+    </div>
+    <div class="nav-item" id="nav-calendar" onclick="go('calendar')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Calendar</span>
     </div>
     <div class="nav-item" id="nav-photos" onclick="go('photos')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -400,8 +461,24 @@ tr:last-child td{border-bottom:none}
 <!-- DASHBOARD -->
 <div class="page active" id="page-dashboard">
 <div class="content">
+  <!-- Time Period Filter -->
+  <div class="dash-period-bar">
+    <div style="display:flex;align-items:center;gap:8px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px">TIME PERIOD</span>
+    </div>
+    <div class="dash-period-btns" id="dash-period-btns">
+      <button class="dash-period-btn" onclick="dashSetPeriod('month')">This Month</button>
+      <button class="dash-period-btn" onclick="dashSetPeriod('lastmonth')">Last Month</button>
+      <button class="dash-period-btn" onclick="dashSetPeriod('3months')">Last 3 Months</button>
+      <button class="dash-period-btn" onclick="dashSetPeriod('year')">This Year</button>
+      <button class="dash-period-btn active" onclick="dashSetPeriod('all')">All Time</button>
+    </div>
+  </div>
   <div id="dash-stats" class="stats-grid"></div>
-  <div id="dash-charts" class="dash-charts"></div>
+  <div id="dash-stats2" class="stats-grid stats-grid-3" style="margin-top:10px"></div>
+  <div id="dash-charts-profit" class="dash-charts" style="margin-top:14px"></div>
+  <div id="dash-charts" class="dash-charts" style="margin-top:14px"></div>
   <div id="dash-bottom" class="dash-bottom"></div>
 </div>
 </div>
@@ -481,13 +558,12 @@ tr:last-child td{border-bottom:none}
 <!-- CATALOG -->
 <div class="page" id="page-catalog">
 <div class="content">
-    <div class="card">
-      <div class="table-wrap">
-        <table><thead><tr><th>Description</th><th>Unit</th><th>Default Price</th><th>Actions</th></tr></thead>
-        <tbody id="catalog-list"></tbody></table>
-      </div>
-    </div>
+  <div class="catalog-search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="catalog-search-input" placeholder="Search templates..." oninput="renderCatalog()">
   </div>
+  <div id="catalog-content"></div>
+</div>
 </div>
 
 <!-- CALCULATORS -->
@@ -1121,7 +1197,7 @@ function go(page){
   const mobEl=document.getElementById('mob-'+page);
   if(navEl) navEl.classList.add('active');
   if(mobEl) mobEl.classList.add('active');
-  const renders={dashboard:renderDash,estimates:renderEstList,invoices:renderInvoices,clients:renderClients,photos:renderPhotos,catalog:renderCatalog,email:loadEmailSettings,settings:loadSettings,team:renderTeam,calculators:initOverhead};
+  const renders={dashboard:renderDash,estimates:renderEstList,invoices:renderInvoices,clients:renderClients,photos:renderPhotos,catalog:renderCatalog,email:loadEmailSettings,settings:loadSettings,team:renderTeam,calculators:initOverhead,estimator:initEstimator,calendar:initCalendar};
   if(renders[page]) renders[page]();
   const pageMeta={
     'dashboard':{title:'Dashboard',sub:'Your business at a glance',actions:'<button class="btn btn-primary" onclick="go(\'estimates\');newEst()">+ New Estimate</button>'},
@@ -1129,7 +1205,9 @@ function go(page){
     'invoices':{title:'Invoices',sub:'Manage and track all your invoices',actions:'<button class="btn btn-primary" onclick="newInvoiceModal()">+ Create Invoice</button>'},
     'clients':{title:'Clients',sub:'Manage your client contacts',actions:'<button class="btn btn-primary" onclick="newClientModal()">+ Add Client</button>'},
     'catalog':{title:'Line Item Catalog',sub:'Reusable line items for estimates',actions:'<button class="btn btn-primary" onclick="newCatItem()">+ Add Item</button>'},
-    'calculators':{title:'Calculators',sub:'Business and pricing calculators',actions:''},
+    'calculators':{title:'Overhead Calculator',sub:'Calculate your billable hourly rate & analyze annual overhead',actions:'<button class="btn btn-primary" onclick="ohSaveSettings()">💾 Save Settings</button>'},
+    'estimator':{title:'Estimator',sub:'Create professional estimates with multiple services',actions:'<button class="btn btn-secondary btn-sm" onclick="ebClear()">Clear</button>'},
+    'calendar':{title:'Calendar',sub:'Schedule and manage your jobs',actions:'<button class="btn btn-primary" onclick="newApptModal()">+ New Appointment</button>'},
     'photos':{title:'Job Photos',sub:'Attach photos to your jobs',actions:'<button class="btn btn-primary" onclick="uploadPhoto()">+ Upload Photo</button>'},
     'team':{title:'Team Access',sub:'Manage team members and PINs',actions:'<button class="btn btn-primary" onclick="newTeamMember()">+ Add Member</button>'},
     'email':{title:'Email & Notifications',sub:'Configure email sending and webhooks',actions:''},
@@ -1159,25 +1237,28 @@ function markInvPaid(id){
   toast('Invoice marked as paid','t-success');
 }
 function renderDash(){
-  const es=db.estimates||[];
   const now=new Date();
+  const allEs=db.estimates;
+  const allInvs=db.invoices||[];
+  // Apply period filter
+  const es=allEs.filter(e=>dashFilterDate(e.date||e.created));
+  const paidInvs=allInvs.filter(x=>x.status==='Paid'&&dashFilterDate(x.date));
+  const unpaidInvs=allInvs.filter(x=>['Unpaid','Overdue','Sent','Viewed'].includes(x.status));
+  const overdueInvs=allInvs.filter(x=>x.status==='Overdue');
   const signed=es.filter(e=>e.status==='Signed');
-  const paidInvs=(db.invoices||[]).filter(x=>x.status==='Paid');
-  const unpaidInvs=(db.invoices||[]).filter(x=>['Unpaid','Overdue','Sent','Viewed','Draft'].includes(x.status));
-  const overdueInvs=(db.invoices||[]).filter(x=>x.status==='Overdue');
   const revenue=paidInvs.reduce((s,x)=>s+(+x.amount||0),0);
   const outstanding=unpaidInvs.reduce((s,x)=>s+(+x.amount||0),0);
   const closeRate=es.length?Math.round(signed.length/es.length*100):0;
-  const totalProfit=revenue*0.25; // estimated profit
-  const profitMargin=revenue?(totalProfit/revenue*100).toFixed(1):0;
-  const avgProfit=paidInvs.length?(revenue/paidInvs.length):0;
+  
+  // Profit = revenue - (estimate subtotals for paid jobs)
+  const avgProfit = paidInvs.length ? (revenue/paidInvs.length) : 0;
 
-  // ── ROW 1 STATS ──
+  // ── TOP STAT CARDS ──
   document.getElementById('dash-stats').innerHTML=`
     <div class="stat clickable" onclick="go('invoices')" title="View paid invoices">
       <div class="stat-icon" style="background:var(--green-bg)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3fb950" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
       <div class="stat-label">Revenue (Paid)</div><div class="stat-value">${$f(revenue)}</div>
-      <div class="stat-sub">${paidInvs.length} paid invoice${paidInvs.length!==1?'s':''} →</div>
+      <div class="stat-sub">${paidInvs.length} invoice${paidInvs.length!==1?'s':''} →</div>
     </div>
     <div class="stat clickable" onclick="go('invoices')" title="View outstanding invoices">
       <div class="stat-icon" style="background:var(--amber-bg)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e3b341" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
@@ -1187,7 +1268,7 @@ function renderDash(){
     <div class="stat clickable" onclick="go('estimates')" title="View all estimates">
       <div class="stat-icon" style="background:var(--blue-bg)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#58a6ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
       <div class="stat-label">Estimates</div><div class="stat-value">${es.length}</div>
-      <div class="stat-sub">${signed.length} signed · view all →</div>
+      <div class="stat-sub">${signed.length} signed →</div>
     </div>
     <div class="stat clickable" onclick="go('estimates')" title="View estimates">
       <div class="stat-icon" style="background:rgba(227,30,36,0.12)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e31e24" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
@@ -1195,220 +1276,143 @@ function renderDash(){
       <div class="stat-sub">${signed.length} won · ${es.filter(e=>e.status==='Declined').length} lost →</div>
     </div>`;
 
-  // ── ROW 2 STATS (profit row like GrowZbl) ──
-  const row2=document.getElementById('dash-stats-2');
-  if(row2) row2.innerHTML=`
-    <div class="stat">
+  // ── SECOND STAT ROW ──
+  const el2=document.getElementById('dash-stats2');
+  if(el2) el2.innerHTML=`
+    <div class="stat clickable" onclick="go('invoices')" style="border-color:var(--green-border)">
       <div class="stat-icon" style="background:var(--green-bg)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3fb950" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-      <div class="stat-label">Total Profit</div><div class="stat-val-accent">${$f(totalProfit)}</div>
+      <div class="stat-label">Total Profit</div>
+      <div class="stat-value" style="color:var(--green)">${$f(revenue)}</div>
       <div class="stat-sub">${paidInvs.length} paid jobs</div>
     </div>
-    <div class="stat" style="grid-column:span 1">
-      <div class="stat-icon" style="background:var(--amber-bg)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e3b341" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M21 21H3V3"/><path d="M21 3L3 21"/></svg></div>
-      <div class="stat-label">Profit Margin</div><div class="stat-value">${profitMargin}%</div>
-      <div class="stat-sub">estimated</div>
+    <div class="stat">
+      <div class="stat-icon" style="background:var(--purple-bg)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg></div>
+      <div class="stat-label">Profit Margin</div>
+      <div class="stat-value">${revenue>0?((revenue/(revenue+outstanding))*100).toFixed(1):0}%</div>
+      <div class="stat-sub">of total billed</div>
     </div>
-    <div class="stat" style="grid-column:span 2">
-      <div class="stat-icon" style="background:var(--purple-bg)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
-      <div class="stat-label">Avg Profit / Job</div><div class="stat-value">${$f(avgProfit)}</div>
+    <div class="stat clickable" onclick="go('invoices')">
+      <div class="stat-icon" style="background:var(--blue-bg)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#58a6ff" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+      <div class="stat-label">Avg Profit / Job</div>
+      <div class="stat-value">${$f(avgProfit)}</div>
       <div class="stat-sub">per paid invoice</div>
     </div>`;
 
-  // ── CHARTS ROW ──
+  // ── REVENUE CHART (bar chart over 6 months) ──
   const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const now2=new Date();
-  // Revenue over 6 months
-  const revData=[];const revLabels=[];
+  const revenueByMonth=[];
   for(let i=5;i>=0;i--){
-    const d=new Date(now2.getFullYear(),now2.getMonth()-i,1);
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
     const m=d.getMonth();const y=d.getFullYear();
-    const amt=paidInvs.filter(x=>{const xd=new Date(x.date||x.created||'');return xd.getMonth()===m&&xd.getFullYear()===y;}).reduce((s,x)=>s+(+x.amount||0),0);
-    revData.push(amt);revLabels.push(months[m]);
+    const amt=allInvs.filter(x=>x.status==='Paid'&&new Date(x.date||x.created||'').getMonth()===m&&new Date(x.date||x.created||'').getFullYear()===y).reduce((s,x)=>s+(+x.amount||0),0);
+    revenueByMonth.push({label:months[m],amt});
   }
-  const maxRev=Math.max(...revData,1);
+  const maxRev=Math.max(...revenueByMonth.map(x=>x.amt),1);
+  const revBars=revenueByMonth.map(x=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+    <div style="font-size:10px;color:var(--text3);margin-bottom:2px">${x.amt?$f(x.amt):''}</div>
+    <div style="width:70%;background:${x.amt?'var(--brand)':'var(--surface3)'};border-radius:4px 4px 0 0;height:${Math.max(4,Math.round(x.amt/maxRev*110))}px" title="${$f(x.amt)}"></div>
+    <div style="font-size:10px;color:var(--text3)">${x.label}</div>
+  </div>`).join('');
 
-  // Pipeline bar chart data
+  // ── PIPELINE CHART ──
   const pipeStatuses=['Draft','Sent','Viewed','Signed','Declined'];
-  const pipeColors=['#374151','#1d4ed8','#b45309','#15803d','#b91c1c'];
-  const pipeCounts=pipeStatuses.map(s=>es.filter(e=>(e.status||'Draft')===s).length);
-  const maxPipe=Math.max(...pipeCounts,1);
+  const pipeColors={'Draft':'#6b7280','Sent':'#3b82f6','Viewed':'#f59e0b','Signed':'#10b981','Declined':'#ef4444'};
+  const pipeCounts=pipeStatuses.map(s=>({s,n:allEs.filter(e=>(e.status||'Draft')===s).length,v:allEs.filter(e=>(e.status||'Draft')===s).reduce((sum,e)=>sum+calcEst(e).total,0)}));
+  const maxPipe=Math.max(...pipeCounts.map(x=>x.n),1);
+  const pipeBars=pipeCounts.map(x=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+    <div style="font-size:10px;color:var(--text3);margin-bottom:2px">${x.n||''}</div>
+    <div style="width:70%;background:${x.n?pipeColors[x.s]:'var(--surface3)'};border-radius:4px 4px 0 0;height:${Math.max(4,Math.round(x.n/maxPipe*110))}px" title="${x.n} ${x.s} · ${$f(x.v)}"></div>
+    <div style="font-size:10px;color:var(--text3)">${x.s}</div>
+  </div>`).join('');
 
-  const chartsEl=document.getElementById('dash-charts');
-  if(chartsEl) chartsEl.innerHTML=`
-    <div class="card">
-      <div class="chart-wrap">
-        <div class="chart-title">Revenue Over Time</div>
-        <div class="mini-chart">
-          ${revData.map((v,i)=>`<div class="mini-bar" style="height:${Math.max(4,Math.round(v/maxRev*100))}%;background:var(--green);opacity:${v>0?1:0.2}" data-tip="${revLabels[i]}: ${$f(v)}"></div>`).join('')}
-        </div>
-        <div class="chart-labels">${revLabels.map(l=>`<div class="chart-label">${l}</div>`).join('')}</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="chart-wrap">
-        <div class="chart-title">Estimate Pipeline</div>
-        <div class="mini-chart">
-          ${pipeStatuses.map((s,i)=>`<div class="mini-bar" style="height:${Math.max(4,Math.round(pipeCounts[i]/maxPipe*100))}%;background:${pipeColors[i]};opacity:${pipeCounts[i]>0?1:0.25}" data-tip="${s}: ${pipeCounts[i]}"></div>`).join('')}
-        </div>
-        <div class="chart-labels">${pipeStatuses.map(s=>`<div class="chart-label">${s}</div>`).join('')}</div>
-      </div>
-    </div>`;
+  // ── PROFIT OVER TIME (monthly line/bar chart) ──
+  const profitByMonth=revenueByMonth.map(x=>({...x})); // same data as revenue for now
+  const maxProfit=Math.max(...profitByMonth.map(x=>x.amt),1);
+  const profitBars=profitByMonth.map(x=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+    <div style="font-size:9px;color:var(--text3);margin-bottom:2px">${x.amt?$f(x.amt):''}</div>
+    <div style="width:65%;background:${x.amt?'var(--green)':'var(--surface3)'};border-radius:4px 4px 0 0;height:${Math.max(4,Math.round(x.amt/maxProfit*110))}px" title="${$f(x.amt)}"></div>
+    <div style="font-size:9px;color:var(--text3)">${x.label}</div>
+  </div>`).join('');
 
-  // ── OVERDUE + RECENT ACTIVITY ──
-  const bottomEl=document.getElementById('dash-bottom');
-  if(bottomEl) bottomEl.innerHTML=`
-    <div class="card">
-      <div class="card-header">
-        <h3>⚠ Overdue Invoices</h3>
-        <button class="btn btn-ghost btn-sm" onclick="go('invoices')">View All</button>
+  // ── TOP JOBS BY PROFIT ──
+  const topJobs = paidInvs.slice().sort((a,b)=>(+b.amount||0)-(+a.amount||0)).slice(0,5);
+  const topJobsHtml = topJobs.length ? topJobs.map((j,i)=>{
+    const pct = maxRev>0?Math.round((+j.amount||0)/maxRev*100):0;
+    const colors=['var(--brand)','var(--blue)','var(--green)','var(--amber)','var(--purple)'];
+    return`<div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:12px;color:var(--text);font-weight:500">${j.clientName||'Client'}</span>
+        <span style="font-size:12px;font-weight:600;color:var(--text)">${$f(+j.amount||0)}</span>
       </div>
-      <div class="card-body" style="padding:0 18px">
-        ${overdueInvs.length?overdueInvs.slice(0,5).map(x=>`
-          <div class="overdue-row">
-            <div><div style="font-weight:600;font-size:13px;color:var(--text)">${x.clientName||'—'}</div><div style="font-size:11px;color:var(--text3)">Due ${x.dueDate||'—'}</div></div>
-            <div style="font-weight:700;color:var(--red2)">${$f(+x.amount||0)}</div>
-          </div>`).join(''):'<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">No overdue invoices</div>'}
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <h3>Recent Activity</h3>
-      </div>
-      <div class="card-body" style="padding:0 18px" id="dash-activity-list">
-        ${(db.activity||[]).length?(db.activity||[]).slice(0,6).map(a=>`
-          <div class="overdue-row">
-            <div style="font-size:13px;color:var(--text)">${a.msg||a.text||'Activity'}</div>
-            <div style="font-size:11px;color:var(--text3);white-space:nowrap;margin-left:8px">${a.time?new Date(a.time).toLocaleDateString():''}</div>
-          </div>`).join(''):'<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">No activity yet</div>'}
+      <div style="background:var(--surface3);border-radius:4px;height:6px;overflow:hidden">
+        <div style="background:${colors[i%colors.length]};height:100%;width:${pct}%;border-radius:4px;transition:width 0.4s"></div>
       </div>
     </div>`;
-}
+  }).join('') : '<div style="text-align:center;color:var(--text3);padding:24px 0;font-size:13px">No paid jobs yet</div>';
 
-function newEst(){
-  document.getElementById('eid').value='';
-  document.getElementById('est-modal-title').textContent='New Estimate';
-  document.getElementById('e-client').innerHTML='<option value="">— Select Client —</option>'+db.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-  document.getElementById('e-cname').value='';
-  document.getElementById('e-cemail').value='';
-  document.getElementById('e-addr').value='';
-  document.getElementById('e-desc').value='';
-  document.getElementById('e-status').value='Draft';
-  document.getElementById('e-tax').value=db.settings.tax||0;
-  document.getElementById('e-disc').value=0;
-  document.getElementById('e-notes').value='';
-  document.getElementById('e-fu-sent').value='';
-  const today=new Date().toISOString().split('T')[0];
-  document.getElementById('e-date').value=today;
-  const valid=new Date(); valid.setDate(valid.getDate()+30);
-  document.getElementById('e-valid').value=valid.toISOString().split('T')[0];
-  const fu=new Date(); fu.setDate(fu.getDate()+(+db.settings.followup||3));
-  document.getElementById('e-followup').value=fu.toISOString().split('T')[0];
-  document.getElementById('items-wrap').innerHTML='';
-  addItem(); addItem();
-  calcPreview();
-  document.getElementById('modal-est').style.display='flex';
-}
+  const profitChartsEl = document.getElementById('dash-charts-profit');
+  if(profitChartsEl) profitChartsEl.innerHTML=`
+    <div class="dash-chart-card">
+      <div class="dash-chart-title">Profit Over Time</div>
+      <div class="dash-chart-sub">Monthly profit from paid invoices</div>
+      <div style="display:flex;align-items:flex-end;gap:4px;height:130px;padding-bottom:4px">${profitBars}</div>
+    </div>
+    <div class="dash-chart-card">
+      <div class="dash-chart-title">Top Jobs by Profit</div>
+      <div class="dash-chart-sub">Highest value paid invoices</div>
+      <div style="margin-top:8px">${topJobsHtml}</div>
+    </div>`;
 
-function editEst(id){
-  const e=db.estimates.find(x=>x.id===id); if(!e) return;
-  document.getElementById('eid').value=e.id;
-  document.getElementById('est-modal-title').textContent='Edit Estimate — '+estNum(e);
-  document.getElementById('e-client').innerHTML='<option value="">— Select Client —</option>'+db.clients.map(c=>`<option value="${c.id}"${c.id===e.clientId?' selected':''} >${c.name}</option>`).join('');
-  document.getElementById('e-cname').value=e.clientName||'';
-  document.getElementById('e-cemail').value=e.clientEmail||'';
-  document.getElementById('e-addr').value=e.address||'';
-  document.getElementById('e-desc').value=e.desc||'';
-  document.getElementById('e-status').value=e.status||'Draft';
-  document.getElementById('e-date').value=e.date||'';
-  document.getElementById('e-valid').value=e.validUntil||'';
-  document.getElementById('e-tax').value=e.tax||0;
-  document.getElementById('e-disc').value=e.disc||0;
-  document.getElementById('e-notes').value=e.clientNotes||'';
-  document.getElementById('e-followup').value=e.followUpDate||'';
-  document.getElementById('e-fu-sent').value=e.followUpSent?'yes':'';
-  document.getElementById('items-wrap').innerHTML='';
-  (e.items||[]).forEach(i=>addItem(i));
-  if(!e.items||!e.items.length){ addItem(); addItem(); }
-  calcPreview();
-  document.getElementById('modal-est').style.display='flex';
-}
+  document.getElementById('dash-charts').innerHTML=`
+    <div class="dash-chart-card">
+      <div class="dash-chart-title">Revenue Over Time</div>
+      <div class="dash-chart-sub">Last 6 months · paid invoices</div>
+      <div style="display:flex;align-items:flex-end;gap:4px;height:130px;padding-bottom:4px">${revBars}</div>
+    </div>
+    <div class="dash-chart-card">
+      <div class="dash-chart-title">Estimate Pipeline</div>
+      <div class="dash-chart-sub">Count · click to filter estimates</div>
+      <div style="display:flex;align-items:flex-end;gap:4px;height:130px;padding-bottom:4px">${pipeBars}</div>
+    </div>`;
 
-function fillClientFromSelect(){
-  const cid=document.getElementById('e-client').value;
-  const c=db.clients.find(x=>x.id===cid);
-  if(c){
-    document.getElementById('e-cname').value=c.name;
-    document.getElementById('e-cemail').value=c.email||'';
-    if(!document.getElementById('e-addr').value) document.getElementById('e-addr').value=c.address||'';
-  }
-}
+  // ── BOTTOM: Overdue + Activity ──
+  const overdueHtml=overdueInvs.length?overdueInvs.map(x=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--text)">${x.clientName||'Client'}</div>
+        <div style="font-size:11px;color:var(--text3)">Due ${$fd(x.dueDate||x.date)}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:13px;font-weight:600;color:var(--red)">${$f(+x.amount||0)}</div>
+        <button class="btn btn-green btn-sm" style="margin-top:4px" onclick="markInvPaid('${x.id}')">Mark Paid</button>
+      </div>
+    </div>`).join(''):`<div style="text-align:center;color:var(--text3);padding:24px;font-size:13px">No overdue invoices</div>`;
 
-function addItem(item={}){
-  const wrap=document.getElementById('items-wrap');
-  const div=document.createElement('div');
-  div.className='item-row';
-  div.innerHTML=`<input placeholder="Description" value="${item.desc||''}" oninput="calcPreview()">
-    <input type="number" placeholder="1" value="${item.qty||1}" min="0" step="any" oninput="calcPreview()">
-    <input placeholder="ea" value="${item.unit||''}">
-    <input type="number" placeholder="0.00" value="${item.price||''}" min="0" step="0.01" oninput="calcPreview()" style="text-align:right">
-    <button onclick="this.parentElement.remove();calcPreview()" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:2px">×</button>`;
-  wrap.appendChild(div);
-}
+  const acts=(db.activity||[]).filter(a=>dashFilterDate(a.ts)).slice(0,8);
+  const actHtml=acts.length?acts.map(a=>{
+    const icon=a.type==='viewed'?'👁':a.type==='signed'?'✅':a.type==='followup'?'📤':'📋';
+    const bg=a.type==='viewed'?'var(--amber-bg)':a.type==='signed'?'var(--green-bg)':'var(--surface3)';
+    return`<div class="activity-item">
+      <div class="activity-icon" style="background:${bg};font-size:14px">${icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;color:var(--text)"><strong>${a.clientName||'Client'}</strong> ${a.type==='viewed'?'viewed':'signed'} <span style="color:var(--brand)">${a.desc||'an estimate'}</span></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">${fmtAgo(a.ts)}</div>
+      </div>
+    </div>`;
+  }).join(''):`<div style="text-align:center;color:var(--text3);padding:24px;font-size:13px">No activity yet</div>`;
 
-function calcPreview(){
-  const rows=document.querySelectorAll('#items-wrap .item-row');
-  let sub=0;
-  rows.forEach(r=>{
-    const inputs=r.querySelectorAll('input');
-    sub+=(+inputs[1].value||0)*(+inputs[3].value||0);
-  });
-  const tax=sub*(+document.getElementById('e-tax').value||0)/100;
-  const disc=+document.getElementById('e-disc').value||0;
-  document.getElementById('e-total-preview').textContent=$f(sub+tax-disc);
-}
-
-function getEstFromForm(){
-  const rows=document.querySelectorAll('#items-wrap .item-row');
-  const items=[];
-  rows.forEach(r=>{
-    const inputs=r.querySelectorAll('input');
-    const desc=inputs[0].value.trim();
-    const qty=+inputs[1].value||0;
-    const unit=inputs[2].value.trim();
-    const price=+inputs[3].value||0;
-    if(desc||price) items.push({desc,qty,unit,price});
-  });
-  return{
-    clientId:document.getElementById('e-client').value,
-    clientName:document.getElementById('e-cname').value.trim(),
-    clientEmail:document.getElementById('e-cemail').value.trim(),
-    address:document.getElementById('e-addr').value.trim(),
-    desc:document.getElementById('e-desc').value.trim(),
-    status:document.getElementById('e-status').value,
-    date:document.getElementById('e-date').value,
-    validUntil:document.getElementById('e-valid').value,
-    tax:+document.getElementById('e-tax').value||0,
-    disc:+document.getElementById('e-disc').value||0,
-    clientNotes:document.getElementById('e-notes').value.trim(),
-    followUpDate:document.getElementById('e-followup').value,
-    followUpSent:document.getElementById('e-fu-sent').value==='yes',
-    items
-  };
-}
-
-function saveEst(){
-  const data=getEstFromForm();
-  const id=document.getElementById('eid').value;
-  if(!data.clientName&&!data.desc){ toast('Add a client name or description.','error'); return; }
-  if(id){ const idx=db.estimates.findIndex(x=>x.id===id); db.estimates[idx]=Object.assign({id},data,{viewedAt:db.estimates[idx].viewedAt,followUpSentAt:db.estimates[idx].followUpSentAt}); }
-  else { db.estimates.push(Object.assign({id:uid(),created:new Date().toISOString()},data)); }
-  save(); close$('modal-est'); renderEstList(); renderDash(); toast('Estimate saved!','success');
-}
-
-function delEst(id){
-  if(!confirm('Delete this estimate?')) return;
-  db.estimates=db.estimates.filter(x=>x.id!==id);
-  save(); renderEstList(); renderDash();
+  document.getElementById('dash-bottom').innerHTML=`
+    <div class="dash-chart-card">
+      <div class="dash-chart-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Overdue Invoices
+      </div>
+      <div style="margin-top:8px">${overdueHtml}</div>
+    </div>
+    <div class="dash-chart-card">
+      <div class="dash-chart-title">Recent Activity</div>
+      <div style="margin-top:8px">${actHtml}</div>
+    </div>`;
 }
 
 function renderEstList(){
@@ -1433,9 +1437,10 @@ function renderEstList(){
           <div style="font-size:12px;font-weight:600;color:var(--text);flex-shrink:0;margin-left:8px">${$f(t)}</div>
         </div>
         <div class="pipeline-item-sub">${e.desc||'No description'}</div>
-        <div style="margin-top:6px;display:flex;gap:6px">
-          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();editEst('${e.id}')">Edit</button>
-          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openEmailModal('${e.id}')">Send</button>
+        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();editEstInPage('${e.id}')">✏️ Edit</button>
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();previewById('${e.id}')">👁 Preview</button>
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openEmailModal('${e.id}')">📧 Send</button>
         </div>
       </div>`;
     }).join('') : `<div class="pipeline-empty">No ${status.toLowerCase()} estimates</div>`;
@@ -2452,6 +2457,59 @@ function checkShareLink(){
   .dash-charts,.dash-bottom{grid-template-columns:1fr}
   .overhead-hero{flex-direction:column;align-items:flex-start}
 }
+
+/* ── ESTIMATOR PAGE ── */
+.est-builder-wrap{display:grid;grid-template-columns:1fr 280px;gap:14px;align-items:start}
+.est-builder-main{}
+.est-builder-side{}
+.eb-item-row td{padding:8px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+.eb-item-row input{background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;width:100%}
+.eb-item-row input:focus{outline:none;border-color:var(--brand)}
+.eb-item-total{font-size:13px;font-weight:600;color:var(--text);text-align:right;white-space:nowrap}
+.client-dropdown{position:absolute;z-index:200;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.4);max-height:200px;overflow-y:auto;width:100%}
+.client-dropdown-item{padding:10px 14px;cursor:pointer;font-size:13px;color:var(--text);border-bottom:1px solid var(--border)}
+.client-dropdown-item:hover{background:var(--surface3)}
+.client-dropdown-item:last-child{border-bottom:none}
+
+/* ── CALENDAR PAGE ── */
+.cal-wrap{display:flex;height:calc(100vh - 56px);overflow:hidden}
+.cal-queue{width:260px;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;background:var(--surface)}
+.cal-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.cal-controls{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.cal-grid-month{display:grid;grid-template-columns:repeat(7,1fr);flex:1}
+.cal-day-header{padding:8px;text-align:center;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;background:var(--surface);border-bottom:1px solid var(--border)}
+.cal-day{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px;min-height:90px;cursor:pointer;transition:background 0.1s;position:relative}
+.cal-day:hover{background:var(--surface2)}
+.cal-day.today{background:rgba(227,30,36,0.06)}
+.cal-day.other-month{opacity:0.35}
+.cal-day-num{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px}
+.cal-day.today .cal-day-num{background:var(--brand);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px}
+.cal-event{background:var(--brand);color:#fff;font-size:10px;border-radius:4px;padding:2px 6px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.cal-event.green{background:var(--green)}
+.cal-event.blue{background:var(--blue)}
+.cal-queue-item{padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.1s}
+.cal-queue-item:hover{background:var(--surface2)}
+.cal-queue-empty{text-align:center;padding:32px 16px;color:var(--text3);font-size:12px}
+
+/* ── CATALOG EMPTY STATE ── */
+.catalog-empty{text-align:center;padding:60px 20px;color:var(--text3)}
+.catalog-empty-icon{font-size:48px;margin-bottom:12px;opacity:0.4}
+.catalog-search{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.catalog-search input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;font-size:13px}
+
+@media(max-width:900px){
+  .est-builder-wrap{grid-template-columns:1fr}
+  .est-builder-side{display:none}
+  .cal-queue{display:none}
+}
+
+/* ── DASHBOARD PERIOD FILTER ── */
+.dash-period-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.dash-period-btns{display:flex;gap:4px;flex-wrap:wrap}
+.dash-period-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border2);background:none;color:var(--text2);font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;transition:all 0.12s}
+.dash-period-btn:hover{background:var(--surface2);color:var(--text)}
+.dash-period-btn.active{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+.stats-grid-3{grid-template-columns:repeat(3,1fr)!important}
 @media print{
   #client-page .cp-bar,#client-page .cp-sig-box,#client-page .cp-print-btn{display:none!important}
   #client-page .cp-doc{box-shadow:none}
@@ -2820,6 +2878,461 @@ async function signOut(){
   toast('Signed out.','');
 }
 
+
+// ══════════════════════════════════════════════════════════
+// ESTIMATOR PAGE
+// ══════════════════════════════════════════════════════════
+let ebEditId = null;
+let ebItems = [];
+
+function initEstimator(est) {
+  ebEditId = est ? est.id : null;
+  ebItems = est ? JSON.parse(JSON.stringify(est.items||[])) : [{desc:'',qty:1,price:0}];
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('eb-desc').value = est ? (est.desc||'') : '';
+  document.getElementById('eb-date').value = est ? (est.date||today) : today;
+  document.getElementById('eb-tax').value = est ? (est.tax||db.settings.tax||0) : (db.settings.tax||0);
+  document.getElementById('eb-discount').value = est ? (est.discount||0) : 0;
+  document.getElementById('eb-notes').value = est ? (est.notes||db.settings.notes||'') : (db.settings.notes||'');
+  document.getElementById('eb-terms').value = est ? (est.terms||db.settings.terms||'') : (db.settings.terms||'');
+  // Set client
+  if(est && est.clientName) {
+    document.getElementById('eb-client-search').value = est.clientName;
+    document.getElementById('eb-client-id').value = est.clientId||'';
+  } else {
+    document.getElementById('eb-client-search').value = '';
+    document.getElementById('eb-client-id').value = '';
+  }
+  const badge = document.getElementById('eb-editing-badge');
+  if(badge) badge.style.display = ebEditId ? '' : 'none';
+  ebRenderItems();
+}
+
+function ebRenderItems() {
+  const tbody = document.getElementById('eb-items');
+  if(!tbody) return;
+  tbody.innerHTML = ebItems.map((it,i) => `
+    <tr class="eb-item-row">
+      <td><input type="text" value="${(it.desc||'').replace(/"/g,'&quot;')}" placeholder="Service description" oninput="ebItems[${i}].desc=this.value"></td>
+      <td><input type="number" value="${it.qty||1}" min="0" style="width:70px" oninput="ebItems[${i}].qty=+this.value;ebCalc()"></td>
+      <td><input type="number" value="${it.price||0}" min="0" step="0.01" style="width:110px" oninput="ebItems[${i}].price=+this.value;ebCalc()"></td>
+      <td><span class="eb-item-total">$${((+it.qty||1)*(+it.price||0)).toFixed(2)}</span></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="ebRemoveItem(${i})" style="color:var(--text3)">✕</button></td>
+    </tr>`).join('');
+  ebCalc();
+}
+
+function ebAddItem(desc, qty, price) {
+  ebItems.push({desc:desc||'',qty:qty||1,price:price||0});
+  ebRenderItems();
+}
+
+function ebRemoveItem(i) {
+  ebItems.splice(i,1);
+  if(!ebItems.length) ebItems = [{desc:'',qty:1,price:0}];
+  ebRenderItems();
+}
+
+function ebCalc() {
+  const sub = ebItems.reduce((s,it)=>s+(+it.qty||1)*(+it.price||0),0);
+  const taxPct = +(document.getElementById('eb-tax')?.value||0)/100;
+  const disc = +(document.getElementById('eb-discount')?.value||0);
+  const taxAmt = sub * taxPct;
+  const total = Math.max(0, sub + taxAmt - disc);
+  setText('eb-subtotal', '$'+sub.toFixed(2));
+  setText('eb-tax-amt', '$'+taxAmt.toFixed(2));
+  setText('eb-disc-amt', '-$'+disc.toFixed(2));
+  setText('eb-total', '$'+total.toFixed(2));
+  // Update item totals
+  document.querySelectorAll('.eb-item-total').forEach((el,i) => {
+    const it = ebItems[i];
+    if(it) el.textContent = '$'+((+it.qty||1)*(+it.price||0)).toFixed(2);
+  });
+}
+
+function ebAddFromCatalog() {
+  if(!db.catalog.length) { toast('No templates yet. Add items to your catalog first.',''); return; }
+  const opts = db.catalog.map(c=>`<option value="${c.id}">${c.desc} — ${$f(c.price)}</option>`).join('');
+  const sel = prompt('Enter template name to search (or leave blank to show all):');
+  const items = db.catalog.filter(c=>!sel||c.desc.toLowerCase().includes(sel.toLowerCase()));
+  if(!items.length) { toast('No matching templates',''); return; }
+  items.forEach(c=>ebAddItem(c.desc,1,c.price));
+  toast(`Added ${items.length} item${items.length!==1?'s':''}`, 't-success');
+}
+
+function ebClear() {
+  ebEditId = null;
+  initEstimator(null);
+  toast('Form cleared');
+}
+
+function editEstInPage(id) {
+  const est = db.estimates.find(e=>e.id===id);
+  if(!est) return;
+  go('estimator');
+  setTimeout(()=>initEstimator(est), 50);
+}
+
+function ebSave(mode) {
+  const desc = document.getElementById('eb-desc')?.value.trim();
+  if(!desc) { toast('Please add an estimate name','t-error'); return; }
+  const clientId = document.getElementById('eb-client-id')?.value;
+  const clientSearch = document.getElementById('eb-client-search')?.value.trim();
+  const client = db.clients.find(c=>c.id===clientId);
+  const clientName = client ? client.name : (clientSearch||'');
+  const clientEmail = client ? client.email : '';
+  const tax = +(document.getElementById('eb-tax')?.value||0);
+  const discount = +(document.getElementById('eb-discount')?.value||0);
+  const notes = document.getElementById('eb-notes')?.value||'';
+  const terms = document.getElementById('eb-terms')?.value||'';
+  const date = document.getElementById('eb-date')?.value||new Date().toISOString().split('T')[0];
+  
+  const filteredItems = ebItems.filter(it=>it.desc||it.price);
+  if(!filteredItems.length) { toast('Please add at least one service','t-error'); return; }
+
+  if(ebEditId) {
+    const est = db.estimates.find(e=>e.id===ebEditId);
+    if(est) {
+      Object.assign(est, {desc,clientName,clientEmail,clientId,items:filteredItems,tax,discount,notes,terms,date});
+      est.status = est.status||'Draft';
+    }
+  } else {
+    db.estimates.push({
+      id:'e'+Date.now(), desc, clientName, clientEmail, clientId,
+      items:filteredItems, tax, discount, notes, terms, date,
+      status:'Draft', created:new Date().toISOString()
+    });
+  }
+  save();
+  toast((ebEditId?'Estimate updated':'Estimate created')+' successfully!','t-success');
+  ebEditId = null;
+  if(mode==='Send') {
+    const id = db.estimates[db.estimates.length-1]?.id;
+    go('estimates');
+    setTimeout(()=>{ if(id) openEmailModal(id); },200);
+  } else {
+    go('estimates');
+  }
+}
+
+function ebSearchClient(q) {
+  const dd = document.getElementById('eb-client-dropdown');
+  if(!q || q.length < 1) { dd.style.display='none'; return; }
+  const matches = db.clients.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||
+    (c.email||'').toLowerCase().includes(q.toLowerCase())).slice(0,6);
+  if(!matches.length) { dd.style.display='none'; return; }
+  dd.innerHTML = matches.map(c=>`<div class="client-dropdown-item" onclick="ebSelectClient('${c.id}','${c.name.replace(/'/g,"\\'")}')">
+    <div style="font-weight:500;color:var(--text)">${c.name}</div>
+    ${c.email?`<div style="font-size:11px;color:var(--text3)">${c.email}</div>`:''}
+  </div>`).join('');
+  dd.style.display='';
+}
+
+function ebSelectClient(id, name) {
+  document.getElementById('eb-client-id').value = id;
+  document.getElementById('eb-client-search').value = name;
+  document.getElementById('eb-client-dropdown').style.display='none';
+}
+
+// Close dropdown on outside click
+document.addEventListener('click', e => {
+  const dd = document.getElementById('eb-client-dropdown');
+  if(dd && !e.target.closest('#eb-client-search') && !e.target.closest('#eb-client-dropdown')) {
+    dd.style.display='none';
+  }
+});
+
+// ══════════════════════════════════════════════════════════
+// CALENDAR PAGE
+// ══════════════════════════════════════════════════════════
+let calDate = new Date();
+let calView = 'month';
+let calAppts = []; // {id, date, title, clientName, estId, color}
+
+function initCalendar() {
+  calAppts = db.calAppts || [];
+  calDate = new Date();
+  renderCalendar();
+  renderCalQueue();
+  updateCalTopbar();
+}
+
+function updateCalTopbar() {
+  const jobs = db.estimates.filter(e=>e.status==='Signed'&&!e.scheduledDate).length;
+  const appts = (db.calAppts||[]).length;
+  const subEl = document.getElementById('topbar-sub');
+  if(subEl) subEl.textContent = `${jobs} job${jobs!==1?'s':''} in queue · ${appts} appointment${appts!==1?'s':''}`;
+}
+
+function calToday() { calDate = new Date(); renderCalendar(); }
+function calNav(dir) {
+  if(calView==='month') calDate.setMonth(calDate.getMonth()+dir);
+  else calDate.setDate(calDate.getDate()+(dir*7));
+  renderCalendar();
+}
+function calSetView(v) {
+  calView=v;
+  ['month','week','queue'].forEach(x=>{
+    const btn = document.getElementById('cal-view-'+x);
+    if(btn) btn.className='btn '+(x===v?'btn-secondary':'btn-ghost')+' btn-sm';
+  });
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('cal-grid');
+  if(!grid) return;
+  const now = new Date();
+  const titleEl = document.getElementById('cal-title');
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  
+  if(calView==='month') {
+    if(titleEl) titleEl.textContent = months[calDate.getMonth()] + ' ' + calDate.getFullYear();
+    const firstDay = new Date(calDate.getFullYear(), calDate.getMonth(), 1);
+    const lastDay = new Date(calDate.getFullYear(), calDate.getMonth()+1, 0);
+    const startPad = firstDay.getDay();
+    const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+    
+    let html = '<div class="cal-grid-month">';
+    days.forEach(d => html += `<div class="cal-day-header">${d}</div>`);
+    
+    for(let i=0;i<startPad;i++) {
+      const d = new Date(calDate.getFullYear(), calDate.getMonth(), -startPad+i+1);
+      html += `<div class="cal-day other-month"><div class="cal-day-num">${d.getDate()}</div></div>`;
+    }
+    for(let d=1;d<=lastDay.getDate();d++) {
+      const isToday = d===now.getDate()&&calDate.getMonth()===now.getMonth()&&calDate.getFullYear()===now.getFullYear();
+      const dateStr = `${calDate.getFullYear()}-${String(calDate.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const dayAppts = calAppts.filter(a=>a.date===dateStr);
+      const daySignedEsts = db.estimates.filter(e=>e.status==='Signed'&&e.scheduledDate===dateStr);
+      html += `<div class="cal-day${isToday?' today':''}" onclick="calDayClick('${dateStr}')">
+        <div class="cal-day-num">${d}</div>
+        ${dayAppts.map(a=>`<div class="cal-event ${a.color||''}" onclick="event.stopPropagation();editAppt('${a.id}')">${a.title||a.clientName||'Appt'}</div>`).join('')}
+        ${daySignedEsts.map(e=>`<div class="cal-event green">${e.clientName||e.desc||'Job'}</div>`).join('')}
+      </div>`;
+    }
+    // Fill remaining cells
+    const total = startPad + lastDay.getDate();
+    const remaining = (7 - (total%7))%7;
+    for(let i=1;i<=remaining;i++) {
+      html += `<div class="cal-day other-month"><div class="cal-day-num">${i}</div></div>`;
+    }
+    html += '</div>';
+    grid.innerHTML = html;
+    
+  } else if(calView==='week') {
+    const weekStart = new Date(calDate);
+    weekStart.setDate(calDate.getDate()-calDate.getDay());
+    const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+    const startDate = new Date(weekStart);
+    const endDate = new Date(weekStart);
+    endDate.setDate(endDate.getDate()+6);
+    if(titleEl) titleEl.textContent = months[startDate.getMonth()]+ ' ' +startDate.getDate()+' – '+months[endDate.getMonth()]+' '+endDate.getDate();
+    
+    let html = '<div class="cal-grid-month">';
+    days.forEach((d,i) => {
+      const day = new Date(weekStart); day.setDate(weekStart.getDate()+i);
+      const isToday = day.toDateString()===now.toDateString();
+      html += `<div class="cal-day-header" style="padding:10px 8px">${d}<br><span style="font-size:14px;font-weight:700;color:${isToday?'var(--brand)':'var(--text)'}">${day.getDate()}</span></div>`;
+    });
+    days.forEach((d,i) => {
+      const day = new Date(weekStart); day.setDate(weekStart.getDate()+i);
+      const dateStr = day.toISOString().split('T')[0];
+      const isToday = day.toDateString()===now.toDateString();
+      const dayAppts = calAppts.filter(a=>a.date===dateStr);
+      html += `<div class="cal-day${isToday?' today':''}" style="min-height:160px" onclick="calDayClick('${dateStr}')">
+        ${dayAppts.map(a=>`<div class="cal-event ${a.color||''}" onclick="event.stopPropagation();editAppt('${a.id}')">${a.title||a.clientName||'Appt'}</div>`).join('')}
+      </div>`;
+    });
+    html += '</div>';
+    grid.innerHTML = html;
+    
+  } else {
+    // Queue view - just show the queue larger
+    if(titleEl) titleEl.textContent = 'All Unscheduled Jobs';
+    grid.innerHTML = '<div style="padding:24px;color:var(--text3);text-align:center;font-size:13px">Use the queue panel to schedule jobs by dragging them to dates.</div>';
+  }
+  updateCalTopbar && updateCalTopbar();
+}
+
+function renderCalQueue() {
+  const el = document.getElementById('cal-queue-items');
+  if(!el) return;
+  const q = document.getElementById('cal-queue-search')?.value.toLowerCase()||'';
+  const sort = document.getElementById('cal-sort')?.value||'signed';
+  let items = db.estimates.filter(e=>e.status==='Signed'&&!e.scheduledDate);
+  if(q) items = items.filter(e=>(e.clientName||'').toLowerCase().includes(q)||(e.desc||'').toLowerCase().includes(q));
+  if(sort==='amount') items.sort((a,b)=>calcEst(b).total-calcEst(a).total);
+  else if(sort==='client') items.sort((a,b)=>(a.clientName||'').localeCompare(b.clientName||''));
+  
+  setText('cal-queue-count', items.length.toString());
+  const dashSub = document.getElementById('topbar-sub');
+  
+  if(!items.length) {
+    el.innerHTML = `<div class="cal-queue-empty">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:8px"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <div>No unscheduled jobs</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML = items.map(e=>{
+    const {total}=calcEst(e);
+    return`<div class="cal-queue-item" onclick="calScheduleEst('${e.id}')">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px">${e.clientName||'No client'}</div>
+      <div style="font-size:11px;color:var(--text3)">${e.desc||'No description'}</div>
+      <div style="font-size:12px;color:var(--brand);font-weight:600;margin-top:4px">${$f(total)}</div>
+    </div>`;
+  }).join('');
+}
+
+function calDayClick(dateStr) {
+  newApptModal(dateStr);
+}
+
+function calScheduleEst(estId) {
+  const date = prompt('Schedule this job for date (YYYY-MM-DD):');
+  if(!date) return;
+  const est = db.estimates.find(e=>e.id===estId);
+  if(est) {
+    est.scheduledDate = date;
+    save();
+    renderCalendar();
+    renderCalQueue();
+    toast('Job scheduled!','t-success');
+  }
+}
+
+function newApptModal(date) {
+  const d = date||new Date().toISOString().split('T')[0];
+  const title = prompt('Appointment title:');
+  if(!title) return;
+  const clientName = prompt('Client name (optional):','');
+  if(!db.calAppts) db.calAppts=[];
+  const appt = {id:'a'+Date.now(),date:d,title,clientName:clientName||'',color:''};
+  db.calAppts.push(appt);
+  calAppts = db.calAppts;
+  save();
+  renderCalendar();
+  toast('Appointment added!','t-success');
+}
+
+function editAppt(id) {
+  const a = (db.calAppts||[]).find(x=>x.id===id);
+  if(!a) return;
+  const action = prompt(`"${a.title}" on ${a.date}\n\nEnter new title, or type DELETE to remove:`,'');
+  if(action===null) return;
+  if(action.toUpperCase()==='DELETE') {
+    db.calAppts=(db.calAppts||[]).filter(x=>x.id!==id);
+    calAppts=db.calAppts;
+    save();renderCalendar();toast('Appointment removed');
+  } else if(action) {
+    a.title=action;save();renderCalendar();toast('Updated!','t-success');
+  }
+}
+
+function toggleCalQueue(){
+  const q=document.getElementById('cal-queue');
+  if(q) q.style.display=q.style.display==='none'?'':'none';
+}
+
+// ══════════════════════════════════════════════════════════
+// DASHBOARD: TIME PERIOD FILTER
+// ══════════════════════════════════════════════════════════
+let dashPeriod = 'all';
+function dashSetPeriod(p) {
+  dashPeriod=p;
+  document.querySelectorAll('.dash-period-btn').forEach(b=>b.classList.remove('active'));
+  const map={'month':0,'lastmonth':1,'3months':2,'year':3,'all':4};
+  const btns=document.querySelectorAll('.dash-period-btn');
+  if(btns[map[p]]) btns[map[p]].classList.add('active');
+  renderDash();
+}
+
+function dashFilterDate(dateStr) {
+  if(!dateStr || dashPeriod==='all') return true;
+  const d = new Date(dateStr); const now = new Date();
+  if(dashPeriod==='month') { return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear(); }
+  if(dashPeriod==='lastmonth') { const lm=new Date(now.getFullYear(),now.getMonth()-1,1); return d.getMonth()===lm.getMonth()&&d.getFullYear()===lm.getFullYear(); }
+  if(dashPeriod==='3months') { const cutoff=new Date(now); cutoff.setMonth(cutoff.getMonth()-3); return d>=cutoff; }
+  if(dashPeriod==='year') { return d.getFullYear()===now.getFullYear(); }
+  return true;
+}
+
+// ══════════════════════════════════════════════════════════
+// CATALOG / TEMPLATES - UPGRADED RENDER
+// ══════════════════════════════════════════════════════════
+function renderCatalog() {
+  const el = document.getElementById('catalog-content');
+  if(!el) return;
+  const q = (document.getElementById('catalog-search-input')?.value||'').toLowerCase();
+  let items = db.catalog||[];
+  if(q) items = items.filter(c=>(c.desc||'').toLowerCase().includes(q));
+  
+  if(!items.length) {
+    el.innerHTML = `<div class="catalog-empty">
+      <div class="catalog-empty-icon">📁</div>
+      <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">${q?'No templates match your search':'No templates yet'}</div>
+      <div style="font-size:13px;margin-bottom:20px">${q?'Try a different search term':'Templates help you quickly add pre-defined items to estimates'}</div>
+      ${!q?`<button class="btn btn-primary" onclick="newCatItem()">+ Create Your First Template</button>`:''}
+    </div>`;
+    return;
+  }
+  
+  el.innerHTML = `<div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Description</th><th>Unit</th><th>Default Price</th><th>Actions</th></tr></thead>
+        <tbody>${items.map(c=>`<tr>
+          <td style="font-weight:500;color:var(--text)">${c.desc}</td>
+          <td>${c.unit||'—'}</td>
+          <td style="color:var(--brand);font-weight:600">${$f(c.price)}</td>
+          <td><div class="flex-gap">
+            <button class="btn btn-ghost btn-sm" onclick="openCatalogItem('${c.id}')">Edit</button>
+            <button class="btn btn-ghost btn-sm" onclick="addCatalogToEstimator('${c.id}')">+ Add to Estimate</button>
+            <button class="btn btn-danger btn-sm" onclick="delCatalogItem('${c.id}')">Delete</button>
+          </div></td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function addCatalogToEstimator(id) {
+  const c = db.catalog.find(x=>x.id===id);
+  if(!c) return;
+  go('estimator');
+  setTimeout(()=>ebAddItem(c.desc,1,c.price),100);
+}
+
+// ══════════════════════════════════════════════════════════
+// OVERHEAD SAVE SETTINGS
+// ══════════════════════════════════════════════════════════
+function ohSaveSettings() {
+  if(!db.settings) db.settings={};
+  db.settings.ohTeam = ohTeam;
+  db.settings.ohCats = ohCats;
+  db.settings.ohPeriod = ohPeriod;
+  db.settings.ohProfitPct = document.getElementById('oh-profit-pct')?.value||'';
+  db.settings.ohWeeks = document.getElementById('oh-weeks')?.value||'52';
+  db.settings.ohRevTotal = document.getElementById('oh-rev-total')?.value||'';
+  save();
+  toast('Settings saved!','t-success');
+}
+
+// Load saved overhead settings
+function initOverhead(){
+  if(db.settings?.ohTeam && db.settings.ohTeam.length) ohTeam=db.settings.ohTeam;
+  if(db.settings?.ohCats && db.settings.ohCats.length) ohCats=db.settings.ohCats;
+  if(db.settings?.ohPeriod) { ohPeriod=db.settings.ohPeriod; ohSetPeriod(ohPeriod); }
+  setTimeout(()=>{
+    ohRenderTeam();ohRenderCats();
+    if(db.settings?.ohProfitPct) { const el=document.getElementById('oh-profit-pct'); if(el) el.value=db.settings.ohProfitPct; }
+    if(db.settings?.ohWeeks) { const el=document.getElementById('oh-weeks'); if(el) el.value=db.settings.ohWeeks; }
+    if(db.settings?.ohRevTotal) { const el=document.getElementById('oh-rev-total'); if(el) el.value=db.settings.ohRevTotal; }
+    ohCalc();
+  },10);
+}
+
 // ── INIT ───────────────────────────────────────────────────────────────
 try{
 load();
@@ -2874,4 +3387,195 @@ if(!window.location.search.includes('view=')){
 }
 </script>
 </body>
-</html>
+</html><!-- ESTIMATOR PAGE -->
+<div class="page" id="page-estimator">
+<div class="content">
+  <div class="est-builder-wrap">
+    <!-- Left: form -->
+    <div class="est-builder-main">
+      <div class="section-card">
+        <div class="section-card-hd">
+          <div class="section-card-icon" style="background:var(--blue-bg)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#58a6ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div>
+            <div class="section-card-title">Estimate Details</div>
+            <div class="section-card-sub">Name your estimate and select a client</div>
+          </div>
+        </div>
+        <div class="section-card-body">
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label>Estimate Name</label>
+              <input type="text" id="eb-desc" placeholder="e.g. Backyard Renovation">
+            </div>
+            <div class="form-group" style="position:relative">
+              <label>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Client
+              </label>
+              <input type="text" id="eb-client-search" placeholder="Type to search clients..." oninput="ebSearchClient(this.value)" autocomplete="off">
+              <input type="hidden" id="eb-client-id">
+              <div id="eb-client-dropdown" class="client-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:200"></div>
+            </div>
+          </div>
+          <div class="form-row cols-3" style="margin-top:4px">
+            <div class="form-group">
+              <label>Date</label>
+              <input type="date" id="eb-date">
+            </div>
+            <div class="form-group">
+              <label>Tax (%)</label>
+              <input type="number" id="eb-tax" placeholder="0" value="0" min="0" max="100">
+            </div>
+            <div class="form-group">
+              <label>Discount ($)</label>
+              <input type="number" id="eb-discount" placeholder="0" value="0" min="0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Services / Line Items -->
+      <div class="section-card">
+        <div class="section-card-hd">
+          <div class="section-card-icon" style="background:var(--green-bg)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div style="flex:1">
+            <div class="section-card-title">Services</div>
+            <div class="section-card-sub">Add line items to your estimate</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="ebAddFromCatalog()">+ From Templates</button>
+        </div>
+        <div class="section-card-body" style="padding:0">
+          <table style="width:100%;border-collapse:collapse">
+            <thead>
+              <tr style="background:var(--surface2)">
+                <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px">DESCRIPTION</th>
+                <th style="padding:10px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;width:80px">QTY</th>
+                <th style="padding:10px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;width:120px">UNIT PRICE</th>
+                <th style="padding:10px 8px;text-align:right;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;width:100px">TOTAL</th>
+                <th style="width:40px"></th>
+              </tr>
+            </thead>
+            <tbody id="eb-items"></tbody>
+          </table>
+          <div style="padding:12px 16px;border-top:1px solid var(--border)">
+            <button class="btn btn-ghost" onclick="ebAddItem()" style="width:100%;justify-content:center;border:2px dashed var(--border2);border-radius:8px;padding:10px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Service
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="section-card">
+        <div class="section-card-hd">
+          <div class="section-card-title">Notes & Terms</div>
+        </div>
+        <div class="section-card-body">
+          <div class="form-row cols-2">
+            <div class="form-group">
+              <label>Notes to Client</label>
+              <textarea id="eb-notes" rows="3" placeholder="Any additional notes for the client..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Payment Terms</label>
+              <textarea id="eb-terms" rows="3" placeholder="e.g. Due on receipt. 50% deposit required."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn btn-secondary" style="flex:1;justify-content:center;padding:14px" onclick="ebSave('Draft')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 12 7 12"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save as Draft
+        </button>
+        <button class="btn btn-primary" style="flex:1;justify-content:center;padding:14px" onclick="ebSave('Send')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Save & Send
+        </button>
+      </div>
+    </div>
+
+    <!-- Right: summary -->
+    <div class="est-builder-side">
+      <div class="section-card" style="position:sticky;top:70px">
+        <div class="section-card-hd">
+          <div class="section-card-title">Summary</div>
+        </div>
+        <div class="section-card-body">
+          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)">
+            <span style="color:var(--text2)">Subtotal</span><span id="eb-subtotal" style="color:var(--text)">$0.00</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)">
+            <span style="color:var(--text2)">Tax</span><span id="eb-tax-amt" style="color:var(--text)">$0.00</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)">
+            <span style="color:var(--text2)">Discount</span><span id="eb-disc-amt" style="color:var(--text)">-$0.00</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:16px;font-weight:700;color:var(--text)">
+            <span>Total</span><span id="eb-total" style="color:var(--brand)">$0.00</span>
+          </div>
+        </div>
+        <div style="padding:0 20px 16px">
+          <div id="eb-editing-badge" style="display:none;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--amber);margin-bottom:10px">
+            ✏️ Editing existing estimate
+          </div>
+          <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center" onclick="ebClear()">Clear Form</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- CALENDAR PAGE -->
+<div class="page" id="page-calendar">
+<div class="content" style="padding:0">
+  <div class="cal-wrap">
+    <div class="cal-queue" id="cal-queue">
+      <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:13px;font-weight:600;color:var(--text)">Queue <span id="cal-queue-count" style="background:var(--surface3);border-radius:10px;padding:1px 7px;font-size:11px;margin-left:6px">0</span></div>
+        <button class="btn btn-ghost btn-sm" onclick="toggleCalQueue()" title="Hide queue">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
+      <div style="padding:10px 12px;border-bottom:1px solid var(--border)">
+        <input type="text" placeholder="Search..." id="cal-queue-search" oninput="renderCalQueue()" style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--text);font-size:12px;font-family:'Inter',sans-serif">
+      </div>
+      <div style="padding:8px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px">
+        <span style="font-size:11px;color:var(--text3)">Sort:</span>
+        <select id="cal-sort" onchange="renderCalQueue()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:4px 8px;color:var(--text);font-size:11px;font-family:'Inter',sans-serif;flex:1">
+          <option value="signed">Date Signed</option>
+          <option value="amount">Amount</option>
+          <option value="client">Client Name</option>
+        </select>
+      </div>
+      <div id="cal-queue-items" style="overflow-y:auto;flex:1"></div>
+    </div>
+    <div class="cal-main" id="cal-main">
+      <div class="cal-controls">
+        <div style="display:flex;align-items:center;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="calNav(-1)">‹</button>
+          <div id="cal-title" style="font-size:16px;font-weight:700;color:var(--text);min-width:160px;text-align:center">March 2026</div>
+          <button class="btn btn-ghost btn-sm" onclick="calNav(1)">›</button>
+          <button class="btn btn-ghost btn-sm" onclick="calToday()">Today</button>
+        </div>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-secondary btn-sm" id="cal-view-month" onclick="calSetView('month')">Month</button>
+          <button class="btn btn-ghost btn-sm" id="cal-view-week" onclick="calSetView('week')">Week</button>
+          <button class="btn btn-ghost btn-sm" id="cal-view-queue" onclick="calSetView('queue')">☰ Queue</button>
+        </div>
+      </div>
+      <div id="cal-grid" style="flex:1;overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+
