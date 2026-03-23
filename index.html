@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
 // ── TOPBAR ACTION ALIASES ──
 function newClientModal(){ openClient(); }
-function newCatItem(){ openCat(); }
+function newCatItem(){ showCatalogForm(null); }
 function newTeamMember(){ openAddMember(); }
 function uploadPhoto(){ document.getElementById('photo-file-input')?.click(); }
 </script>
@@ -346,6 +346,72 @@ tr:last-child td{border-bottom:none}
 .dash-period-btn:hover{background:var(--surface2);color:var(--text)}
 .dash-period-btn.active{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
 .stats-grid-3{grid-template-columns:repeat(3,1fr)!important}
+
+/* ── SERVICE CARDS (GrowZbl style) ── */
+.service-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:12px;overflow:visible}
+.service-card-hd{padding:14px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.service-card-icon{width:34px;height:34px;border-radius:8px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.service-card-title{font-size:14px;font-weight:600;color:var(--text);flex:1}
+.service-card-actions{display:flex;gap:4px;align-items:center}
+.service-card-body{padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.service-card-body.collapsed{display:none}
+
+/* Rich-text editor (contenteditable) */
+.rich-editor{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;min-height:120px;padding:10px 14px;color:var(--text);font-size:13px;font-family:'Inter',sans-serif;line-height:1.6;outline:none}
+.rich-editor:focus{border-color:var(--brand)}
+.rich-toolbar{background:var(--surface2);border:1px solid var(--border2);border-radius:8px 8px 0 0;border-bottom:none;padding:6px 10px;display:flex;align-items:center;gap:2px;flex-wrap:wrap}
+.rich-editor.with-toolbar{border-radius:0 0 8px 8px}
+.tb-btn{background:none;border:none;color:var(--text2);cursor:pointer;padding:4px 7px;border-radius:4px;font-size:13px;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;min-width:28px}
+.tb-btn:hover{background:var(--surface3);color:var(--text)}
+.tb-btn.active{background:var(--surface3);color:var(--text)}
+.tb-sep{width:1px;height:18px;background:var(--border2);margin:0 4px}
+.tb-select{background:var(--surface2);border:1px solid var(--border2);border-radius:4px;color:var(--text2);font-size:12px;font-family:'Inter',sans-serif;padding:3px 6px;cursor:pointer}
+
+/* Photo upload zone */
+.photo-drop-zone{border:2px dashed var(--border2);border-radius:8px;padding:16px;text-align:center;cursor:pointer;transition:all 0.15s;background:var(--surface2)}
+.photo-drop-zone:hover{border-color:var(--brand);background:var(--brand-dim)}
+.photo-drop-zone svg{opacity:0.4}
+.photo-thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.photo-thumb{width:60px;height:60px;border-radius:6px;object-fit:cover;border:1px solid var(--border)}
+
+/* Catalog template cards */
+.template-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:16px 18px;display:flex;align-items:center;gap:14px;margin-bottom:8px;transition:border-color 0.15s;cursor:pointer}
+.template-card:hover{border-color:var(--brand)}
+.template-card-icon{width:40px;height:40px;border-radius:8px;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.template-card-info{flex:1;min-width:0}
+.template-card-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.template-card-meta{font-size:11px;color:var(--text3)}
+.template-card-price{font-size:14px;font-weight:700;color:var(--brand);white-space:nowrap}
+
+@media(max-width:700px){
+  .service-card-body{grid-template-columns:1fr}
+}
+
+/* ── RICH TEXT EDITOR ── */
+.rich-editor-wrap{border:1px solid var(--border2);border-radius:8px;overflow:hidden;background:var(--surface2)}
+.rich-editor-toolbar{display:flex;align-items:center;gap:2px;padding:6px 8px;border-bottom:1px solid var(--border);background:var(--surface3);flex-wrap:wrap}
+.re-btn{background:none;border:none;color:var(--text2);cursor:pointer;padding:4px 7px;border-radius:4px;font-size:13px;font-family:'Inter',sans-serif;line-height:1;transition:all 0.1s;display:flex;align-items:center;justify-content:center}
+.re-btn:hover{background:var(--surface2);color:var(--text)}
+.re-sep{width:1px;height:18px;background:var(--border2);margin:0 4px}
+.rich-editor{min-height:100px;padding:12px;outline:none;font-size:13px;line-height:1.6;color:var(--text);background:var(--surface2)}
+.rich-editor:focus{background:var(--surface)}
+.rich-editor ul,.rich-editor ol{padding-left:20px}
+.rich-editor b,.rich-editor strong{font-weight:700}
+
+/* ── SERVICE PHOTO GRID ── */
+.eb-photos-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.eb-photo-thumb{width:72px;height:72px;border-radius:8px;background-size:cover;background-position:center;position:relative;flex-shrink:0;border:1px solid var(--border2)}
+.eb-photo-del{position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1}
+.eb-photos-add{width:72px;height:72px;border-radius:8px;border:2px dashed var(--border2);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text3);font-size:10px;transition:all 0.12s;flex-shrink:0}
+.eb-photos-add:hover{border-color:var(--brand);color:var(--brand)}
+
+/* ── TEMPLATES CREATE FORM ── */
+.catalog-create-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:24px;margin-bottom:14px}
+.catalog-create-form .form-section-title{font-size:15px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.catalog-create-form .form-section-sub{font-size:12px;color:var(--text3);margin-bottom:20px}
+
+/* ── FORM COLS ── */
+.cols-3{grid-template-columns:repeat(3,1fr)!important}
 @media print{
   .sidebar,.mob-nav,.mob-fab,.btn,.x-btn,.overlay,.toast,.topbar{display:none!important}
   .main{margin-left:0}
@@ -388,6 +454,10 @@ tr:last-child td{border-bottom:none}
       <span>Overhead</span>
     </div>
     <div class="nav-section">BUSINESS</div>
+    <div class="nav-item" id="nav-leads" onclick="go('leads')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>Leads</span>
+    </div>
     <div class="nav-item" id="nav-clients" onclick="go('clients')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       <span>Clients</span>
@@ -484,6 +554,13 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <!-- TEAM ACCESS -->
+<!-- LEADS -->
+<div class="page" id="page-leads">
+<div class="content">
+  <div id="leads-list"></div>
+</div>
+</div>
+
 <div class="page" id="page-team">
 <div class="content" style="max-width:640px">
     <div class="card mb-20">
@@ -558,11 +635,72 @@ tr:last-child td{border-bottom:none}
 <!-- CATALOG -->
 <div class="page" id="page-catalog">
 <div class="content">
+  <!-- Search bar -->
   <div class="catalog-search">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <input type="text" id="catalog-search-input" placeholder="Search templates..." oninput="renderCatalog()">
   </div>
-  <div id="catalog-content"></div>
+
+  <!-- Inline create/editid="catalog-form-panel" style="display:none;margin-bottom:16px">
+    <div class="catalog-create-form">
+      <div class="form-section-title">
+        <span style="background:var(--green-bg);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--green)">+</span>
+        <div>
+          <div id="catalog-form-title-label" style="font-size:15px;font-weight:700;color:var(--text)">Create New Template</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px">Give your template a name and description</div>
+        </div>
+      </div>
+      <input type="hidden" id="catid">
+      <div class="form-group" style="margin-top:20px">
+        <label>Template Name</label>
+        <input type="text" id="cat-desc" placeholder="e.g., Kitchen Renovation, Bathroom Remodel" style="font-size:15px;padding:12px 14px">
+      </div>
+      <div class="form-group">
+        <label>Description (optional)</label>
+        <input type="text" id="cat-notes" placeholder="Brief description of this template">
+      </div>
+      <div class="form-group">
+        <label>Scope of Work (optional)</label>
+        <div class="rich-editor-wrap">
+          <div class="rich-editor-toolbar">
+            <button class="re-btn" onclick="event.preventDefault();reCmd('bold')"><b>B</b></button>
+            <button class="re-btn" onclick="event.preventDefault();reCmd('italic')"><i>I</i></button>
+            <button class="re-btn" onclick="event.preventDefault();reCmd('underline')"><u>U</u></button>
+            <button class="re-btn" onclick="event.preventDefault();reCmd('strikeThrough')"><s>S</s></button>
+            <div class="re-sep"></div>
+            <button class="re-btn" onclick="event.preventDefault();reCmd('justifyLeft')" title="Left">◀</button>
+            <button class="re-btn" onclick="event.preventDefault();reCmd('justifyCenter')" title="Center">▶◀</button>
+            <button class="re-btn" onclick="event.preventDefault();reCmd('justifyRight')" title="Right">▶</button>
+            <button class="re-btn" onclick="event.preventDefault();reCmd('justifyFull')" title="Justify">▐</button>
+            <div class="re-sep"></div>
+            <button class="re-btn" onclick="event.preventDefault();reCmd('insertUnorderedList')" title="Bullets">• —</button>
+            <button class="re-btn" onclick="event.preventDefault();reCmd('insertOrderedList')" title="Numbers">1.</button>
+            <div class="re-sep"></div>
+            <button class="re-btn" onclick="event.preventDefault();document.execCommand('undo')" title="Undo">↩</button>
+            <button class="re-btn" onclick="event.preventDefault();document.execCommand('redo')" title="Redo">↪</button>
+          </div>
+          <div class="rich-editor" id="cat-scope" contenteditable="true" style="min-height:160px"></div>
+        </div>
+      </div>
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label>Unit</label>
+          <input type="text" id="cat-unit" placeholder="e.g. sqft, hr, each">
+        </div>
+        <div class="form-group">
+          <label>Default Price ($)</label>
+          <input type="number" id="cat-price" placeholder="0.00" min="0" step="0.01">
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <button class="btn btn-primary" onclick="saveCatalogItem()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 12 7 12"/><polyline points="7 3 7 8 15 8"/></svg>
+          <span id="cat-save-btn-text">Create Template</span>
+        </button>
+        <button class="btn btn-ghost" onclick="hideCatalogForm()">Cancel</button>
+      </div>
+    </div>
+    <div id="catalog-content"></div>
 </div>
 </div>
 
@@ -1144,6 +1282,7 @@ tr:last-child td{border-bottom:none}
 <script>
 // ── DB ──────────────────────────────────────────────────────────────────
 const DBKEY='ep2_db';
+let sbClient=null,currentUser=null;
 let db={estimates:[],invoices:[],clients:[],catalog:[],photos:[],activity:[],team:[],settings:{tax:0,terms:'Due on receipt',notes:'',followup:3},emailjs:{pubkey:'',service:'',template:'',message:'',webhook:'',fuDays:3,fuTemplate:'',fuMsg:''}};
 
 function save(){
@@ -1197,12 +1336,13 @@ function go(page){
   const mobEl=document.getElementById('mob-'+page);
   if(navEl) navEl.classList.add('active');
   if(mobEl) mobEl.classList.add('active');
-  const renders={dashboard:renderDash,estimates:renderEstList,invoices:renderInvoices,clients:renderClients,photos:renderPhotos,catalog:renderCatalog,email:loadEmailSettings,settings:loadSettings,team:renderTeam,calculators:initOverhead,estimator:initEstimator,calendar:initCalendar};
+  const renders={dashboard:renderDash,estimates:renderEstList,invoices:renderInvoices,clients:renderClients,photos:renderPhotos,catalog:renderCatalog,email:loadEmailSettings,settings:loadSettings,team:renderTeam,calculators:initOverhead,estimator:initEstimator,calendar:initCalendar,leads:renderLeads};
   if(renders[page]) renders[page]();
   const pageMeta={
     'dashboard':{title:'Dashboard',sub:'Your business at a glance',actions:'<button class="btn btn-primary" onclick="go(\'estimates\');newEst()">+ New Estimate</button>'},
     'estimates':{title:'Estimates',sub:'Track and manage all your estimates',actions:'<button class="btn btn-secondary btn-sm" onclick="go(\'estimates\')" style="margin-right:4px">↻ Refresh</button><button class="btn btn-primary" onclick="newEst()">+ New Estimate</button>'},
     'invoices':{title:'Invoices',sub:'Manage and track all your invoices',actions:'<button class="btn btn-primary" onclick="newInvoiceModal()">+ Create Invoice</button>'},
+    'leads':{title:'Leads',sub:'Track potential clients and opportunities',actions:'<button class="btn btn-primary" onclick="newLead()">+ Add Lead</button>'},
     'clients':{title:'Clients',sub:'Manage your client contacts',actions:'<button class="btn btn-primary" onclick="newClientModal()">+ Add Client</button>'},
     'catalog':{title:'Line Item Catalog',sub:'Reusable line items for estimates',actions:'<button class="btn btn-primary" onclick="newCatItem()">+ Add Item</button>'},
     'calculators':{title:'Overhead Calculator',sub:'Calculate your billable hourly rate & analyze annual overhead',actions:'<button class="btn btn-primary" onclick="ohSaveSettings()">💾 Save Settings</button>'},
@@ -1861,1448 +2001,138 @@ function delPhoto(id){
 }
 
 // ── CATALOG ────────────────────────────────────────────────────────────
-function renderCatalog(){
-  document.getElementById('catalog-list').innerHTML=db.catalog.length?db.catalog.map(c=>`<tr>
-    <td style="font-weight:500;color:var(--text)">${c.desc}</td>
-    <td>${c.unit||'—'}</td>
-    <td class="text-gold">${$f(c.price)}</td>
-    <td><div class="flex-gap">
-      <button class="btn btn-ghost btn-sm" onclick="openCatalogItem('${c.id}')">Edit</button>
-      <button class="btn btn-danger btn-sm" onclick="delCatalogItem('${c.id}')">Del</button>
-    </div></td>
-  </tr>`).join(''):'<tr><td colspan="4" class="empty">No catalog items yet.</td></tr>';
-}
-
-function openCatalogItem(id=''){
-  const c=db.catalog.find(x=>x.id===id)||{};
-  document.getElementById('catid').value=c.id||'';
-  document.getElementById('cat-desc').value=c.desc||'';
-  document.getElementById('cat-unit').value=c.unit||'';
-  document.getElementById('cat-price').value=c.price||'';
-  document.getElementById('modal-cat').style.display='flex';
-}
-
-function saveCatalogItem(){
-  const desc=document.getElementById('cat-desc').value.trim();
-  if(!desc){ toast('Description required.','error'); return; }
-  const item={id:document.getElementById('catid').value||uid(),desc,unit:document.getElementById('cat-unit').value,price:+document.getElementById('cat-price').value||0};
-  const idx=db.catalog.findIndex(x=>x.id===item.id);
-  if(idx>=0) db.catalog[idx]=item; else db.catalog.push(item);
-  save(); close$('modal-cat'); renderCatalog(); toast('Item saved!','success');
-}
-
-function delCatalogItem(id){
-  if(!confirm('Delete?')) return;
-  db.catalog=db.catalog.filter(x=>x.id!==id); save(); renderCatalog();
-}
-
-function openCatalogPicker(){ renderPicker(); document.getElementById('modal-picker').style.display='flex'; }
-
-function renderPicker(){
-  const q=(document.getElementById('picker-search')?.value||'').toLowerCase();
-  const items=db.catalog.filter(c=>!q||c.desc.toLowerCase().includes(q));
-  document.getElementById('picker-body').innerHTML=items.length?items.map(c=>`<tr>
-    <td>${c.desc}</td><td>${c.unit||'—'}</td><td class="text-gold">${$f(c.price)}</td>
-    <td><button class="btn btn-primary btn-sm" onclick="addFromCatalog('${c.id}')">Add</button></td>
-  </tr>`).join(''):'<tr><td colspan="4" class="empty">No items found.</td></tr>';
-}
-
-function addFromCatalog(id){
-  const c=db.catalog.find(x=>x.id===id); if(!c) return;
-  addItem({desc:c.desc,qty:1,unit:c.unit,price:c.price});
-  calcPreview(); close$('modal-picker'); toast('Item added!','success');
-}
-
-// ── CALCULATORS ────────────────────────────────────────────────────────
-
-// ══ OVERHEAD CALCULATOR ══
-let ohPeriod='annual';
-let ohTeam=[{name:'',rate:0,hrs:40}];
-let ohCats=[
-  {name:'Office / Shop Rent',amt:0},
-  {name:'Insurance (Liability, Workers Comp, Vehicle)',amt:0},
-  {name:'Utilities (Electric, Water, Gas, Internet, Phone)',amt:0},
-  {name:'Office Staff / Admin Salaries',amt:0},
-  {name:'Vehicle Costs (Fuel, Maintenance, Payments)',amt:0},
-  {name:'Tools & Equipment (Purchases, Repairs, Rentals)',amt:0},
-  {name:'Licenses & Permits',amt:0},
-  {name:'Accounting / Legal / Professional Services',amt:0},
-  {name:'Marketing & Advertising',amt:0},
-  {name:'Other Fixed Overhead Costs',amt:0}
-];
-let ohRevMode_='total';
-
-function ohSetPeriod(p){
-  ohPeriod=p;
-  document.getElementById('oh-monthly-btn').className='btn btn-'+(p==='monthly'?'primary':'ghost')+' btn-sm';
-  document.getElementById('oh-annual-btn').className='btn btn-'+(p==='annual'?'primary':'ghost')+' btn-sm';
-  document.getElementById('oh-col-hd').textContent=p==='annual'?'ANNUAL AMOUNT ($)':'MONTHLY AMOUNT ($)';
-  ohRenderCats();ohCalc();
-}
-function ohRevMode(m){
-  ohRevMode_=m;
-  document.getElementById('oh-rev-total-group').style.display=m==='total'?'':'none';
-  document.getElementById('oh-rev-hrs-group').style.display=m==='hours'?'':'none';
-  document.getElementById('oh-rev-total-btn').className='btn btn-'+(m==='total'?'primary':'ghost')+' btn-sm';
-  document.getElementById('oh-rev-hrs-btn').className='btn btn-'+(m==='hours'?'primary':'ghost')+' btn-sm';
-  ohCalc();
-}
-function ohAddTeam(){
-  ohTeam.push({name:'',rate:0,hrs:40});
-  ohRenderTeam();ohCalc();
-}
-function ohDelTeam(i){ohTeam.splice(i,1);if(!ohTeam.length)ohTeam=[{name:'',rate:0,hrs:40}];ohRenderTeam();ohCalc();}
-function ohRenderTeam(){
-  const el=document.getElementById('oh-team-rows');
-  if(!el) return;
-  el.innerHTML=ohTeam.map((t,i)=>`<tr>
-    <td style="padding:6px 0"><input type="text" placeholder="Employee name" value="${t.name||''}" oninput="ohTeam[${i}].name=this.value;ohRenderTeamHero()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;width:100%"></td>
-    <td style="padding:6px 6px"><input type="number" value="${t.rate||0}" oninput="ohTeam[${i}].rate=+this.value;ohCalc()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;width:90px"></td>
-    <td style="padding:6px 6px"><input type="number" value="${t.hrs||40}" oninput="ohTeam[${i}].hrs=+this.value;ohCalc()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;width:80px"></td>
-    <td style="padding:6px 0"><button class="btn btn-ghost btn-sm" onclick="ohDelTeam(${i})">🗑</button></td>
-  </tr>`).join('');
-}
-function ohRenderTeamHero(){}
-function ohAddCat(){
-  ohCats.push({name:'Custom Expense',amt:0});
-  ohRenderCats();
-}
-function ohDelCat(i){ohCats.splice(i,1);ohRenderCats();ohCalc();}
-function ohClearDefaults(){if(confirm('Clear all default categories?')){ohCats=[];ohRenderCats();ohCalc();}}
-function ohRenderCats(){
-  const el=document.getElementById('oh-cat-rows');
-  if(!el) return;
-  el.innerHTML=ohCats.map((c,i)=>`<tr>
-    <td style="padding:8px 0;color:var(--text2);font-size:13px">${c.name}</td>
-    <td style="padding:8px 4px"><input type="number" value="${c.amt||0}" oninput="ohCats[${i}].amt=+this.value;ohCalc()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;width:120px"></td>
-    <td style="padding:8px 4px;color:var(--text3);font-size:13px" id="oh-cat-m-${i}">${$f(ohPeriod==='annual'?(c.amt||0)/12:((c.amt||0)*12))}</td>
-    <td><button class="btn btn-ghost btn-sm" onclick="ohDelCat(${i})">🗑</button></td>
-  </tr>`).join('');
-}
-function ohCalc(){
-  // Labor costs
-  const totalLaborHrly=ohTeam.reduce((s,t)=>s+(+t.rate||0),0);
-  const totalHrsWeek=ohTeam.reduce((s,t)=>s+(+t.hrs||0),0);
-  const weeks=+(document.getElementById('oh-weeks')?.value||52);
-  const billableHrsMonth=Math.round(totalHrsWeek*(weeks/12));
-  const laborMonthly=ohTeam.reduce((s,t)=>s+((+t.rate||0)*(+t.hrs||0)*weeks/12),0);
-
-  // Overhead
-  const totalOhAnnual=ohCats.reduce((s,c)=>s+(ohPeriod==='annual'?(+c.amt||0):(+c.amt||0)*12),0);
-  const totalOhMonthly=totalOhAnnual/12;
-
-  // Update category monthly column
-  ohCats.forEach((c,i)=>{
-    const el=document.getElementById('oh-cat-m-'+i);
-    if(el) el.textContent=$f(ohPeriod==='annual'?(+c.amt||0)/12:((+c.amt||0)*12));
-  });
-
-  const totalMonthly=laborMonthly+totalOhMonthly;
-  const profitPct=+(document.getElementById('oh-profit-pct')?.value||0)/100;
-  const revenueNeeded=totalMonthly/(1-profitPct)||totalMonthly;
-  const billableRate=billableHrsMonth>0?revenueNeeded/billableHrsMonth:0;
-
-  // Revenue for overhead rate
-  let annualRev=0;
-  if(ohRevMode_==='total'){
-    annualRev=+(document.getElementById('oh-rev-total')?.value||0);
-  } else {
-    const h=+(document.getElementById('oh-rev-hrs')?.value||0);
-    const r=+(document.getElementById('oh-rev-rate')?.value||0);
-    annualRev=h*r*weeks;
-  }
-  const ohRate=annualRev>0?Math.round(totalOhAnnual/annualRev*100):0;
-  const cpp=annualRev>0?totalOhAnnual/annualRev:0;
-
-  // Update totals
-  setText('oh-total-annual',$f(totalOhAnnual));
-  setText('oh-total-monthly',$f(totalOhMonthly));
-  setText('oh-hero-rate','$'+billableRate.toFixed(2));
-  setText('oh-hero-hrs',billableHrsMonth.toString());
-  setText('oh-hero-rev',$f(revenueNeeded));
-  setText('oh-bd-labor',$f(laborMonthly>0?laborMonthly/Math.max(billableHrsMonth,1):0));
-  setText('oh-bd-overhead',$f(billableHrsMonth>0?totalOhMonthly/billableHrsMonth:0));
-  setText('oh-bd-rate','$'+billableRate.toFixed(2));
-  setText('oh-sum-annual',$f(totalOhAnnual));
-  setText('oh-sum-monthly',$f(totalOhMonthly));
-  setText('oh-sum-ohrate',ohRate+'%');
-  setText('oh-sum-cpp','$'+cpp.toFixed(3));
-  setText('oh-ms-labor-lbl','Labor ('+ohTeam.length+')');
-  setText('oh-ms-labor',$f(laborMonthly));
-  setText('oh-ms-overhead',$f(totalOhMonthly));
-  setText('oh-ms-total',$f(totalMonthly));
-  setText('oh-ms-needed',$f(revenueNeeded));
-  setText('oh-ms-hrs',billableHrsMonth+' hrs');
-}
-function setText(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
-function initOverhead(){
-  // Small delay to ensure DOM is ready
-  setTimeout(()=>{ohRenderTeam();ohRenderCats();ohCalc();},10);
-}
-function calcMarkup(){
-  const cost=+document.getElementById('c-markup-cost').value||0;
-  const pct=+document.getElementById('c-markup-pct').value||0;
-  const price=cost*(1+pct/100);
-  document.getElementById('c-markup-res').innerHTML=`<div class="calc-result-val">${$f(price)}</div><div class="calc-result-label">Selling Price (profit: ${$f(price-cost)})</div>`;
-}
-function calcMargin(){
-  const rev=+document.getElementById('c-margin-rev').value||0;
-  const cost=+document.getElementById('c-margin-cost').value||0;
-  const margin=rev>0?((rev-cost)/rev*100).toFixed(1):0;
-  document.getElementById('c-margin-res').innerHTML=`<div class="calc-result-val">${margin}%</div><div class="calc-result-label">Net Profit (${$f(rev-cost)})</div>`;
-}
-function calcHourly(){
-  const sal=+document.getElementById('c-hr-sal').value||0;
-  const hrs=+document.getElementById('c-hr-hrs').value||40;
-  const oh=+document.getElementById('c-hr-oh').value||0;
-  const base=sal/(hrs*52);
-  const rate=base*(1+oh/100);
-  document.getElementById('c-hr-res').innerHTML=`<div class="calc-result-val">${$f(rate)}/hr</div><div class="calc-result-label">Recommended Billable Rate</div>`;
-}
-function calcBreakEven(){
-  const fixed=+document.getElementById('c-be-fixed').value||0;
-  const price=+document.getElementById('c-be-price').value||0;
-  const varCost=+document.getElementById('c-be-var').value||0;
-  const margin=price-varCost;
-  const jobs=margin>0?Math.ceil(fixed/margin):0;
-  document.getElementById('c-be-res').innerHTML=`<div class="calc-result-val">${jobs}</div><div class="calc-result-label">Jobs/month to cover fixed costs</div>`;
-}
-
-// ── SETTINGS ───────────────────────────────────────────────────────────
-function loadSettings(){
-  const s=db.settings;
-  ['co','own','ph','em','addr','web','lic'].forEach(k=>{ const el=document.getElementById('s-'+k); if(el) el.value=s[k]||''; });
-  document.getElementById('s-tax').value=s.tax||0;
-  document.getElementById('s-terms').value=s.terms||'Due on receipt';
-  document.getElementById('s-notes').value=s.notes||'';
-  const bk=document.getElementById('s-backup-hook'); if(bk) bk.value=s.backupHook||'';
-  const bs=document.getElementById('backup-status'); if(bs&&s.lastBackup) bs.textContent='Last backup: '+new Date(s.lastBackup).toLocaleString();
-}
-
-function saveSettings(){
-  const s=db.settings;
-  ['co','own','ph','em','addr','web','lic'].forEach(k=>{ const el=document.getElementById('s-'+k); if(el) s[k]=el.value.trim(); });
-  s.tax=+document.getElementById('s-tax').value||0;
-  s.terms=document.getElementById('s-terms').value;
-  s.notes=document.getElementById('s-notes').value;
-  s.backupHook=document.getElementById('s-backup-hook')?.value||'';
-  save(); toast('Settings saved!','success');
-}
-
-function loadEmailSettings(){
-  const ej=db.emailjs;
-  document.getElementById('ej-pubkey').value=ej.pubkey||'';
-  document.getElementById('ej-service').value=ej.service||'';
-  document.getElementById('ej-template').value=ej.template||'';
-  document.getElementById('ej-message').value=ej.message||'';
-  document.getElementById('ej-webhook').value=ej.webhook||'';
-  document.getElementById('ej-fu-days').value=ej.fuDays||3;
-  document.getElementById('ej-fu-template').value=ej.fuTemplate||'';
-  document.getElementById('ej-fu-msg').value=ej.fuMsg||'';
-}
-
-function saveEmailSettings(){
-  db.emailjs={
-    pubkey:document.getElementById('ej-pubkey').value,
-    service:document.getElementById('ej-service').value,
-    template:document.getElementById('ej-template').value,
-    message:document.getElementById('ej-message').value,
-    webhook:document.getElementById('ej-webhook').value,
-    fuDays:+document.getElementById('ej-fu-days').value||3,
-    fuTemplate:document.getElementById('ej-fu-template').value,
-    fuMsg:document.getElementById('ej-fu-msg').value
-  };
-  save(); toast('Email settings saved!','success');
-}
-
-// ── DATA ───────────────────────────────────────────────────────────────
-function exportData(){
-  const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download='estimatepro-backup-'+new Date().toISOString().split('T')[0]+'.json';
-  a.click();
-}
-
-function importData(event){
-  const file=event.target.files[0]; if(!file) return;
-  const reader=new FileReader();
-  reader.onload=e=>{ try{ db=JSON.parse(e.target.result); save(); loadSettings(); renderDash(); toast('Data imported!','success'); }catch(err){ toast('Invalid backup file.','error'); } };
-  reader.readAsText(file);
-}
-
-function nukeData(){
-  if(!confirm('Delete ALL data? This cannot be undone.')) return;
-  db={estimates:[],invoices:[],clients:[],catalog:[],photos:[],activity:[],team:[],settings:{tax:0,terms:'Due on receipt',notes:'',followup:3},emailjs:{pubkey:'',service:'',template:'',message:'',webhook:'',fuDays:3,fuTemplate:'',fuMsg:''}};
-  save(); renderDash(); toast('All data cleared.','');
-}
-
-async function cloudBackup(manual=false){
-  const hookUrl=db.settings.backupHook||'';
-  if(!hookUrl){ if(manual) toast('Add a webhook URL in Settings first.','error'); return; }
-  try{
-    // Send summary rows for each estimate — maps cleanly to Google Sheets columns
-    const rows=db.estimates.map(e=>({
-      client:e.clientName||'',
-      desc:e.desc||'',
-      total:calcEst(e).total,
-      status:e.status||'Draft',
-      date:e.date||'',
-      email:e.clientEmail||'',
-      address:e.address||''
-    }));
-    await fetch(hookUrl,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({source:'EstimatePro',backedUpAt:new Date().toISOString(),estimateCount:rows.length,estimates:rows,fullBackup:db})
-    });
-    db.settings.lastBackup=new Date().toISOString();
-    save();
-    if(manual){
-      const bs=document.getElementById('backup-status');
-      if(bs) bs.textContent='✓ Backed up '+rows.length+' estimates at '+new Date().toLocaleTimeString();
-      toast('Cloud backup successful!','success');
-    }
-  }catch(err){ if(manual){ toast('Backup failed — check your webhook URL.','error'); } }
-}
-
-// ── ACTIVITY + VIEW TRACKING ───────────────────────────────────────────
-function logActivity(ev){
-  if(!db.activity) db.activity=[];
-  const dupe=db.activity.find(a=>a.estimateId===ev.estimateId&&a.type===ev.type&&(Date.now()-new Date(a.ts))<60000);
-  if(dupe) return;
-  db.activity.unshift(ev);
-  if(db.activity.length>50) db.activity=db.activity.slice(0,50);
-  const est=db.estimates.find(x=>x.id===ev.estimateId);
-  if(est&&ev.type==='viewed'&&est.status==='Sent'){ est.status='Viewed'; est.viewedAt=ev.ts; }
-  save(); renderDash();
-  toast('👁 '+ev.clientName+' just viewed their estimate!','success');
-}
-
-let _lastEvKey='';
-function pollForViewEvents(){
-  try{
-    const raw=localStorage.getItem('ep2_incoming_view');
-    if(raw&&raw!==_lastEvKey){
-      _lastEvKey=raw;
-      const ev=JSON.parse(raw);
-      if(ev&&ev.ts&&(Date.now()-new Date(ev.ts))<30000){ logActivity(ev); localStorage.removeItem('ep2_incoming_view'); }
-    }
-  }catch(e){}
-}
-setInterval(pollForViewEvents,2000);
-
-// ── TEAM ACCESS ────────────────────────────────────────────────────────
-function renderTeam(){
-  if(!db.team) db.team=[];
-  const el=document.getElementById('team-list'); if(!el) return;
-  if(!db.team.length){
-    el.innerHTML='<div style="text-align:center;padding:24px;color:var(--text3);font-size:12px">No team members yet. Add your first team member above.</div>';
-    return;
-  }
-  el.innerHTML=db.team.map(m=>`
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)">
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:36px;height:36px;border-radius:50%;background:var(--gold-bg);border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:16px;color:var(--gold2)">${m.name[0].toUpperCase()}</div>
-        <div>
-          <div style="font-size:13px;font-weight:500">${m.name}</div>
-          <div style="font-size:11px;color:var(--text3)">${m.role||'Team Member'} · PIN: ${'•'.repeat(m.pin.length)}</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px">
-        <span class="badge ${m.active?'b-signed':'b-draft'}">${m.active?'Active':'Inactive'}</span>
-        <button class="btn btn-ghost btn-sm" onclick="toggleMember('${m.id}')">${m.active?'Deactivate':'Activate'}</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteMember('${m.id}')">Remove</button>
-      </div>
-    </div>`).join('');
-}
-
-function openAddMember(){
-  const name=prompt('Team member name:'); if(!name) return;
-  const role=prompt('Role (e.g. Estimator, Field Tech):') || 'Team Member';
-  const pin=prompt('Set a 4-6 digit PIN for this member:');
-  if(!pin||pin.length<4||!/^\d+$/.test(pin)){ toast('PIN must be 4-6 digits.','error'); return; }
-  if(!db.team) db.team=[];
-  db.team.push({id:Date.now().toString(36),name:name.trim(),role:role.trim(),pin,active:true,createdAt:new Date().toISOString()});
-  save(); renderTeam(); toast(`${name} added to your team!`,'success');
-}
-
-function toggleMember(id){
-  const m=db.team.find(x=>x.id===id); if(!m) return;
-  m.active=!m.active; save(); renderTeam();
-}
-
-function deleteMember(id){
-  if(!confirm('Remove this team member?')) return;
-  db.team=db.team.filter(x=>x.id!==id); save(); renderTeam();
-}
-
-function saveOwnerPin(){
-  const p1=document.getElementById('owner-pin').value;
-  const p2=document.getElementById('owner-pin2').value;
-  if(!p1||p1.length<4||!/^\d+$/.test(p1)){ toast('PIN must be 4-6 digits.','error'); return; }
-  if(p1!==p2){ toast('PINs do not match.','error'); return; }
-  db.settings.ownerPin=p1; save();
-  toast('Owner PIN saved! Settings are now protected.','success');
-}
-
-function clearOwnerPin(){
-  if(!confirm('Remove PIN lock? Anyone can access settings.')) return;
-  delete db.settings.ownerPin; save(); toast('PIN lock removed.','');
-}
-
-function checkPinLock(page){
-  // PIN lock disabled for owner — always allow
-  return true;
-}
-
-function testCloudSync(){
-  const url=document.getElementById('s-backup-hook')?.value||db.settings.backupHook||'';
-  if(!url){ toast('Enter a webhook URL first.','error'); return; }
-  const status=document.getElementById('backup-status');
-  if(status) status.textContent='Testing…';
-  fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({test:true,from:'EstimatePro',at:new Date().toISOString(),sampleEstimate:{client:'Test Client',total:1000,status:'Sent'}})
-  }).then(()=>{
-    if(status) status.textContent='✓ Connected! Check your Google Sheet.';
-    toast('Cloud sync test successful!','success');
-  }).catch(()=>{ if(status) status.textContent='✗ Failed — check the URL.'; toast('Sync test failed.','error'); });
-}
-
-// ── AUTO FOLLOW-UP ─────────────────────────────────────────────────────
-async function checkFollowUps(){
-  const ej=db.emailjs;
-  if(!ej.pubkey||!ej.service) return;
-  const tplId=ej.fuTemplate||ej.template;
-  if(!tplId) return;
-  const now=new Date();
-  for(const e of db.estimates){
-    if(!['Sent','Viewed'].includes(e.status)) continue;
-    if(!e.followUpDate||e.followUpSent) continue;
-    if(new Date(e.followUpDate)>now) continue;
-    if(!e.clientEmail) continue;
-    try{
-      emailjs.init(ej.pubkey);
-      const payload=JSON.stringify({e,s:db.settings,wh:ej.webhook||''});
-      const link='https://saucedoinnovations.github.io/SIContractors/?view='+btoa(encodeURIComponent(payload));
-      await emailjs.send(ej.service,tplId,{
-        to_email:e.clientEmail,to_name:e.clientName,
-        from_name:db.settings.co||db.settings.own||'Your Contractor',
-        estimate_number:estNum(e),estimate_total:$f(calcEst(e).total),
-        estimate_link:link,
-        message:ej.fuMsg||'Just following up on your estimate. Let me know if you have any questions!',
-        reply_to:db.settings.em||''
-      });
-      e.followUpSent=true; e.followUpSentAt=now.toISOString();
-      db.activity.unshift({type:'followup',estimateId:e.id,clientName:e.clientName,desc:e.desc,ts:now.toISOString()});
-      save(); renderEstList(); renderDash();
-      toast('Follow-up sent to '+e.clientName+'!','success');
-    }catch(err){ console.error('Follow-up failed:',err); }
-  }
-}
-setInterval(checkFollowUps,60000);
-
-// ── CLIENT-FACING SHARE LINK VIEW ─────────────────────────────────────
-function checkShareLink(){
-  const params=new URLSearchParams(window.location.search);
-  const view=params.get('view');
-  if(!view) return;
-  try{
-    const {e,s,wh}=JSON.parse(decodeURIComponent(atob(view)));
-    const {sub,tax,disc,total}=calcEst(e);
-
-    // Log view event cross-tab
-    const ev={type:'viewed',estimateId:e.id,clientName:e.clientName,desc:e.desc,ts:new Date().toISOString()};
-    try{ localStorage.setItem('ep2_incoming_view',JSON.stringify(ev)); }catch(ex){}
-
-    // Fire webhook
-    if(wh){
-      fetch(wh,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({event:'estimate_viewed',estimateId:e.id,clientName:e.clientName,desc:e.desc,total,viewedAt:new Date().toISOString()})
-      }).catch(()=>{});
-    }
-
-    // Hide app, show client page
-    document.querySelector('.app').style.display='none';
-    const nav=document.querySelector('.mob-nav'); if(nav) nav.style.display='none';
-    const fab=document.querySelector('.mob-fab'); if(fab) fab.style.display='none';
-    document.body.style.background='#f5f0e8';
-
-    const page=document.createElement('div');
-    page.id='client-page';
-    const photos=(wh===undefined?[]:[]); // no photos in share link for privacy
-    page.innerHTML=`
-<style>
-#client-page{min-height:100vh;background:#f5f0e8;font-family:'Inter',sans-serif;padding-bottom:60px}
-#client-page .cp-bar{background:#1a1611;padding:14px 24px;display:flex;justify-content:space-between;align-items:center}
-#client-page .cp-brand{font-family:'Inter',sans-serif;font-size:17px;color:#e8c97a}
-#client-page .cp-sub{font-size:11px;color:rgba(232,201,122,0.5);letter-spacing:1px;text-transform:uppercase}
-#client-page .cp-wrap{max-width:720px;margin:32px auto;padding:0 16px}
-#client-page .cp-doc{background:#fff;border-radius:10px;box-shadow:0 6px 32px rgba(0,0,0,0.12);overflow:hidden}
-#client-page .cp-hd{padding:36px 40px 28px;border-bottom:3px solid var(--brand);display:flex;justify-content:space-between;align-items:flex-start}
-#client-page .cp-co{font-family:'Inter',sans-serif;font-size:26px;font-weight:700;color:#1a1611}
-#client-page .cp-co-info{font-size:12px;color:#777;margin-top:3px;line-height:1.8}
-#client-page .cp-est-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#999;text-align:right;margin-bottom:4px}
-#client-page .cp-est-num{font-family:'Inter',sans-serif;font-size:30px;font-weight:700;color:#1a1611;text-align:right}
-#client-page .cp-dates{font-size:12px;color:#777;text-align:right;margin-top:4px;line-height:1.8}
-#client-page .cp-#client-page{padding:28px 40px}
-#client-page .sec-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#999;margin-bottom:5px}
-#client-page .cp-bill-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:28px}
-#client-page .cp-name{font-size:15px;font-weight:700;color:#1a1611}
-#client-page .cp-info{font-size:12px;color:#666;margin-top:2px}
-#client-page table{width:100%;border-collapse:collapse;margin-bottom:20px}
-#client-page th{text-align:left;padding:10px 12px;background:#f5f0e8;font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:#666;border-bottom:2px solid #e0d8cc}
-#client-page td{padding:11px 12px;border-bottom:1px solid #f0ebe0;font-size:13px;color:#333}
-#client-page .rt{text-align:right}
-#client-page .cp-totals{max-width:260px;margin-left:auto;margin-bottom:28px}
-#client-page .cp-tot-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;color:#666;border-bottom:1px solid #eee}
-#client-page .cp-grand{font-family:'Inter',sans-serif;font-size:24px;font-weight:700;color:#1a1611;border-top:2px solid #1a1611;border-bottom:none;padding-top:10px;margin-top:4px}
-#client-page .cp-note{background:#f9f6f0;border-left:3px solid #c9a84c;border-radius:0 6px 6px 0;padding:14px 18px;font-size:13px;color:#555;margin-bottom:28px;line-height:1.7}
-#client-page .cp-sig-box{background:#f9f6f0;border-radius:8px;padding:24px;margin-bottom:24px}
-#client-page .cp-sig-title{font-family:'Inter',sans-serif;font-size:19px;color:#1a1611;margin-bottom:5px}
-#client-page .cp-sig-sub{font-size:12px;color:#888;margin-bottom:14px;line-height:1.7}
-#client-page canvas{width:100%;height:120px;border:2px dashed #c9a84c;border-radius:6px;cursor:crosshair;display:block;background:#fff;touch-action:none}
-#client-page .cp-sig-actions{display:flex;gap:10px;margin-top:12px}
-#client-page .cp-clear{background:#fff;border:1px solid #ddd;border-radius:6px;padding:8px 16px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;color:#666}
-#client-page .cp-accept{background:var(--brand);color:#fff;border:none;border-radius:6px;padding:12px 28px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;flex:1;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:8px}
-#client-page .cp-accept:hover{background:#2d2820}
-#client-page .cp-accept:disabled{background:#ccc;color:#999;cursor:not-allowed}
-#client-page .cp-footer{text-align:center;padding:20px 40px;border-top:1px solid #e8e0d0;font-size:11px;color:#aaa;line-height:1.9}
-#client-page .cp-done{background:#2d6a4f;color:#fff;border-radius:8px;padding:20px 24px;text-align:center;margin-bottom:20px;display:none}
-#client-page .cp-done h3{font-family:'Inter',sans-serif;font-size:20px;margin-bottom:4px}
-#client-page .cp-print-btn{background:transparent;border:1px solid #c9a84c;color:#c9a84c;border-radius:6px;padding:8px 18px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;margin-top:8px}
-#client-page .cp-print-btn:hover{background:#c9a84c;color:#1a1611}
-@media(max-width:600px){
-  #client-page .cp-hd{flex-direction:column;gap:14px;padding:20px}
-  #client-page .cp-est-lbl,#client-page .cp-est-num,#client-page .cp-dates{text-align:left}
-  #client-page .cp-#client-page{padding:20px}
-  #client-page .cp-bill-grid{grid-template-columns:1fr}
-  #client-page .cp-totals{max-width:100%}
-  #client-page table{font-size:12px}
-  #client-page th,#client-page td{padding:8px}
-}
-
-/* ── PIPELINE COLUMNS (Estimates / Invoices) ── */
-.pipeline-cols{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-items:start}
-.pipeline-col{display:flex;flex-direction:column;gap:8px;min-width:0}
-.pipeline-tab{border-radius:10px;padding:14px 16px;cursor:default;margin-bottom:4px}
-.pipeline-tab .pt-left{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#fff;margin-bottom:2px}
-.pipeline-tab .pt-left svg{width:15px;height:15px;flex-shrink:0}
-.pipeline-tab .pt-amt{font-size:13px;font-weight:600;color:rgba(255,255,255,0.85);margin-top:2px}
-.pt-draft{background:#374151}
-.pt-sent{background:#1d4ed8}
-.pt-viewed{background:#b45309}
-.pt-signed{background:#15803d}
-.pt-paid{background:#15803d}
-.pt-declined{background:#b91c1c}
-.pt-overdue{background:#b91c1c}
-.pipeline-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;cursor:pointer;transition:all 0.12s}
-.pipeline-item:hover{background:var(--surface3);border-color:var(--border2)}
-.pipeline-item-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.3}
-.pipeline-item-sub{font-size:11px;color:var(--text3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pipeline-#client-page{display:flex;flex-direction:column;gap:8px;margin-top:2px}
-.pipeline-empty{text-align:center;padding:24px 12px;color:var(--text3);font-size:12px;background:var(--surface2);border:1px dashed var(--border2);border-radius:8px}
-
-/* ── DASHBOARD CHARTS ── */
-.dash-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-.dash-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
-.chart-wrap{padding:16px 18px 8px}
-.chart-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:14px}
-.mini-chart{height:120px;position:relative;display:flex;align-items:flex-end;gap:4px}
-.mini-bar{flex:1;border-radius:4px 4px 0 0;transition:height 0.3s;min-height:2px;cursor:default;position:relative}
-.mini-bar:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--surface4);color:var(--text);font-size:10px;padding:3px 7px;border-radius:4px;white-space:nowrap;pointer-events:none;font-family:'Inter',sans-serif}
-.chart-labels{display:flex;gap:4px;margin-top:6px}
-.chart-label{flex:1;font-size:9px;color:var(--text3);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.spark-line{height:60px;width:100%}
-.overdue-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
-.overdue-row:last-child{border-bottom:none}
-
-/* ── STAT ROW 2 (profit, margin, avg) ── */
-.stat-val-accent{font-size:22px;font-weight:700;color:var(--green2);letter-spacing:-0.5px;line-height:1}
-
-@media(max-width:900px){
-  .pipeline-cols{grid-template-columns:1fr 1fr;overflow-x:auto}
-  .dash-grid-2,.dash-grid-3{grid-template-columns:1fr}
-}
-@media(max-width:600px){
-  .pipeline-cols{grid-template-columns:1fr}
-}
-
-
-/* ── DASHBOARD ── */
-.dash-charts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
-.dash-bottom{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
-.dash-chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:18px}
-.dash-chart-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;display:flex;align-items:center;gap:8px}
-.dash-chart-sub{font-size:11px;color:var(--text3);margin-bottom:14px}
-
-/* ── OVERHEAD HERO ── */
-.overhead-hero{background:linear-gradient(135deg,#1a0505 0%,#2d0a0a 100%);border:1px solid rgba(227,30,36,0.3);border-radius:var(--r2);padding:24px 28px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
-.overhead-hero-rate{display:flex;align-items:center;gap:18px}
-.overhead-hero-icon{width:52px;height:52px;background:rgba(227,30,36,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;font-weight:700;flex-shrink:0}
-.overhead-hero-label{font-size:12px;color:#fca5a5;margin-bottom:4px}
-.overhead-hero-value{font-size:36px;font-weight:800;color:#fff;letter-spacing:-1px;line-height:1}
-.overhead-hero-sub{font-size:12px;color:#fca5a5;margin-top:4px}
-.overhead-hero-stats{display:flex;gap:12px}
-.overhead-hero-stat{background:rgba(255,255,255,0.08);border-radius:8px;padding:12px 20px;text-align:center}
-.overhead-hero-stat-val{font-size:20px;font-weight:700;color:#fff}
-.overhead-hero-stat-lbl{font-size:10px;color:#fca5a5;margin-top:2px}
-
-/* ── SECTION CARD ── */
-.section-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:14px;overflow:hidden}
-.section-card-hd{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
-.section-card-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.section-card-title{font-size:14px;font-weight:600;color:var(--text)}
-.section-card-sub{font-size:12px;color:var(--text3);margin-top:1px}
-.section-card-body{padding:18px 20px}
-
-@media(max-width:900px){
-  .dash-charts,.dash-bottom{grid-template-columns:1fr}
-  .overhead-hero{flex-direction:column;align-items:flex-start}
-}
-
-/* ── ESTIMATOR PAGE ── */
-.est-builder-wrap{display:grid;grid-template-columns:1fr 280px;gap:14px;align-items:start}
-.est-builder-main{}
-.est-builder-side{}
-.eb-item-row td{padding:8px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
-.eb-item-row input{background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;width:100%}
-.eb-item-row input:focus{outline:none;border-color:var(--brand)}
-.eb-item-total{font-size:13px;font-weight:600;color:var(--text);text-align:right;white-space:nowrap}
-.client-dropdown{position:absolute;z-index:200;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.4);max-height:200px;overflow-y:auto;width:100%}
-.client-dropdown-item{padding:10px 14px;cursor:pointer;font-size:13px;color:var(--text);border-bottom:1px solid var(--border)}
-.client-dropdown-item:hover{background:var(--surface3)}
-.client-dropdown-item:last-child{border-bottom:none}
-
-/* ── CALENDAR PAGE ── */
-.cal-wrap{display:flex;height:calc(100vh - 56px);overflow:hidden}
-.cal-queue{width:260px;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;background:var(--surface)}
-.cal-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.cal-controls{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
-.cal-grid-month{display:grid;grid-template-columns:repeat(7,1fr);flex:1}
-.cal-day-header{padding:8px;text-align:center;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;background:var(--surface);border-bottom:1px solid var(--border)}
-.cal-day{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:6px;min-height:90px;cursor:pointer;transition:background 0.1s;position:relative}
-.cal-day:hover{background:var(--surface2)}
-.cal-day.today{background:rgba(227,30,36,0.06)}
-.cal-day.other-month{opacity:0.35}
-.cal-day-num{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:4px}
-.cal-day.today .cal-day-num{background:var(--brand);color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px}
-.cal-event{background:var(--brand);color:#fff;font-size:10px;border-radius:4px;padding:2px 6px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
-.cal-event.green{background:var(--green)}
-.cal-event.blue{background:var(--blue)}
-.cal-queue-item{padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.1s}
-.cal-queue-item:hover{background:var(--surface2)}
-.cal-queue-empty{text-align:center;padding:32px 16px;color:var(--text3);font-size:12px}
-
-/* ── CATALOG EMPTY STATE ── */
-.catalog-empty{text-align:center;padding:60px 20px;color:var(--text3)}
-.catalog-empty-icon{font-size:48px;margin-bottom:12px;opacity:0.4}
-.catalog-search{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
-.catalog-search input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;font-size:13px}
-
-@media(max-width:900px){
-  .est-builder-wrap{grid-template-columns:1fr}
-  .est-builder-side{display:none}
-  .cal-queue{display:none}
-}
-
-/* ── DASHBOARD PERIOD FILTER ── */
-.dash-period-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.dash-period-btns{display:flex;gap:4px;flex-wrap:wrap}
-.dash-period-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border2);background:none;color:var(--text2);font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;transition:all 0.12s}
-.dash-period-btn:hover{background:var(--surface2);color:var(--text)}
-.dash-period-btn.active{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
-.stats-grid-3{grid-template-columns:repeat(3,1fr)!important}
-@media print{
-  #client-page .cp-bar,#client-page .cp-sig-box,#client-page .cp-print-btn{display:none!important}
-  #client-page .cp-doc{box-shadow:none}
-}
-</style>
-
-<div class="cp-bar">
-  <div style="display:flex;align-items:center;gap:10px">
-    <img src="data:image/png;base64,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" alt="SI" style="width:36px;height:36px;object-fit:contain;background:#fff;border-radius:6px;padding:2px">
-    <div>
-      <div class="cp-brand">${s.co||'Saucedo Innovations'}</div>
-      <div class="cp-sub">Estimate for Review</div>
-    </div>
-  </div>
-</div>
-
-<div class="cp-wrap">
-  <div class="cp-done" id="cp-done-banner">
-    <h3>✓ Estimate Accepted!</h3>
-    <p style="font-size:13px;opacity:0.85;margin-top:4px">Thank you! ${s.own||s.co||'Your contractor'} will be in touch shortly.</p>
-  </div>
-
-  <div class="cp-doc">
-    <div class="cp-hd">
-      <div style="display:flex;align-items:flex-start;gap:12px">
-        <img src="data:image/png;base64,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" alt="SI" style="width:52px;height:52px;object-fit:contain;flex-shrink:0">
-        <div>
-          <div class="cp-co">${s.co||'Saucedo Innovations'}</div>
-          <div class="cp-co-info">${s.own?s.own+'<br>':''}${s.ph?s.ph+'<br>':''}${s.em?s.em+'<br>':''}${s.addr?s.addr+'<br>':''}${s.lic?'License #'+s.lic:''}</div>
-        </div>
-      </div>
-      <div>
-        <div class="cp-est-lbl">Estimate</div>
-        <div class="cp-est-num">${e.id?'#'+e.id.slice(-4).toUpperCase():'—'}</div>
-        <div class="cp-dates">Date: ${$fd(e.date)}<br>Valid Until: ${$fd(e.validUntil)}</div>
-      </div>
-    </div>
-
-    <div class="cp-body">
-      <div class="cp-bill-grid">
-        <div>
-          <div class="sec-lbl">Prepared For</div>
-          <div class="cp-name">${e.clientName||'—'}</div>
-          ${e.clientEmail?`<div class="cp-info">${e.clientEmail}</div>`:''}
-          ${e.address?`<div class="cp-info">${e.address}</div>`:''}
-        </div>
-        <div>
-          <div class="sec-lbl">Job Description</div>
-          <div class="cp-name">${e.desc||'—'}</div>
-          ${e.address?`<div class="cp-info">${e.address}</div>`:''}
-        </div>
-      </div>
-
-      <table>
-        <thead><tr><th>Description</th><th style="text-align:center">Qty</th><th>Unit</th><th class="rt">Price</th><th class="rt">Total</th></tr></thead>
-        <tbody>${(e.items||[]).map(i=>`<tr>
-          <td>${i.desc||'—'}</td>
-          <td style="text-align:center">${i.qty}</td>
-          <td style="color:#999">${i.unit||'—'}</td>
-          <td class="rt">${$f(i.price)}</td>
-          <td class="rt" style="font-weight:600">${$f(i.qty*i.price)}</td>
-        </tr>`).join('')}</tbody>
-      </table>
-
-      <div class="cp-totals">
-        <div class="cp-tot-row"><span>Subtotal</span><span>${$f(sub)}</span></div>
-        ${tax?`<div class="cp-tot-row"><span>Tax (${e.tax}%)</span><span>${$f(tax)}</span></div>`:''}
-        ${disc?`<div class="cp-tot-row"><span>Discount</span><span>-${$f(disc)}</span></div>`:''}
-        <div class="cp-tot-row cp-grand"><span>Total</span><span>${$f(total)}</span></div>
-      </div>
-
-      ${e.clientNotes?`<div class="cp-note"><strong>Note from ${s.co||'your contractor'}:</strong><br>${e.clientNotes}</div>`:''}
-
-      <div class="cp-sig-box" id="cp-sig-box">
-        <div class="cp-sig-title">Sign to Accept</div>
-        <div class="cp-sig-sub">Draw your signature below to accept this estimate and authorize the work. By signing you agree to the total amount and payment terms.</div>
-        <canvas id="cp-sig" width="620" height="120"></canvas>
-        <div class="cp-sig-actions">
-          <button class="cp-clear" onclick="cpClear()">Clear</button>
-          <button class="cp-accept" id="cp-accept-btn" onclick="cpAccept()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-            Accept & Sign Estimate
-          </button>
-        </div>
-      </div>
-
-      <div class="cp-footer">
-        Payment Terms: ${s.terms||'Due on receipt'}<br>
-        ${s.notes?s.notes+'<br>':''}
-        ${s.ph?'Questions? Call '+s.ph:''}
-        <br><button class="cp-print-btn" onclick="window.print()">🖨 Print / Save as PDF</button>
-      </div>
-    </div>
-  </div>
-</div>`;
-
-    document.body.appendChild(page);
-
-    // Init sig pad
-    const canvas=document.getElementById('cp-sig');
-    if(canvas){
-      const ctx=canvas.getContext('2d');
-      ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
-      ctx.strokeStyle='#1a1611'; ctx.lineWidth=2.5; ctx.lineCap='round'; ctx.lineJoin='round';
-      let drawing=false,last={x:0,y:0},signed=false;
-      function pt(ev){ const r=canvas.getBoundingClientRect(); const cl=ev.touches?ev.touches[0]:ev; return{x:(cl.clientX-r.left)*(canvas.width/r.width),y:(cl.clientY-r.top)*(canvas.height/r.height)}; }
-      canvas.onmousedown=canvas.ontouchstart=ev=>{ drawing=true; last=pt(ev); ev.preventDefault(); };
-      canvas.onmousemove=canvas.ontouchmove=ev=>{ if(!drawing) return; const p=pt(ev); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p; signed=true; ev.preventDefault(); };
-      canvas.onmouseup=canvas.ontouchend=()=>drawing=false;
-      window.cpClear=()=>{ ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width,canvas.height); signed=false; };
-      window.cpAccept=()=>{
-        if(!signed){ alert('Please draw your signature first.'); return; }
-        document.getElementById('cp-accept-btn').disabled=true;
-        document.getElementById('cp-accept-btn').innerHTML='✓ Accepted!';
-        document.getElementById('cp-sig-box').style.opacity='0.5';
-        document.getElementById('cp-sig-box').style.pointerEvents='none';
-        const banner=document.getElementById('cp-done-banner');
-        banner.style.display='block';
-        banner.scrollIntoView({behavior:'smooth',block:'center'});
-      };
-    }
-
-  }catch(err){ console.error('Client view error:',err); }
-}
-
-// ── SUPABASE SYNC (background only) ───────────────────────────────────
-const SUPA_URL_KEY = 'ep2_supa_url';
-const SUPA_ANON_KEY = 'ep2_supa_anon';
-let sbClient = null;
-let currentUser = null;
-
-function initSupabase(){
-  if(!window.supabase) return false;
-  const url = localStorage.getItem(SUPA_URL_KEY)||'';
-  const key = localStorage.getItem(SUPA_ANON_KEY)||'';
-  if(!url||!key) return false;
-  try{ sbClient = window.supabase.createClient(url, key, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    }
-  }); return true; }catch(e){ return false; }
-}
-
-function updateSyncStatus(status,email){
-  const el=document.getElementById('sync-status-bar');
-  if(!el) return;
-  if(status==='connected'){
-    el.innerHTML=`<div style="display:flex;align-items:center;gap:6px;padding:10px 16px;background:rgba(76,175,125,0.08);border-top:1px solid rgba(76,175,125,0.15)">
-      <div style="width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0"></div>
-      <div style="font-size:10px;color:var(--green);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${email||'Synced'}</div>
-      <button onclick="signOut()" style="background:transparent;border:none;color:var(--text3);font-size:10px;cursor:pointer;font-family:'Inter',sans-serif;padding:0;white-space:nowrap">Sign Out</button>
-    </div>`;
-  } else {
-    el.innerHTML=`<div style="display:flex;align-items:center;gap:6px;padding:10px 16px;background:var(--surface2);border-top:1px solid var(--border)">
-      <div style="width:7px;height:7px;border-radius:50%;background:var(--text3);flex-shrink:0"></div>
-      <div style="font-size:10px;color:var(--text3);flex:1">Offline mode</div>
-      <button onclick="openSupabaseSetup()" style="background:transparent;border:none;color:var(--gold2);font-size:10px;cursor:pointer;font-family:'Inter',sans-serif;padding:0;white-space:nowrap">Connect ↗</button>
-    </div>`;
-  }
-}
-
-async function saveToSupabase(){
-  if(!sbClient||!currentUser) return;
-  try{
-    await sbClient.from('estimatepro_data').upsert({user_id:currentUser.id,data:JSON.stringify(db),updated_at:new Date().toISOString()},{onConflict:'user_id'});
-  }catch(e){ console.warn('Sync failed:',e.message); }
-}
-
-async function loadFromSupabase(){
-  if(!sbClient||!currentUser) return;
-  try{
-    const {data,error}=await sbClient.from('estimatepro_data').select('data').eq('user_id',currentUser.id).single();
-    if(data?.data){ db=Object.assign(db,JSON.parse(data.data)); localStorage.setItem(DBKEY,JSON.stringify(db)); }
-    else load();
-  }catch(e){ load(); }
-}
-
-function openSupabaseSetup(){
-  document.getElementById('supa-modal')?.remove();
-  const url=localStorage.getItem(SUPA_URL_KEY)||'';
-  const key=localStorage.getItem(SUPA_ANON_KEY)||'';
-  const configured=!!(url&&key);
-  const sql=`create table if not exists estimatepro_data (
-  user_id uuid references auth.users primary key,
-  data text,
-  updated_at timestamptz default now()
-);
-alter table estimatepro_data enable row level security;
-create policy "own" on estimatepro_data
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);`;
-
-  const html=`<div style="position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;font-family:'Inter',sans-serif" id="supa-modal" onclick="if(event.target===this)this.remove()">
-  <div style="background:#161616;border:1px solid #2e2e2e;border-radius:10px;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.6)">
-
-    <!-- Tabs -->
-    <div style="display:flex;border-bottom:1px solid #2e2e2e">
-      <button id="tab-setup" onclick="supaTab('setup')" style="flex:1;padding:14px;background:transparent;border:none;color:var(--gold2);font-family:'Inter',sans-serif;font-size:12px;cursor:pointer;border-bottom:2px solid var(--gold);font-weight:600">⚙️ Setup</button>
-      <button id="tab-signin" onclick="supaTab('signin')" style="flex:1;padding:14px;background:transparent;border:none;color:var(--text3);font-family:'Inter',sans-serif;font-size:12px;cursor:pointer;border-bottom:2px solid transparent">🔑 Sign In</button>
-      <button id="tab-signup" onclick="supaTab('signup')" style="flex:1;padding:14px;background:transparent;border:none;color:var(--text3);font-family:'Inter',sans-serif;font-size:12px;cursor:pointer;border-bottom:2px solid transparent">✨ Create Account</button>
-      <button onclick="document.getElementById('supa-modal').remove()" style="padding:14px 18px;background:transparent;border:none;color:var(--text3);font-size:18px;cursor:pointer">×</button>
-    </div>
-
-    <!-- SETUP TAB -->
-    <div id="supa-tab-setup" style="padding:24px">
-      <p style="font-size:12px;color:var(--text2);margin-bottom:16px;line-height:1.8">Connect a free Supabase database so your estimates sync across every device automatically.</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px;text-align:center"><div style="font-size:18px;margin-bottom:4px">1️⃣</div><div style="font-size:10px;color:var(--text2)"><a href="https://supabase.com" target="_blank" style="color:var(--gold2);text-decoration:none">supabase.com</a><br>New project → free</div></div>
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px;text-align:center"><div style="font-size:18px;margin-bottom:4px">2️⃣</div><div style="font-size:10px;color:var(--text2)">Project Settings<br>→ API → copy keys</div></div>
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px;text-align:center"><div style="font-size:18px;margin-bottom:4px">3️⃣</div><div style="font-size:10px;color:var(--text2)">SQL Editor → run<br>query below → paste keys</div></div>
-      </div>
-      <div style="background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:12px;margin-bottom:16px;font-size:11px;color:var(--text3);line-height:1.9;font-family:'Inter',sans-serif;white-space:pre-wrap">${sql}<br><button onclick="navigator.clipboard.writeText(document.getElementById('sql-block').textContent).then(()=>toast('SQL copied!','success'))" style="margin-top:8px;background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:4px;padding:4px 10px;font-size:10px;cursor:pointer;font-family:'Inter',sans-serif">📋 Copy SQL</button><span id="sql-block" style="display:none">${sql}</span></div>
-      <div style="margin-bottom:12px">
-        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Project URL</label>
-        <input id="si-url" value="${url}" placeholder="https://xxxxxxxxxxx.supabase.co" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:12px;font-family:'Inter',sans-serif;outline:none">
-      </div>
-      <div style="margin-bottom:20px">
-        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Anon Public Key</label>
-        <input id="si-key" value="${key}" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:12px;font-family:'Inter',sans-serif;outline:none">
-      </div>
-      <div id="si-msg" style="font-size:12px;margin-bottom:12px;padding:10px 14px;border-radius:6px;display:none"></div>
-      <div style="display:flex;gap:8px">
-        <button onclick="saveSupabaseKeys()" style="flex:1;background:var(--gold);color:#0e0e0e;border:none;border-radius:6px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">Save Keys</button>
-        <button onclick="document.getElementById('supa-modal').remove()" style="background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:6px;padding:11px 16px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif">Cancel</button>
-      </div>
-      ${configured?'<div style="margin-top:12px;font-size:11px;color:var(--green);text-align:center">✓ Keys saved — switch to Sign In tab to log in</div>':''}
-    </div>
-
-    <!-- SIGN IN TAB -->
-    <div id="supa-tab-signin" style="padding:24px;display:none">
-      <p style="font-size:12px;color:var(--text2);margin-bottom:20px;line-height:1.8">Sign in to sync your data across all devices.</p>
-      <div style="margin-bottom:12px">
-        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Email</label>
-        <input id="login-email" type="email" placeholder="you@email.com" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'Inter',sans-serif;outline:none">
-      </div>
-      <div style="margin-bottom:20px">
-        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Password</label>
-        <input id="login-pass" type="password" placeholder="••••••••" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'Inter',sans-serif;outline:none" onkeydown="if(event.key==='Enter')supaSignIn()">
-      </div>
-      <div id="login-msg" style="font-size:12px;margin-bottom:12px;padding:10px 14px;border-radius:6px;display:none"></div>
-      <button onclick="supaSignIn()" id="signin-btn" style="width:100%;background:var(--gold);color:#0e0e0e;border:none;border-radius:6px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:10px">Sign In</button>
-      <button onclick="supaForgot()" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--text3);border-radius:6px;padding:10px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif">Forgot password?</button>
-      ${!configured?'<div style="margin-top:12px;font-size:11px;color:var(--amber);text-align:center">⚠ Set up your Supabase keys first in the Setup tab</div>':''}
-    </div>
-
-    <!-- SIGN UP TAB -->
-    <div id="supa-tab-signup" style="padding:24px;display:none">
-      <p style="font-size:12px;color:var(--text2);margin-bottom:20px;line-height:1.8">Create your account. Make sure you've set up Supabase keys in the Setup tab first.</p>
-      <div style="margin-bottom:12px">
-        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Email</label>
-        <input id="reg-email" type="email" placeholder="you@email.com" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'Inter',sans-serif;outline:none">
-      </div>
-      <div style="margin-bottom:20px">
-        <label style="font-size:11px;color:var(--text2);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.8px">Password (min 6 characters)</label>
-        <input id="reg-pass" type="password" placeholder="Choose a strong password" style="width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-size:13px;font-family:'Inter',sans-serif;outline:none" onkeydown="if(event.key==='Enter')supaSignUp()">
-      </div>
-      <div id="reg-msg" style="font-size:12px;margin-bottom:12px;padding:10px 14px;border-radius:6px;display:none"></div>
-      <button onclick="supaSignUp()" id="signup-btn" style="width:100%;background:var(--gold);color:#0e0e0e;border:none;border-radius:6px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif">Create Account</button>
-      ${!configured?'<div style="margin-top:12px;font-size:11px;color:var(--amber);text-align:center">⚠ Set up your Supabase keys first in the Setup tab</div>':''}
-    </div>
-
-  </div></div>`;
-  document.body.insertAdjacentHTML('beforeend',html);
-}
-
-function supaTab(tab){
-  ['setup','signin','signup'].forEach(t=>{
-    const panel=document.getElementById('supa-tab-'+t);
-    const btn=document.getElementById('tab-'+t);
-    if(panel) panel.style.display=t===tab?'block':'none';
-    if(btn){
-      btn.style.color=t===tab?'var(--gold2)':'var(--text3)';
-      btn.style.borderBottom=t===tab?'2px solid var(--gold)':'2px solid transparent';
-    }
-  });
-}
-
-function supaMsg(id,msg,ok){
-  const el=document.getElementById(id); if(!el) return;
-  el.style.display='block';
-  el.style.background=ok?'rgba(76,175,125,0.1)':'rgba(224,82,82,0.1)';
-  el.style.border='1px solid '+(ok?'rgba(76,175,125,0.3)':'rgba(224,82,82,0.3)');
-  el.style.color=ok?'var(--green)':'var(--red)';
-  el.textContent=msg;
-}
-
-function saveSupabaseKeys(){
-  const url=document.getElementById('si-url').value.trim();
-  const key=document.getElementById('si-key').value.trim();
-  if(!url||!key){ supaMsg('si-msg','Enter both the Project URL and Anon Key.',false); return; }
-  if(!url.includes('supabase.co')){ supaMsg('si-msg','URL should look like https://xxx.supabase.co',false); return; }
-  localStorage.setItem(SUPA_URL_KEY,url);
-  localStorage.setItem(SUPA_ANON_KEY,key);
-  const ok=initSupabase();
-  if(ok){
-    supaMsg('si-msg','✓ Keys saved! Go to the Sign In or Create Account tab.',true);
-    setTimeout(()=>supaTab('signup'),1200);
-  } else {
-    supaMsg('si-msg','Could not connect — double check your URL and key.',false);
-  }
-}
-
-async function supaSignIn(){
-  if(!sbClient){ supaMsg('login-msg','Set up your Supabase keys in the Setup tab first.',false); return; }
-  const email=document.getElementById('login-email').value.trim();
-  const pass=document.getElementById('login-pass').value;
-  if(!email||!pass){ supaMsg('login-msg','Enter your email and password.',false); return; }
-  const btn=document.getElementById('signin-btn');
-  btn.textContent='Signing in…'; btn.disabled=true;
-  try{
-    const {data,error}=await sbClient.auth.signInWithPassword({email,password:pass});
-    if(error) throw error;
-    currentUser=data.user;
-    document.getElementById('supa-modal')?.remove();
-    toast('Signed in! Loading your data…','success');
-    await loadFromSupabase();
-    updateSyncStatus('connected',email);
-    renderDash();
-  }catch(e){
-    supaMsg('login-msg',e.message||'Sign in failed. Check your email and password.',false);
-  }finally{ btn.textContent='Sign In'; btn.disabled=false; }
-}
-
-async function supaSignUp(){
-  if(!sbClient){ supaMsg('reg-msg','Set up your Supabase keys in the Setup tab first.',false); return; }
-  const email=document.getElementById('reg-email').value.trim();
-  const pass=document.getElementById('reg-pass').value;
-  if(!email||!pass){ supaMsg('reg-msg','Enter your email and password.',false); return; }
-  if(pass.length<6){ supaMsg('reg-msg','Password must be at least 6 characters.',false); return; }
-  const btn=document.getElementById('signup-btn');
-  btn.textContent='Creating account…'; btn.disabled=true;
-  try{
-    const {data,error}=await sbClient.auth.signUp({email,password:pass});
-    if(error) throw error;
-    if(data.user&&data.session){
-      // Auto confirmed
-      currentUser=data.user;
-      document.getElementById('supa-modal')?.remove();
-      toast('Account created and signed in!','success');
-      await saveToSupabase();
-      updateSyncStatus('connected',email);
-      renderDash();
-    } else {
-      supaMsg('reg-msg','✓ Account created! Check your email to confirm, then sign in.',true);
-    }
-  }catch(e){
-    supaMsg('reg-msg',e.message||'Sign up failed.',false);
-  }finally{ btn.textContent='Create Account'; btn.disabled=false; }
-}
-
-async function supaForgot(){
-  if(!sbClient){ supaMsg('login-msg','Set up Supabase keys first.',false); return; }
-  const email=document.getElementById('login-email').value.trim();
-  if(!email){ supaMsg('login-msg','Enter your email address first.',false); return; }
-  const {error}=await sbClient.auth.resetPasswordForEmail(email);
-  if(error) supaMsg('login-msg',error.message,false);
-  else supaMsg('login-msg','✓ Password reset email sent! Check your inbox.',true);
-}
-
-async function signOut(){
-  if(sbClient) await sbClient.auth.signOut();
-  currentUser=null;
-  updateSyncStatus('offline');
-  toast('Signed out.','');
-}
-
-
-// ══════════════════════════════════════════════════════════
-// ESTIMATOR PAGE
-// ══════════════════════════════════════════════════════════
-let ebEditId = null;
-let ebItems = [];
-
-function initEstimator(est) {
-  ebEditId = est ? est.id : null;
-  ebItems = est ? JSON.parse(JSON.stringify(est.items||[])) : [{desc:'',qty:1,price:0}];
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('eb-desc').value = est ? (est.desc||'') : '';
-  document.getElementById('eb-date').value = est ? (est.date||today) : today;
-  document.getElementById('eb-tax').value = est ? (est.tax||db.settings.tax||0) : (db.settings.tax||0);
-  document.getElementById('eb-discount').value = est ? (est.discount||0) : 0;
-  document.getElementById('eb-notes').value = est ? (est.notes||db.settings.notes||'') : (db.settings.notes||'');
-  document.getElementById('eb-terms').value = est ? (est.terms||db.settings.terms||'') : (db.settings.terms||'');
-  // Set client
-  if(est && est.clientName) {
-    document.getElementById('eb-client-search').value = est.clientName;
-    document.getElementById('eb-client-id').value = est.clientId||'';
-  } else {
-    document.getElementById('eb-client-search').value = '';
-    document.getElementById('eb-client-id').value = '';
-  }
-  const badge = document.getElementById('eb-editing-badge');
-  if(badge) badge.style.display = ebEditId ? '' : 'none';
-  ebRenderItems();
-}
-
-function ebRenderItems() {
-  const tbody = document.getElementById('eb-items');
-  if(!tbody) return;
-  tbody.innerHTML = ebItems.map((it,i) => `
-    <tr class="eb-item-row">
-      <td><input type="text" value="${(it.desc||'').replace(/"/g,'&quot;')}" placeholder="Service description" oninput="ebItems[${i}].desc=this.value"></td>
-      <td><input type="number" value="${it.qty||1}" min="0" style="width:70px" oninput="ebItems[${i}].qty=+this.value;ebCalc()"></td>
-      <td><input type="number" value="${it.price||0}" min="0" step="0.01" style="width:110px" oninput="ebItems[${i}].price=+this.value;ebCalc()"></td>
-      <td><span class="eb-item-total">$${((+it.qty||1)*(+it.price||0)).toFixed(2)}</span></td>
-      <td><button class="btn btn-ghost btn-sm" onclick="ebRemoveItem(${i})" style="color:var(--text3)">✕</button></td>
-    </tr>`).join('');
-  ebCalc();
-}
-
-function ebAddItem(desc, qty, price) {
-  ebItems.push({desc:desc||'',qty:qty||1,price:price||0});
-  ebRenderItems();
-}
-
-function ebRemoveItem(i) {
-  ebItems.splice(i,1);
-  if(!ebItems.length) ebItems = [{desc:'',qty:1,price:0}];
-  ebRenderItems();
-}
-
-function ebCalc() {
-  const sub = ebItems.reduce((s,it)=>s+(+it.qty||1)*(+it.price||0),0);
-  const taxPct = +(document.getElementById('eb-tax')?.value||0)/100;
-  const disc = +(document.getElementById('eb-discount')?.value||0);
-  const taxAmt = sub * taxPct;
-  const total = Math.max(0, sub + taxAmt - disc);
-  setText('eb-subtotal', '$'+sub.toFixed(2));
-  setText('eb-tax-amt', '$'+taxAmt.toFixed(2));
-  setText('eb-disc-amt', '-$'+disc.toFixed(2));
-  setText('eb-total', '$'+total.toFixed(2));
-  // Update item totals
-  document.querySelectorAll('.eb-item-total').forEach((el,i) => {
-    const it = ebItems[i];
-    if(it) el.textContent = '$'+((+it.qty||1)*(+it.price||0)).toFixed(2);
-  });
-}
-
-function ebAddFromCatalog() {
-  if(!db.catalog.length) { toast('No templates yet. Add items to your catalog first.',''); return; }
-  const opts = db.catalog.map(c=>`<option value="${c.id}">${c.desc} — ${$f(c.price)}</option>`).join('');
-  const sel = prompt('Enter template name to search (or leave blank to show all):');
-  const items = db.catalog.filter(c=>!sel||c.desc.toLowerCase().includes(sel.toLowerCase()));
-  if(!items.length) { toast('No matching templates',''); return; }
-  items.forEach(c=>ebAddItem(c.desc,1,c.price));
-  toast(`Added ${items.length} item${items.length!==1?'s':''}`, 't-success');
-}
-
-function ebClear() {
-  ebEditId = null;
-  initEstimator(null);
-  toast('Form cleared');
-}
-
-function editEstInPage(id) {
-  const est = db.estimates.find(e=>e.id===id);
-  if(!est) return;
-  go('estimator');
-  setTimeout(()=>initEstimator(est), 50);
-}
-
-function ebSave(mode) {
-  const desc = document.getElementById('eb-desc')?.value.trim();
-  if(!desc) { toast('Please add an estimate name','t-error'); return; }
-  const clientId = document.getElementById('eb-client-id')?.value;
-  const clientSearch = document.getElementById('eb-client-search')?.value.trim();
-  const client = db.clients.find(c=>c.id===clientId);
-  const clientName = client ? client.name : (clientSearch||'');
-  const clientEmail = client ? client.email : '';
-  const tax = +(document.getElementById('eb-tax')?.value||0);
-  const discount = +(document.getElementById('eb-discount')?.value||0);
-  const notes = document.getElementById('eb-notes')?.value||'';
-  const terms = document.getElementById('eb-terms')?.value||'';
-  const date = document.getElementById('eb-date')?.value||new Date().toISOString().split('T')[0];
-  
-  const filteredItems = ebItems.filter(it=>it.desc||it.price);
-  if(!filteredItems.length) { toast('Please add at least one service','t-error'); return; }
-
-  if(ebEditId) {
-    const est = db.estimates.find(e=>e.id===ebEditId);
-    if(est) {
-      Object.assign(est, {desc,clientName,clientEmail,clientId,items:filteredItems,tax,discount,notes,terms,date});
-      est.status = est.status||'Draft';
-    }
-  } else {
-    db.estimates.push({
-      id:'e'+Date.now(), desc, clientName, clientEmail, clientId,
-      items:filteredItems, tax, discount, notes, terms, date,
-      status:'Draft', created:new Date().toISOString()
-    });
-  }
-  save();
-  toast((ebEditId?'Estimate updated':'Estimate created')+' successfully!','t-success');
-  ebEditId = null;
-  if(mode==='Send') {
-    const id = db.estimates[db.estimates.length-1]?.id;
-    go('estimates');
-    setTimeout(()=>{ if(id) openEmailModal(id); },200);
-  } else {
-    go('estimates');
-  }
-}
-
-function ebSearchClient(q) {
-  const dd = document.getElementById('eb-client-dropdown');
-  if(!q || q.length < 1) { dd.style.display='none'; return; }
-  const matches = db.clients.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||
-    (c.email||'').toLowerCase().includes(q.toLowerCase())).slice(0,6);
-  if(!matches.length) { dd.style.display='none'; return; }
-  dd.innerHTML = matches.map(c=>`<div class="client-dropdown-item" onclick="ebSelectClient('${c.id}','${c.name.replace(/'/g,"\\'")}')">
-    <div style="font-weight:500;color:var(--text)">${c.name}</div>
-    ${c.email?`<div style="font-size:11px;color:var(--text3)">${c.email}</div>`:''}
-  </div>`).join('');
-  dd.style.display='';
-}
-
-function ebSelectClient(id, name) {
-  document.getElementById('eb-client-id').value = id;
-  document.getElementById('eb-client-search').value = name;
-  document.getElementById('eb-client-dropdown').style.display='none';
-}
-
-// Close dropdown on outside click
-document.addEventListener('click', e => {
-  const dd = document.getElementById('eb-client-dropdown');
-  if(dd && !e.target.closest('#eb-client-search') && !e.target.closest('#eb-client-dropdown')) {
-    dd.style.display='none';
-  }
-});
-
-// ══════════════════════════════════════════════════════════
-// CALENDAR PAGE
-// ══════════════════════════════════════════════════════════
-let calDate = new Date();
-let calView = 'month';
-let calAppts = []; // {id, date, title, clientName, estId, color}
-
-function initCalendar() {
-  calAppts = db.calAppts || [];
-  calDate = new Date();
-  renderCalendar();
-  renderCalQueue();
-  updateCalTopbar();
-}
-
-function updateCalTopbar() {
-  const jobs = db.estimates.filter(e=>e.status==='Signed'&&!e.scheduledDate).length;
-  const appts = (db.calAppts||[]).length;
-  const subEl = document.getElementById('topbar-sub');
-  if(subEl) subEl.textContent = `${jobs} job${jobs!==1?'s':''} in queue · ${appts} appointment${appts!==1?'s':''}`;
-}
-
-function calToday() { calDate = new Date(); renderCalendar(); }
-function calNav(dir) {
-  if(calView==='month') calDate.setMonth(calDate.getMonth()+dir);
-  else calDate.setDate(calDate.getDate()+(dir*7));
-  renderCalendar();
-}
-function calSetView(v) {
-  calView=v;
-  ['month','week','queue'].forEach(x=>{
-    const btn = document.getElementById('cal-view-'+x);
-    if(btn) btn.className='btn '+(x===v?'btn-secondary':'btn-ghost')+' btn-sm';
-  });
-  renderCalendar();
-}
-
-function renderCalendar() {
-  const grid = document.getElementById('cal-grid');
-  if(!grid) return;
-  const now = new Date();
-  const titleEl = document.getElementById('cal-title');
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  
-  if(calView==='month') {
-    if(titleEl) titleEl.textContent = months[calDate.getMonth()] + ' ' + calDate.getFullYear();
-    const firstDay = new Date(calDate.getFullYear(), calDate.getMonth(), 1);
-    const lastDay = new Date(calDate.getFullYear(), calDate.getMonth()+1, 0);
-    const startPad = firstDay.getDay();
-    const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-    
-    let html = '<div class="cal-grid-month">';
-    days.forEach(d => html += `<div class="cal-day-header">${d}</div>`);
-    
-    for(let i=0;i<startPad;i++) {
-      const d = new Date(calDate.getFullYear(), calDate.getMonth(), -startPad+i+1);
-      html += `<div class="cal-day other-month"><div class="cal-day-num">${d.getDate()}</div></div>`;
-    }
-    for(let d=1;d<=lastDay.getDate();d++) {
-      const isToday = d===now.getDate()&&calDate.getMonth()===now.getMonth()&&calDate.getFullYear()===now.getFullYear();
-      const dateStr = `${calDate.getFullYear()}-${String(calDate.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const dayAppts = calAppts.filter(a=>a.date===dateStr);
-      const daySignedEsts = db.estimates.filter(e=>e.status==='Signed'&&e.scheduledDate===dateStr);
-      html += `<div class="cal-day${isToday?' today':''}" onclick="calDayClick('${dateStr}')">
-        <div class="cal-day-num">${d}</div>
-        ${dayAppts.map(a=>`<div class="cal-event ${a.color||''}" onclick="event.stopPropagation();editAppt('${a.id}')">${a.title||a.clientName||'Appt'}</div>`).join('')}
-        ${daySignedEsts.map(e=>`<div class="cal-event green">${e.clientName||e.desc||'Job'}</div>`).join('')}
-      </div>`;
-    }
-    // Fill remaining cells
-    const total = startPad + lastDay.getDate();
-    const remaining = (7 - (total%7))%7;
-    for(let i=1;i<=remaining;i++) {
-      html += `<div class="cal-day other-month"><div class="cal-day-num">${i}</div></div>`;
-    }
-    html += '</div>';
-    grid.innerHTML = html;
-    
-  } else if(calView==='week') {
-    const weekStart = new Date(calDate);
-    weekStart.setDate(calDate.getDate()-calDate.getDay());
-    const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-    const startDate = new Date(weekStart);
-    const endDate = new Date(weekStart);
-    endDate.setDate(endDate.getDate()+6);
-    if(titleEl) titleEl.textContent = months[startDate.getMonth()]+ ' ' +startDate.getDate()+' – '+months[endDate.getMonth()]+' '+endDate.getDate();
-    
-    let html = '<div class="cal-grid-month">';
-    days.forEach((d,i) => {
-      const day = new Date(weekStart); day.setDate(weekStart.getDate()+i);
-      const isToday = day.toDateString()===now.toDateString();
-      html += `<div class="cal-day-header" style="padding:10px 8px">${d}<br><span style="font-size:14px;font-weight:700;color:${isToday?'var(--brand)':'var(--text)'}">${day.getDate()}</span></div>`;
-    });
-    days.forEach((d,i) => {
-      const day = new Date(weekStart); day.setDate(weekStart.getDate()+i);
-      const dateStr = day.toISOString().split('T')[0];
-      const isToday = day.toDateString()===now.toDateString();
-      const dayAppts = calAppts.filter(a=>a.date===dateStr);
-      html += `<div class="cal-day${isToday?' today':''}" style="min-height:160px" onclick="calDayClick('${dateStr}')">
-        ${dayAppts.map(a=>`<div class="cal-event ${a.color||''}" onclick="event.stopPropagation();editAppt('${a.id}')">${a.title||a.clientName||'Appt'}</div>`).join('')}
-      </div>`;
-    });
-    html += '</div>';
-    grid.innerHTML = html;
-    
-  } else {
-    // Queue view - just show the queue larger
-    if(titleEl) titleEl.textContent = 'All Unscheduled Jobs';
-    grid.innerHTML = '<div style="padding:24px;color:var(--text3);text-align:center;font-size:13px">Use the queue panel to schedule jobs by dragging them to dates.</div>';
-  }
-  updateCalTopbar && updateCalTopbar();
-}
-
-function renderCalQueue() {
-  const el = document.getElementById('cal-queue-items');
-  if(!el) return;
-  const q = document.getElementById('cal-queue-search')?.value.toLowerCase()||'';
-  const sort = document.getElementById('cal-sort')?.value||'signed';
-  let items = db.estimates.filter(e=>e.status==='Signed'&&!e.scheduledDate);
-  if(q) items = items.filter(e=>(e.clientName||'').toLowerCase().includes(q)||(e.desc||'').toLowerCase().includes(q));
-  if(sort==='amount') items.sort((a,b)=>calcEst(b).total-calcEst(a).total);
-  else if(sort==='client') items.sort((a,b)=>(a.clientName||'').localeCompare(b.clientName||''));
-  
-  setText('cal-queue-count', items.length.toString());
-  const dashSub = document.getElementById('topbar-sub');
-  
-  if(!items.length) {
-    el.innerHTML = `<div class="cal-queue-empty">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:8px"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      <div>No unscheduled jobs</div>
-    </div>`;
-    return;
-  }
-  el.innerHTML = items.map(e=>{
-    const {total}=calcEst(e);
-    return`<div class="cal-queue-item" onclick="calScheduleEst('${e.id}')">
-      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px">${e.clientName||'No client'}</div>
-      <div style="font-size:11px;color:var(--text3)">${e.desc||'No description'}</div>
-      <div style="font-size:12px;color:var(--brand);font-weight:600;margin-top:4px">${$f(total)}</div>
-    </div>`;
-  }).join('');
-}
-
-function calDayClick(dateStr) {
-  newApptModal(dateStr);
-}
-
-function calScheduleEst(estId) {
-  const date = prompt('Schedule this job for date (YYYY-MM-DD):');
-  if(!date) return;
-  const est = db.estimates.find(e=>e.id===estId);
-  if(est) {
-    est.scheduledDate = date;
-    save();
-    renderCalendar();
-    renderCalQueue();
-    toast('Job scheduled!','t-success');
-  }
-}
-
-function newApptModal(date) {
-  const d = date||new Date().toISOString().split('T')[0];
-  const title = prompt('Appointment title:');
-  if(!title) return;
-  const clientName = prompt('Client name (optional):','');
-  if(!db.calAppts) db.calAppts=[];
-  const appt = {id:'a'+Date.now(),date:d,title,clientName:clientName||'',color:''};
-  db.calAppts.push(appt);
-  calAppts = db.calAppts;
-  save();
-  renderCalendar();
-  toast('Appointment added!','t-success');
-}
-
-function editAppt(id) {
-  const a = (db.calAppts||[]).find(x=>x.id===id);
-  if(!a) return;
-  const action = prompt(`"${a.title}" on ${a.date}\n\nEnter new title, or type DELETE to remove:`,'');
-  if(action===null) return;
-  if(action.toUpperCase()==='DELETE') {
-    db.calAppts=(db.calAppts||[]).filter(x=>x.id!==id);
-    calAppts=db.calAppts;
-    save();renderCalendar();toast('Appointment removed');
-  } else if(action) {
-    a.title=action;save();renderCalendar();toast('Updated!','t-success');
-  }
-}
-
-function toggleCalQueue(){
-  const q=document.getElementById('cal-queue');
-  if(q) q.style.display=q.style.display==='none'?'':'none';
-}
-
-// ══════════════════════════════════════════════════════════
-// DASHBOARD: TIME PERIOD FILTER
-// ══════════════════════════════════════════════════════════
-let dashPeriod = 'all';
-function dashSetPeriod(p) {
-  dashPeriod=p;
-  document.querySelectorAll('.dash-period-btn').forEach(b=>b.classList.remove('active'));
-  const map={'month':0,'lastmonth':1,'3months':2,'year':3,'all':4};
-  const btns=document.querySelectorAll('.dash-period-btn');
-  if(btns[map[p]]) btns[map[p]].classList.add('active');
-  renderDash();
-}
-
-function dashFilterDate(dateStr) {
-  if(!dateStr || dashPeriod==='all') return true;
-  const d = new Date(dateStr); const now = new Date();
-  if(dashPeriod==='month') { return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear(); }
-  if(dashPeriod==='lastmonth') { const lm=new Date(now.getFullYear(),now.getMonth()-1,1); return d.getMonth()===lm.getMonth()&&d.getFullYear()===lm.getFullYear(); }
-  if(dashPeriod==='3months') { const cutoff=new Date(now); cutoff.setMonth(cutoff.getMonth()-3); return d>=cutoff; }
-  if(dashPeriod==='year') { return d.getFullYear()===now.getFullYear(); }
-  return true;
-}
-
-// ══════════════════════════════════════════════════════════
-// CATALOG / TEMPLATES - UPGRADED RENDER
-// ══════════════════════════════════════════════════════════
 function renderCatalog() {
   const el = document.getElementById('catalog-content');
   if(!el) return;
   const q = (document.getElementById('catalog-search-input')?.value||'').toLowerCase();
   let items = db.catalog||[];
-  if(q) items = items.filter(c=>(c.desc||'').toLowerCase().includes(q));
-  
+  if(q) items = items.filter(c=>(c.desc||'').toLowerCase().includes(q)||(c.notes||'').toLowerCase().includes(q));
+
   if(!items.length) {
     el.innerHTML = `<div class="catalog-empty">
-      <div class="catalog-empty-icon">📁</div>
+      <div class="catalog-empty-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="opacity:0.3"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      </div>
       <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">${q?'No templates match your search':'No templates yet'}</div>
-      <div style="font-size:13px;margin-bottom:20px">${q?'Try a different search term':'Templates help you quickly add pre-defined items to estimates'}</div>
-      ${!q?`<button class="btn btn-primary" onclick="newCatItem()">+ Create Your First Template</button>`:''}
+      <div style="font-size:13px;color:var(--text3);margin-bottom:20px">${q?'Try a different search term':'Templates help you quickly add pre-defined services to estimates'}</div>
+      ${!q?`<button class="btn btn-primary" onclick="showCatalogForm()">+ Create Your First Template</button>`:''}
     </div>`;
     return;
   }
-  
-  el.innerHTML = `<div class="card">
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Description</th><th>Unit</th><th>Default Price</th><th>Actions</th></tr></thead>
-        <tbody>${items.map(c=>`<tr>
-          <td style="font-weight:500;color:var(--text)">${c.desc}</td>
-          <td>${c.unit||'—'}</td>
-          <td style="color:var(--brand);font-weight:600">${$f(c.price)}</td>
-          <td><div class="flex-gap">
-            <button class="btn btn-ghost btn-sm" onclick="openCatalogItem('${c.id}')">Edit</button>
-            <button class="btn btn-ghost btn-sm" onclick="addCatalogToEstimator('${c.id}')">+ Add to Estimate</button>
-            <button class="btn btn-danger btn-sm" onclick="delCatalogItem('${c.id}')">Delete</button>
-          </div></td>
-        </tr>`).join('')}</tbody>
-      </table>
-    </div>
-  </div>`;
+
+  el.innerHTML = items.map(c=>`
+    <div class="template-card" onclick="openCatalogItem('${c.id}')">
+      <div class="template-card-icon">📋</div>
+      <div class="template-card-info">
+        <div class="template-card-name">${c.desc}</div>
+        <div class="template-card-meta">${c.unit?c.unit+' · ':''}${c.notes||c.scope||'No description'}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="template-card-price">${$f(+c.price||0)}</div>
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();addCatalogToEstimator('${c.id}')" title="Add to Estimator">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();delCatalogItem('${c.id}')" title="Delete" style="color:var(--text3)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </button>
+      </div>
+    </div>`).join('');
 }
+
+function showCatalogForm(editId) {
+  const panel = document.getElementById('catalog-form-panel');
+  if(!panel) return;
+  const d = id => document.getElementById(id);
+  if(editId) {
+    const c = (db.catalog||[]).find(x=>x.id===editId)||{};
+    if(d('catid')) d('catid').value = c.id||'';
+    if(d('cat-desc')) d('cat-desc').value = c.desc||'';
+    if(d('cat-unit')) d('cat-unit').value = c.unit||'';
+    if(d('cat-price')) d('cat-price').value = c.price||'';
+    if(d('cat-notes')) d('cat-notes').value = c.notes||'';
+    if(d('cat-scope')) d('cat-scope').innerHTML = c.scope||'';
+    const btn=d('cat-save-btn-text');if(btn)btn.textContent='Update Template';
+    const title=d('catalog-form-title-label');if(title)title.textContent='Edit Template';
+  } else {
+    if(d('catid')) d('catid').value='';
+    if(d('cat-desc')) d('cat-desc').value='';
+    if(d('cat-unit')) d('cat-unit').value='';
+    if(d('cat-price')) d('cat-price').value='';
+    if(d('cat-notes')) d('cat-notes').value='';
+    if(d('cat-scope')) d('cat-scope').innerHTML='';
+    const btn=d('cat-save-btn-text');if(btn)btn.textContent='Create Template';
+    const title=d('catalog-form-title-label');if(title)title.textContent='Create New Template';
+  }
+  panel.style.display='';
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+  setTimeout(()=>d('cat-desc')?.focus(),100);
+}
+
+
+function hideCatalogForm() {
+  const panel = document.getElementById('catalog-form-panel');
+  if(panel) panel.style.display = 'none';
+}
+
+function openCatalogItem(id) { showCatalogForm(id); }
+
+function saveCatalogItem() {
+  const desc=(document.getElementById('cat-desc')?.value||'').trim();
+  if(!desc){toast('Template name is required','t-error');return;}
+  const id=document.getElementById('catid')?.value||uid();
+  const unit=document.getElementById('cat-unit')?.value||'';
+  const price=+(document.getElementById('cat-price')?.value||0);
+  const notes=document.getElementById('cat-notes')?.value||'';
+  const scope=document.getElementById('cat-scope')?.innerHTML||'';
+  const existing=(db.catalog||[]).find(x=>x.id===id);
+  if(existing){
+    Object.assign(existing,{desc,unit,price,notes,scope});
+    toast('Template updated!','t-success');
+  } else {
+    if(!db.catalog) db.catalog=[];
+    db.catalog.push({id,desc,unit,price,notes,scope,created:new Date().toISOString()});
+    toast('Template created!','t-success');
+  }
+  save();
+  hideCatalogForm();
+  renderCatalog();
+}
+
+function hideCatalogForm(){
+  const p=document.getElementById('catalog-form-panel');
+  if(p) p.style.display='none';
+  ['catid','cat-desc','cat-unit','cat-notes'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  const price=document.getElementById('cat-price');if(price)price.value='';
+  const scope=document.getElementById('cat-scope');if(scope)scope.innerHTML='';
+  const btnText=document.getElementById('cat-save-btn-text');
+  if(btnText)btnText.textContent='Create Template';
+  const title=document.getElementById('catalog-form-title-label');
+  if(title)title.textContent='Create New Template';
+}
+
+
+function delCatalogItem(id) {
+  if(!confirm('Delete this template?')) return;
+  db.catalog=(db.catalog||[]).filter(c=>c.id!==id);
+  save();renderCatalog();
+  toast('Template deleted');
+}
+
+function newCatItem(){ showCatalogForm(); }
 
 function addCatalogToEstimator(id) {
   const c = db.catalog.find(x=>x.id===id);
   if(!c) return;
   go('estimator');
-  setTimeout(()=>ebAddItem(c.desc,1,c.price),100);
+  setTimeout(()=>{
+    ebServices.push({id:uid(),name:c.desc,desc:'',scope:c.scope||c.notes||'',qty:1,price:+c.price||0,photos:[]});
+    ebRenderServices();
+    toast('Service added from template','t-success');
+  },100);
 }
+
 
 // ══════════════════════════════════════════════════════════
 // OVERHEAD SAVE SETTINGS
@@ -3331,6 +2161,788 @@ function initOverhead(){
     if(db.settings?.ohRevTotal) { const el=document.getElementById('oh-rev-total'); if(el) el.value=db.settings.ohRevTotal; }
     ohCalc();
   },10);
+}
+
+
+// ══════════════════════════════════════════════════════════
+// SETTINGS & EMAIL
+// ══════════════════════════════════════════════════════════
+function loadSettings(){
+  const s=db.settings;
+  ['co','own','ph','em','addr','web','lic'].forEach(k=>{
+    const el=document.getElementById('s-'+k);
+    if(el) el.value=s[k]||'';
+  });
+  const t=document.getElementById('s-tax');if(t) t.value=s.tax||0;
+  const tn=document.getElementById('s-terms');if(tn) tn.value=s.terms||'';
+  const n=document.getElementById('s-notes');if(n) n.value=s.notes||'';
+  const p=document.getElementById('s-pin');if(p) p.value=s.ownerPin?'••••••':'';
+}
+function saveSettings(){
+  ['co','own','ph','em','addr','web','lic'].forEach(k=>{
+    const el=document.getElementById('s-'+k);
+    if(el) db.settings[k]=el.value;
+  });
+  const t=document.getElementById('s-tax');if(t) db.settings.tax=+t.value||0;
+  const tn=document.getElementById('s-terms');if(tn) db.settings.terms=tn.value;
+  const n=document.getElementById('s-notes');if(n) db.settings.notes=n.value;
+  save(); toast('Settings saved!','t-success');
+}
+function loadEmailSettings(){
+  const ej=db.emailjs;
+  const f=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
+  f('ej-pubkey',ej.pubkey);f('ej-service',ej.service);f('ej-template',ej.template);
+  f('ej-msg',ej.message);f('ej-webhook',ej.webhook);
+  f('ej-fu-template',ej.fuTemplate);f('ej-fu-msg',ej.fuMsg);
+  f('ej-fu-days',ej.fuDays||3);
+}
+function saveEmailSettings(){
+  const g=id=>document.getElementById(id)?.value||'';
+  db.emailjs={pubkey:g('ej-pubkey'),service:g('ej-service'),template:g('ej-template'),
+    message:g('ej-msg'),webhook:g('ej-webhook'),fuTemplate:g('ej-fu-template'),
+    fuMsg:g('ej-fu-msg'),fuDays:+g('ej-fu-days')||3};
+  save(); toast('Email settings saved!','t-success');
+}
+function testEmail(){
+  const ej=db.emailjs;
+  if(!ej.pubkey||!ej.service||!ej.template){toast('Configure EmailJS settings first','t-error');return;}
+  emailjs.init(ej.pubkey);
+  emailjs.send(ej.service,ej.template,{
+    to_email:db.settings.em||'test@example.com',to_name:'Test',
+    from_name:db.settings.co||'EstimatePro',estimate_number:'EST-001',
+    estimate_total:'$1,000.00',estimate_link:window.location.href,message:'Test email!'
+  }).then(()=>toast('✅ Test email sent!','t-success')).catch(e=>toast('❌ '+e.text,'t-error'));
+}
+
+// ══════════════════════════════════════════════════════════
+// TEAM
+// ══════════════════════════════════════════════════════════
+function renderTeam(){
+  if(!db.team) db.team=[];
+  const el=document.getElementById('team-list');if(!el)return;
+  if(!db.team.length){
+    el.innerHTML='<div style="text-align:center;padding:24px;color:var(--text3);font-size:12px">No team members yet.</div>';
+    return;
+  }
+  el.innerHTML=db.team.map(m=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)">
+    <div>
+      <div style="font-weight:500;color:var(--text)">${m.name}</div>
+      <div style="font-size:11px;color:var(--text3)">${m.role||'Member'} · PIN: ${m.pin?'••••':'Not set'}</div>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-ghost btn-sm" onclick="toggleMember('${m.id}')">
+        ${m.active?'Deactivate':'Activate'}
+      </button>
+      <button class="btn btn-danger btn-sm" onclick="deleteMember('${m.id}')">Remove</button>
+    </div>
+  </div>`).join('');
+}
+function openAddMember(){
+  const name=prompt('Team member name:');
+  if(!name) return;
+  const role=prompt('Role (e.g. Foreman, Estimator):','Member')||'Member';
+  const pin=prompt('4-digit PIN (optional):','')||'';
+  if(!db.team) db.team=[];
+  db.team.push({id:uid(),name,role,pin,active:true});
+  save(); renderTeam(); toast(`${name} added to team!`,'t-success');
+}
+function newTeamMember(){ openAddMember(); }
+function toggleMember(id){
+  const m=(db.team||[]).find(x=>x.id===id);
+  if(m){m.active=!m.active;save();renderTeam();}
+}
+function deleteMember(id){
+  if(!confirm('Remove this team member?')) return;
+  db.team=(db.team||[]).filter(x=>x.id!==id);
+  save(); renderTeam(); toast('Member removed');
+}
+function checkPinLock(){return true;}
+function saveOwnerPin(){
+  const p=document.getElementById('s-pin')?.value;
+  if(p&&p.length<4){toast('PIN must be at least 4 characters','t-error');return;}
+  db.settings.ownerPin=p||'';save();toast('PIN saved!','t-success');
+}
+function clearOwnerPin(){db.settings.ownerPin='';save();const el=document.getElementById('s-pin');if(el)el.value='';toast('PIN cleared');}
+
+// ══════════════════════════════════════════════════════════
+// DATA / EXPORT / IMPORT
+// ══════════════════════════════════════════════════════════
+function exportData(){
+  const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='estimatepro-backup-'+new Date().toISOString().split('T')[0]+'.json';
+  a.click();
+  toast('Backup downloaded!','t-success');
+}
+function importData(){
+  const input=document.createElement('input');
+  input.type='file';input.accept='.json';
+  input.onchange=e=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const data=JSON.parse(ev.target.result);
+        Object.assign(db,data);save();renderDash();
+        toast('Data imported successfully!','t-success');
+      } catch(err){toast('Invalid backup file','t-error');}
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+function nukeData(){
+  if(!confirm('DELETE ALL DATA? This cannot be undone!')) return;
+  if(!confirm('Are you absolutely sure? All estimates, clients, and settings will be lost.')) return;
+  localStorage.removeItem('ep2_db');
+  location.reload();
+}
+
+// ══════════════════════════════════════════════════════════
+// FOLLOW-UPS & ACTIVITY
+// ══════════════════════════════════════════════════════════
+function logActivity(type,clientName,desc,estId){
+  if(!db.activity) db.activity=[];
+  db.activity.unshift({type,clientName,desc,estId,ts:new Date().toISOString()});
+  db.activity=db.activity.slice(0,50);
+}
+function checkFollowUps(){
+  const ej=db.emailjs;
+  if(!ej.pubkey||!ej.service||!ej.fuTemplate) return;
+  const now=new Date();
+  db.estimates.forEach(e=>{
+    if(!['Sent','Viewed'].includes(e.status)) return;
+    if(e.followUpSent) return;
+    const fuDate=e.followUpDate?new Date(e.followUpDate):null;
+    if(fuDate&&fuDate<=now){
+      emailjs.init(ej.pubkey);
+      emailjs.send(ej.service,ej.fuTemplate,{
+        to_email:e.clientEmail||'',to_name:e.clientName||'Client',
+        from_name:db.settings.co||'EstimatePro',
+        estimate_number:estNum(e),estimate_total:$f(calcEst(e).total),
+        estimate_link:genShareLink(e),message:ej.fuMsg||'Following up on your estimate.'
+      }).then(()=>{e.followUpSent=true;save();logActivity('followup',e.clientName,e.desc,e.id);});
+    }
+  });
+}
+function pollForViewEvents(){
+  const ej=db.emailjs;
+  if(!ej.webhook) return;
+  // Webhook polling handled by Pipedream - just check localStorage for queued events
+}
+
+// ══════════════════════════════════════════════════════════
+// CLOUD SYNC (Supabase)
+// ══════════════════════════════════════════════════════════
+// sbClient, currentUser, DBKEY declared earlier
+function initSupabase(){
+  try{
+    const url=localStorage.getItem('ep2_supa_url');
+    const key=localStorage.getItem('ep2_supa_anon');
+    if(!url||!key||!window.supabase){updateSyncStatus('offline');return;}
+    sbClient=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+    updateSyncStatus('offline');
+  } catch(e){updateSyncStatus('offline');}
+}
+function updateSyncStatus(status,email){
+  const el=document.getElementById('sync-status');
+  if(!el) return;
+  const map={connected:'🟢 Connected'+(email?' · '+email:''),offline:'⚪ Not connected',syncing:'🔄 Syncing...'};
+  el.textContent=map[status]||status;
+}
+async function saveToSupabase(){
+  if(!sbClient||!currentUser) return;
+  try{
+    updateSyncStatus('syncing');
+    await sbClient.from('estimatepro_data').upsert({user_id:currentUser.id,data:JSON.stringify(db),updated_at:new Date().toISOString()});
+    updateSyncStatus('connected',currentUser.email);
+  } catch(e){updateSyncStatus('offline');}
+}
+async function loadFromSupabase(){
+  if(!sbClient||!currentUser) return;
+  try{
+    const {data}=await sbClient.from('estimatepro_data').select('data').eq('user_id',currentUser.id).single();
+    if(data?.data){Object.assign(db,JSON.parse(data.data));save();}
+  } catch(e){}
+}
+function supaTab(tab){
+  ['setup','signin','signup','forgot'].forEach(t=>{
+    const el=document.getElementById('supa-tab-'+t);
+    if(el) el.style.display=t===tab?'':'none';
+  });
+}
+function openSupabaseSetup(){go('cloud');}
+function saveSupabaseKeys(){
+  const url=document.getElementById('supa-url')?.value.trim();
+  const key=document.getElementById('supa-key')?.value.trim();
+  if(!url||!key){toast('Enter both URL and key','t-error');return;}
+  localStorage.setItem('ep2_supa_url',url);
+  localStorage.setItem('ep2_supa_anon',key);
+  initSupabase();
+  toast('Keys saved! Now sign in below.','t-success');
+}
+async function supaSignUp(){
+  if(!sbClient){toast('Save your Supabase keys first','t-error');return;}
+  const email=document.getElementById('supa-email')?.value.trim();
+  const pass=document.getElementById('supa-pass')?.value;
+  if(!email||!pass){toast('Enter email and password','t-error');return;}
+  const {error}=await sbClient.auth.signUp({email,password:pass});
+  if(error) toast('❌ '+error.message,'t-error');
+  else toast('✅ Check your email to confirm your account!','t-success');
+}
+async function supaSignIn(){
+  if(!sbClient){toast('Configure Supabase first','t-error');return;}
+  const email=document.getElementById('supa-signin-email')?.value.trim();
+  const pass=document.getElementById('supa-signin-pass')?.value;
+  if(!email||!pass){toast('Enter email and password','t-error');return;}
+  const {data,error}=await sbClient.auth.signInWithPassword({email,password:pass});
+  if(error){toast('❌ '+error.message,'t-error');return;}
+  currentUser=data.user;
+  updateSyncStatus('connected',email);
+  await loadFromSupabase();
+  toast('✅ Signed in!','t-success');
+  renderDash();
+}
+async function supaForgot(){
+  if(!sbClient) return;
+  const email=document.getElementById('supa-email')?.value.trim();
+  if(!email){toast('Enter your email first','t-error');return;}
+  await sbClient.auth.resetPasswordForEmail(email);
+  toast('Password reset email sent!','t-success');
+}
+async function supaMsg(id,msg,ok){const el=document.getElementById(id);if(el){el.textContent=msg;el.style.color=ok?'var(--green)':'var(--red)';}}
+function testCloudSync(){if(!sbClient||!currentUser){toast('Sign in first','t-error');return;}saveToSupabase();toast('Syncing...','');}
+function cloudBackup(){saveToSupabase();}
+async function signOut(){
+  if(sbClient) await sbClient.auth.signOut();
+  currentUser=null;updateSyncStatus('offline');toast('Signed out');
+}
+
+// ══════════════════════════════════════════════════════════
+// SHARE LINK & PREVIEW POLLING
+// ══════════════════════════════════════════════════════════
+function checkShareLink(){
+  const params=new URLSearchParams(window.location.search);
+  const encoded=params.get('view');
+  if(!encoded) return;
+  try{
+    const est=JSON.parse(atob(encoded));
+    document.getElementById('main-app').style.display='none';
+    const cp=document.getElementById('client-page');
+    if(cp){cp.style.display='';renderClientPage(est);}
+  } catch(e){}
+}
+
+// ══════════════════════════════════════════════════════════
+// ESTIMATOR PAGE (Full Page Form)
+// ══════════════════════════════════════════════════════════
+let ebServices=[]; // [{id,name,desc,qty,price,photos,collapsed}]
+let ebEditId=null;
+const ICONS=['🔧','🔨','🪚','🪛','⚡','🔌','🪠','🖌️','🏗️','🌿','🚿','🏠','🔩'];
+
+function initEstimator(existingEst){
+  ebEditId=existingEst?existingEst.id:null;
+  const today=new Date().toISOString().split('T')[0];
+  const d=id=>document.getElementById(id);
+  if(d('eb-desc')) d('eb-desc').value=existingEst?(existingEst.desc||''):'';
+  if(d('eb-date')) d('eb-date').value=existingEst?(existingEst.date||today):today;
+  if(d('eb-tax')) d('eb-tax').value=existingEst?(existingEst.tax||0):(db.settings.tax||0);
+  if(d('eb-discount')) d('eb-discount').value=existingEst?(existingEst.discount||0):0;
+  if(d('eb-notes')) d('eb-notes').value=existingEst?(existingEst.notes||''):(db.settings.notes||'');
+  if(d('eb-terms')) d('eb-terms').value=existingEst?(existingEst.terms||''):(db.settings.terms||'');
+  if(d('eb-client-search')) d('eb-client-search').value=existingEst?(existingEst.clientName||''):'';
+  if(d('eb-client-id')) d('eb-client-id').value=existingEst?(existingEst.clientId||''):'';
+  const badge=d('eb-editing-badge');if(badge) badge.style.display=ebEditId?'':'none';
+  // Build services from items
+  if(existingEst&&existingEst.items&&existingEst.items.length){
+    ebServices=existingEst.items.map((it,i)=>({
+      id:'s'+Date.now()+i, name:it.desc||'', desc:'', qty:it.qty||1,
+      price:it.price||0, photos:[], collapsed:false
+    }));
+  } else {
+    ebServices=[{id:'s'+Date.now(),name:'',desc:'',qty:1,price:0,photos:[],collapsed:false}];
+  }
+  ebRenderServices();
+  ebCalcSummary();
+}
+
+function ebAddService(){
+  ebServices.push({id:'s'+Date.now(),name:'',desc:'',qty:1,price:0,photos:[],collapsed:false});
+  ebRenderServices();
+  // Scroll to new service
+  const wrap=document.getElementById('eb-services-wrap');
+  if(wrap) setTimeout(()=>wrap.lastElementChild?.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+
+function ebRemoveService(id){
+  ebServices=ebServices.filter(s=>s.id!==id);
+  if(!ebServices.length) ebAddService();
+  else ebRenderServices();
+}
+
+function ebToggleService(id){
+  const s=ebServices.find(x=>x.id===id);
+  if(s){s.collapsed=!s.collapsed;ebRenderServices();}
+}
+
+function ebUpdateService(id,field,val){
+  const s=ebServices.find(x=>x.id===id);
+  if(s){s[field]=field==='qty'||field==='price'?+val:val;ebCalcSummary();}
+}
+
+function ebRenderServices(){
+  const wrap=document.getElementById('eb-services-wrap');
+  if(!wrap) return;
+  const catalogOpts='<option value="">Select a template...</option>'+
+    (db.catalog||[]).map(c=>`<option value="${c.id}">${c.desc} — ${$f(c.price)}</option>`).join('');
+  
+  wrap.innerHTML=ebServices.map((s,idx)=>{
+    const icon=ICONS[idx%ICONS.length];
+    const total=(s.qty||1)*(s.price||0);
+    return`<div class="section-card" style="margin-bottom:10px" id="svc-${s.id}">
+      <div class="section-card-hd" style="cursor:pointer" onclick="ebToggleService('${s.id}')">
+        <div class="section-card-icon" style="background:var(--purple-bg);font-size:16px">${icon}</div>
+        <div style="flex:1">
+          <div class="section-card-title">${s.name||'Service #'+(idx+1)}</div>
+          ${s.price?`<div class="section-card-sub">${$f(total)}</div>`:'<div class="section-card-sub">No price set</div>'}
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();ebRemoveService('${s.id}')" title="Remove service">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();ebToggleService('${s.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${s.collapsed?'<polyline points="6 9 12 15 18 9"/>':'<polyline points="18 15 12 9 6 15"/>'}</svg>
+        </button>
+      </div>
+      ${s.collapsed?'':`<div class="section-card-body">
+        <div class="form-row cols-2" style="margin-bottom:12px">
+          <div class="form-group">
+            <label>Service Name</label>
+            <input type="text" value="${(s.name||'').replace(/"/g,'&quot;')}" placeholder="e.g. Patio Installation"
+              oninput="ebUpdateService('${s.id}','name',this.value);document.querySelector('#svc-${s.id} .section-card-title').textContent=this.value||'Service #${idx+1}'">
+          </div>
+          <div class="form-group">
+            <label>Template</label>
+            <select onchange="ebApplyTemplate('${s.id}',this.value)" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:8px 10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;width:100%">
+              ${catalogOpts}
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:12px">
+          <label>Service Description</label>
+          <div class="rich-editor-wrap">
+            <div class="rich-editor-toolbar">
+              <button class="re-btn" onclick="event.preventDefault();reCmd('bold')" title="Bold"><b>B</b></button>
+              <button class="re-btn" onclick="event.preventDefault();reCmd('italic')" title="Italic"><i>I</i></button>
+              <button class="re-btn" onclick="event.preventDefault();reCmd('underline')" title="Underline"><u>U</u></button>
+              <button class="re-btn" onclick="event.preventDefault();reCmd('strikeThrough')" title="Strike"><s>S</s></button>
+              <div class="re-sep"></div>
+              <button class="re-btn" onclick="event.preventDefault();reCmd('justifyLeft')" title="Align Left">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="5" width="18" height="2"/><rect x="3" y="10" width="12" height="2"/><rect x="3" y="15" width="16" height="2"/><rect x="3" y="20" width="10" height="2"/></svg>
+              </button>
+              <button class="re-btn" onclick="event.preventDefault();reCmd('justifyCenter')" title="Center">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="5" width="18" height="2"/><rect x="6" y="10" width="12" height="2"/><rect x="4" y="15" width="16" height="2"/><rect x="7" y="20" width="10" height="2"/></svg>
+              </button>
+              <button class="re-btn" onclick="event.preventDefault();reCmd('insertUnorderedList')" title="Bullet list">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="7" r="2"/><rect x="9" y="6" width="12" height="2"/><circle cx="5" cy="13" r="2"/><rect x="9" y="12" width="12" height="2"/><circle cx="5" cy="19" r="2"/><rect x="9" y="18" width="12" height="2"/></svg>
+              </button>
+              <button class="re-btn" onclick="event.preventDefault();reCmd('insertOrderedList')" title="Numbered list">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+              </button>
+              <div class="re-sep"></div>
+              <button class="re-btn" onclick="event.preventDefault();document.execCommand('undo')" title="Undo">↩</button>
+              <button class="re-btn" onclick="event.preventDefault();document.execCommand('redo')" title="Redo">↪</button>
+            </div>
+            <div class="rich-editor" contenteditable="true" data-svc-id="${s.id}"
+              oninput="ebUpdateService('${s.id}','desc',this.innerHTML)"
+              style="min-height:100px;padding:12px;outline:none;font-size:13px;line-height:1.6;color:var(--text)">${s.desc||''}</div>
+          </div>
+        </div>
+        <div class="form-row cols-2" style="margin-bottom:12px">
+          <div class="form-group">
+            <label>Quantity</label>
+            <input type="number" value="${s.qty||1}" min="0.01" step="0.01"
+              oninput="ebUpdateService('${s.id}','qty',this.value)">
+          </div>
+          <div class="form-group">
+            <label>Unit Price ($)</label>
+            <input type="number" value="${s.price||0}" min="0" step="0.01"
+              oninput="ebUpdateService('${s.id}','price',this.value)">
+          </div>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:6px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Photos (${(s.photos||[]).length}/8)
+          </label>
+          <div class="eb-photos-wrap" id="eb-photos-${s.id}">
+            ${(s.photos||[]).map((p,pi)=>`<div class="eb-photo-thumb" style="background-image:url(${p})">
+              <button class="eb-photo-del" onclick="ebRemovePhoto('${s.id}',${pi})">×</button>
+            </div>`).join('')}
+            ${(s.photos||[]).length<8?`<label class="eb-photos-add">
+              <input type="file" accept="image/*" multiple style="display:none" onchange="ebHandlePhotos('${s.id}',this)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <div style="font-size:11px;margin-top:4px">Add Photos</div>
+            </label>`:''}
+          </div>
+        </div>
+      </div>`}
+    </div>`;
+  }).join('');
+  ebCalcSummary();
+}
+
+function ebApplyTemplate(svcId,catId){
+  if(!catId) return;
+  const cat=db.catalog.find(c=>c.id===catId);
+  if(!cat) return;
+  const s=ebServices.find(x=>x.id===svcId);
+  if(!s) return;
+  s.name=cat.desc;s.price=cat.price;s.qty=1;
+  ebRenderServices();toast('Template applied!','t-success');
+}
+
+function ebHandlePhotos(svcId,input){
+  const s=ebServices.find(x=>x.id===svcId);
+  if(!s) return;
+  const files=Array.from(input.files).slice(0,8-(s.photos||[]).length);
+  let loaded=0;
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      if(!s.photos) s.photos=[];
+      s.photos.push(e.target.result);
+      loaded++;
+      if(loaded===files.length) ebRenderServices();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function ebRemovePhoto(svcId,idx){
+  const s=ebServices.find(x=>x.id===svcId);
+  if(s&&s.photos){s.photos.splice(idx,1);ebRenderServices();}
+}
+
+function ebCalcSummary(){
+  const sub=ebServices.reduce((sum,s)=>sum+(+s.qty||1)*(+s.price||0),0);
+  const taxPct=+(document.getElementById('eb-tax')?.value||0)/100;
+  const disc=+(document.getElementById('eb-discount')?.value||0);
+  const taxAmt=sub*taxPct;
+  const total=Math.max(0,sub+taxAmt-disc);
+  setText('eb-subtotal','$'+sub.toFixed(2));
+  setText('eb-tax-amt','$'+taxAmt.toFixed(2));
+  setText('eb-disc-amt','-$'+disc.toFixed(2));
+  setText('eb-total','$'+total.toFixed(2));
+}
+function ebCalc(){ebCalcSummary();}
+
+function ebSearchClient(q){
+  const dd=document.getElementById('eb-client-dropdown');
+  if(!q||q.length<1){if(dd)dd.style.display='none';return;}
+  const matches=(db.clients||[]).filter(c=>
+    c.name.toLowerCase().includes(q.toLowerCase())||
+    (c.email||'').toLowerCase().includes(q.toLowerCase())).slice(0,6);
+  if(!matches.length){if(dd)dd.style.display='none';return;}
+  if(dd){
+    dd.innerHTML=matches.map(c=>`<div class="client-dropdown-item" onclick="ebSelectClient('${c.id}','${c.name.replace(/'/g,"\\'").replace(/"/g,"&quot;")}')">
+      <div style="font-weight:500;color:var(--text)">${c.name}</div>
+      ${c.email?`<div style="font-size:11px;color:var(--text3)">${c.email}</div>`:''}
+    </div>`).join('');
+    dd.style.display='';
+  }
+}
+
+function ebSelectClient(id,name){
+  const idEl=document.getElementById('eb-client-id');
+  const srchEl=document.getElementById('eb-client-search');
+  const dd=document.getElementById('eb-client-dropdown');
+  if(idEl) idEl.value=id;
+  if(srchEl) srchEl.value=name;
+  if(dd) dd.style.display='none';
+}
+
+function ebClear(){
+  ebEditId=null;
+  initEstimator(null);
+  toast('Form cleared');
+}
+
+function editEstInPage(id){
+  const est=db.estimates.find(e=>e.id===id);
+  if(!est) return;
+  go('estimator');
+  setTimeout(()=>initEstimator(est),50);
+}
+
+function ebSave(mode){
+  const desc=(document.getElementById('eb-desc')?.value||'').trim();
+  if(!desc){toast('Please add an estimate name','t-error');return;}
+  const clientId=document.getElementById('eb-client-id')?.value||'';
+  const clientName=(document.getElementById('eb-client-search')?.value||'').trim();
+  const client=db.clients.find(c=>c.id===clientId);
+  const clientEmail=client?client.email:'';
+  const tax=+(document.getElementById('eb-tax')?.value||0);
+  const discount=+(document.getElementById('eb-discount')?.value||0);
+  const notes=document.getElementById('eb-notes')?.value||'';
+  const terms=document.getElementById('eb-terms')?.value||'';
+  const date=document.getElementById('eb-date')?.value||new Date().toISOString().split('T')[0];
+  const items=ebServices.filter(s=>s.name||s.price).map(s=>({
+    desc:s.name||'Service',qty:s.qty||1,price:s.price||0,
+    notes:s.desc||'',photos:s.photos||[]
+  }));
+  if(!items.length){toast('Please add at least one service','t-error');return;}
+  if(ebEditId){
+    const est=db.estimates.find(e=>e.id===ebEditId);
+    if(est) Object.assign(est,{desc,clientName,clientEmail,clientId,items,tax,discount,notes,terms,date});
+  } else {
+    db.estimates.push({id:'e'+Date.now(),desc,clientName,clientEmail,clientId,
+      items,tax,discount,notes,terms,date,status:'Draft',created:new Date().toISOString()});
+  }
+  save();
+  toast((ebEditId?'Estimate updated':'Estimate created')+' successfully!','t-success');
+  const savedId=ebEditId||db.estimates[db.estimates.length-1]?.id;
+  ebEditId=null;
+  if(mode==='Send'){
+    go('estimates');
+    setTimeout(()=>{if(savedId) openEmailModal(savedId);},200);
+  } else {
+    go('estimates');
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// CALENDAR
+// ══════════════════════════════════════════════════════════
+let calDate=new Date(),calView='month',calAppts=[];
+
+function initCalendar(){
+  calAppts=db.calAppts||[];
+  calDate=new Date();
+  renderCalendar();
+  renderCalQueue();
+  updateCalTopbar();
+}
+function updateCalTopbar(){
+  const jobs=(db.estimates||[]).filter(e=>e.status==='Signed'&&!e.scheduledDate).length;
+  const appts=(db.calAppts||[]).length;
+  const el=document.getElementById('topbar-sub');
+  if(el&&document.getElementById('page-calendar')?.classList.contains('active'))
+    el.textContent=`${jobs} job${jobs!==1?'s':''} in queue · ${appts} appointment${appts!==1?'s':''}`;
+}
+function calToday(){calDate=new Date();renderCalendar();}
+function calNav(dir){
+  if(calView==='month') calDate=new Date(calDate.getFullYear(),calDate.getMonth()+dir,1);
+  else{calDate=new Date(calDate);calDate.setDate(calDate.getDate()+(dir*7));}
+  renderCalendar();
+}
+function calSetView(v){
+  calView=v;
+  ['month','week','queue'].forEach(x=>{
+    const b=document.getElementById('cal-view-'+x);
+    if(b) b.className='btn '+(x===v?'btn-secondary':'btn-ghost')+' btn-sm';
+  });
+  renderCalendar();
+}
+function renderCalendar(){
+  const grid=document.getElementById('cal-grid');if(!grid)return;
+  const now=new Date();
+  const mNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const titleEl=document.getElementById('cal-title');
+  if(calView==='month'){
+    if(titleEl) titleEl.textContent=mNames[calDate.getMonth()]+' '+calDate.getFullYear();
+    const first=new Date(calDate.getFullYear(),calDate.getMonth(),1);
+    const last=new Date(calDate.getFullYear(),calDate.getMonth()+1,0);
+    const pad=first.getDay();
+    let html='<div class="cal-grid-month">';
+    ['SUN','MON','TUE','WED','THU','FRI','SAT'].forEach(d=>html+=`<div class="cal-day-header">${d}</div>`);
+    for(let i=0;i<pad;i++){
+      const d=new Date(calDate.getFullYear(),calDate.getMonth(),-pad+i+1);
+      html+=`<div class="cal-day other-month"><div class="cal-day-num">${d.getDate()}</div></div>`;
+    }
+    for(let d=1;d<=last.getDate();d++){
+      const isToday=d===now.getDate()&&calDate.getMonth()===now.getMonth()&&calDate.getFullYear()===now.getFullYear();
+      const ds=`${calDate.getFullYear()}-${String(calDate.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const da=calAppts.filter(a=>a.date===ds);
+      const de=(db.estimates||[]).filter(e=>e.status==='Signed'&&e.scheduledDate===ds);
+      html+=`<div class="cal-day${isToday?' today':''}" onclick="calDayClick('${ds}')">
+        <div class="cal-day-num${isToday?' today-num':''}">${d}</div>
+        ${da.map(a=>`<div class="cal-event" onclick="event.stopPropagation();editAppt('${a.id}')">${a.title||'Appt'}</div>`).join('')}
+        ${de.map(e=>`<div class="cal-event green">${e.clientName||e.desc||'Job'}</div>`).join('')}
+      </div>`;
+    }
+    const remaining=(7-(pad+last.getDate())%7)%7;
+    for(let i=1;i<=remaining;i++) html+=`<div class="cal-day other-month"><div class="cal-day-num">${i}</div></div>`;
+    html+='</div>';
+    grid.innerHTML=html;
+  } else if(calView==='week'){
+    const ws=new Date(calDate);ws.setDate(calDate.getDate()-calDate.getDay());
+    const we=new Date(ws);we.setDate(ws.getDate()+6);
+    if(titleEl) titleEl.textContent=mNames[ws.getMonth()]+' '+ws.getDate()+' – '+mNames[we.getMonth()]+' '+we.getDate();
+    let html='<div class="cal-grid-month">';
+    ['SUN','MON','TUE','WED','THU','FRI','SAT'].forEach((day,i)=>{
+      const d=new Date(ws);d.setDate(ws.getDate()+i);
+      const isTod=d.toDateString()===now.toDateString();
+      html+=`<div class="cal-day-header">${day}<br><span style="font-size:14px;font-weight:700;color:${isTod?'var(--brand)':'var(--text)'}">${d.getDate()}</span></div>`;
+    });
+    ['SUN','MON','TUE','WED','THU','FRI','SAT'].forEach((_,i)=>{
+      const d=new Date(ws);d.setDate(ws.getDate()+i);
+      const ds=d.toISOString().split('T')[0];
+      const isTod=d.toDateString()===now.toDateString();
+      const da=calAppts.filter(a=>a.date===ds);
+      html+=`<div class="cal-day${isTod?' today':''}" style="min-height:160px" onclick="calDayClick('${ds}')">
+        ${da.map(a=>`<div class="cal-event" onclick="event.stopPropagation();editAppt('${a.id}')">${a.title||'Appt'}</div>`).join('')}
+      </div>`;
+    });
+    html+='</div>';
+    grid.innerHTML=html;
+  } else {
+    if(titleEl) titleEl.textContent='Queue View';
+    grid.innerHTML='<div style="padding:24px;color:var(--text3);text-align:center;font-size:13px">Manage unscheduled jobs in the queue panel →</div>';
+  }
+  updateCalTopbar();
+}
+function renderCalQueue(){
+  const el=document.getElementById('cal-queue-items');if(!el)return;
+  const q=(document.getElementById('cal-queue-search')?.value||'').toLowerCase();
+  const sort=document.getElementById('cal-sort')?.value||'signed';
+  let items=(db.estimates||[]).filter(e=>e.status==='Signed'&&!e.scheduledDate);
+  if(q) items=items.filter(e=>(e.clientName||'').toLowerCase().includes(q)||(e.desc||'').toLowerCase().includes(q));
+  if(sort==='amount') items.sort((a,b)=>calcEst(b).total-calcEst(a).total);
+  else if(sort==='client') items.sort((a,b)=>(a.clientName||'').localeCompare(b.clientName||''));
+  setText('cal-queue-count',items.length.toString());
+  if(!items.length){
+    el.innerHTML=`<div class="cal-queue-empty">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      No unscheduled jobs
+    </div>`;
+    return;
+  }
+  el.innerHTML=items.map(e=>{
+    const {total}=calcEst(e);
+    return`<div class="cal-queue-item" onclick="calScheduleEst('${e.id}')">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px">${e.clientName||'No client'}</div>
+      <div style="font-size:11px;color:var(--text3)">${e.desc||'No description'}</div>
+      <div style="font-size:12px;color:var(--brand);font-weight:600;margin-top:4px">${$f(total)}</div>
+    </div>`;
+  }).join('');
+}
+function calDayClick(ds){newApptModal(ds);}
+function calScheduleEst(estId){
+  const date=prompt('Schedule for date (YYYY-MM-DD):',new Date().toISOString().split('T')[0]);
+  if(!date) return;
+  const est=(db.estimates||[]).find(e=>e.id===estId);
+  if(est){est.scheduledDate=date;save();renderCalendar();renderCalQueue();toast('Job scheduled!','t-success');}
+}
+function newApptModal(date){
+  const d=date||new Date().toISOString().split('T')[0];
+  const title=prompt('Appointment title:','');if(!title) return;
+  const client=prompt('Client name (optional):','')||'';
+  if(!db.calAppts) db.calAppts=[];
+  db.calAppts.push({id:'a'+Date.now(),date:d,title,clientName:client,color:''});
+  calAppts=db.calAppts;save();renderCalendar();renderCalQueue();toast('Appointment added!','t-success');
+}
+function editAppt(id){
+  const a=(db.calAppts||[]).find(x=>x.id===id);if(!a)return;
+  const action=prompt(`"${a.title}" on ${a.date}\n\nEnter new title or type DELETE:`,'');
+  if(action===null) return;
+  if(action.toUpperCase()==='DELETE'){
+    db.calAppts=(db.calAppts||[]).filter(x=>x.id!==id);
+    calAppts=db.calAppts;save();renderCalendar();toast('Appointment removed');
+  } else if(action){a.title=action;save();renderCalendar();toast('Updated!','t-success');}
+}
+function toggleCalQueue(){
+  const q=document.getElementById('cal-queue');
+  if(q) q.style.display=q.style.display==='none'?'flex':'none';
+}
+
+// ══════════════════════════════════════════════════════════
+// DASHBOARD PERIOD FILTER
+// ══════════════════════════════════════════════════════════
+let dashPeriod='all';
+function dashSetPeriod(p){
+  dashPeriod=p;
+  document.querySelectorAll('.dash-period-btn').forEach(b=>b.classList.remove('active'));
+  const map={month:0,lastmonth:1,'3months':2,year:3,all:4};
+  const btns=document.querySelectorAll('.dash-period-btn');
+  if(btns[map[p]]) btns[map[p]].classList.add('active');
+  renderDash();
+}
+function dashFilterDate(ds){
+  if(!ds||dashPeriod==='all') return true;
+  const d=new Date(ds),now=new Date();
+  if(dashPeriod==='month') return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+  if(dashPeriod==='lastmonth'){const lm=new Date(now.getFullYear(),now.getMonth()-1,1);return d.getMonth()===lm.getMonth()&&d.getFullYear()===lm.getFullYear();}
+  if(dashPeriod==='3months'){const c=new Date(now);c.setMonth(c.getMonth()-3);return d>=c;}
+  if(dashPeriod==='year') return d.getFullYear()===now.getFullYear();
+  return true;
+}
+
+// ══════════════════════════════════════════════════════════
+// RICH TEXT EDITOR HELPER
+// ══════════════════════════════════════════════════════════
+function reCmd(cmd,val){document.execCommand(cmd,false,val||null);}
+
+// ══════════════════════════════════════════════════════════
+// LEADS (simple CRM)
+// ══════════════════════════════════════════════════════════
+function renderLeads(){
+  const el=document.getElementById('leads-list');if(!el)return;
+  if(!db.leads) db.leads=[];
+  if(!db.leads.length){
+    el.innerHTML=`<div style="text-align:center;padding:60px;color:var(--text3)">
+      <div style="font-size:40px;margin-bottom:12px">🎯</div>
+      <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px">No leads yet</div>
+      <div style="font-size:13px;margin-bottom:16px">Track potential clients before they become customers</div>
+      <button class="btn btn-primary" onclick="newLead()">+ Add First Lead</button>
+    </div>`;
+    return;
+  }
+  const stages=['New','Contacted','Qualified','Proposal','Won','Lost'];
+  const stageColors={New:'b-draft',Contacted:'b-sent',Qualified:'b-viewed',Proposal:'b-sent',Won:'b-signed',Lost:'b-declined'};
+  el.innerHTML=`<div class="card"><div class="table-wrap"><table>
+    <thead><tr><th>Name</th><th>Contact</th><th>Source</th><th>Stage</th><th>Value</th><th>Actions</th></tr></thead>
+    <tbody>${db.leads.map(l=>`<tr>
+      <td style="font-weight:500;color:var(--text)">${l.name||'—'}</td>
+      <td>${l.email||l.phone||'—'}</td>
+      <td>${l.source||'—'}</td>
+      <td><select onchange="updateLeadStage('${l.id}',this.value)" style="background:var(--surface2);border:1px solid var(--border2);border-radius:4px;padding:3px 6px;color:var(--text);font-size:11px;font-family:'Inter',sans-serif">
+        ${stages.map(s=>`<option value="${s}"${l.stage===s?' selected':''}>${s}</option>`).join('')}
+      </select></td>
+      <td style="color:var(--brand);font-weight:600">${l.value?$f(+l.value):'—'}</td>
+      <td><div class="flex-gap">
+        <button class="btn btn-ghost btn-sm" onclick="convertLeadToClient('${l.id}')">→ Client</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteLead('${l.id}')">Del</button>
+      </div></td>
+    </tr>`).join('')}</tbody>
+  </table></div></div>`;
+}
+function newLead(){
+  const name=prompt('Lead name:','');if(!name) return;
+  const email=prompt('Email (optional):','')||'';
+  const phone=prompt('Phone (optional):','')||'';
+  const source=prompt('Source (e.g. Referral, Website):','')||'';
+  const value=prompt('Estimated value ($):','')||'0';
+  if(!db.leads) db.leads=[];
+  db.leads.push({id:'l'+Date.now(),name,email,phone,source,value:+value||0,stage:'New',created:new Date().toISOString()});
+  save();renderLeads();toast(name+' added as lead!','t-success');
+}
+function updateLeadStage(id,stage){
+  const l=(db.leads||[]).find(x=>x.id===id);
+  if(l){l.stage=stage;save();toast('Stage updated','t-success');}
+}
+function convertLeadToClient(id){
+  const l=(db.leads||[]).find(x=>x.id===id);
+  if(!l) return;
+  if(!confirm(`Convert "${l.name}" to a client?`)) return;
+  db.clients.push({id:'c'+Date.now(),name:l.name,email:l.email||'',phone:l.phone||'',type:'Residential',address:''});
+  db.leads=(db.leads||[]).filter(x=>x.id!==id);
+  save();renderLeads();renderClients();toast(l.name+' converted to client!','t-success');
+}
+function deleteLead(id){
+  if(!confirm('Delete this lead?')) return;
+  db.leads=(db.leads||[]).filter(x=>x.id!==id);
+  save();renderLeads();toast('Lead deleted');
 }
 
 // ── INIT ───────────────────────────────────────────────────────────────
@@ -3389,126 +3001,87 @@ if(!window.location.search.includes('view=')){
 </body>
 </html><!-- ESTIMATOR PAGE -->
 <div class="page" id="page-estimator">
-<div class="content">
-  <div class="est-builder-wrap">
-    <!-- Left: form -->
-    <div class="est-builder-main">
-      <div class="section-card">
-        <div class="section-card-hd">
-          <div class="section-card-icon" style="background:var(--blue-bg)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#58a6ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          </div>
-          <div>
-            <div class="section-card-title">Estimate Details</div>
-            <div class="section-card-sub">Name your estimate and select a client</div>
-          </div>
-        </div>
-        <div class="section-card-body">
-          <div class="form-row cols-2">
-            <div class="form-group">
-              <label>Estimate Name</label>
-              <input type="text" id="eb-desc" placeholder="e.g. Backyard Renovation">
-            </div>
-            <div class="form-group" style="position:relative">
-              <label>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                Client
-              </label>
-              <input type="text" id="eb-client-search" placeholder="Type to search clients..." oninput="ebSearchClient(this.value)" autocomplete="off">
-              <input type="hidden" id="eb-client-id">
-              <div id="eb-client-dropdown" class="client-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:200"></div>
-            </div>
-          </div>
-          <div class="form-row cols-3" style="margin-top:4px">
-            <div class="form-group">
-              <label>Date</label>
-              <input type="date" id="eb-date">
-            </div>
-            <div class="form-group">
-              <label>Tax (%)</label>
-              <input type="number" id="eb-tax" placeholder="0" value="0" min="0" max="100">
-            </div>
-            <div class="form-group">
-              <label>Discount ($)</label>
-              <input type="number" id="eb-discount" placeholder="0" value="0" min="0">
-            </div>
-          </div>
-        </div>
-      </div>
+<div class="content" style="max-width:900px">
 
-      <!-- Services / Line Items -->
-      <div class="section-card">
-        <div class="section-card-hd">
-          <div class="section-card-icon" style="background:var(--green-bg)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </div>
-          <div style="flex:1">
-            <div class="section-card-title">Services</div>
-            <div class="section-card-sub">Add line items to your estimate</div>
-          </div>
-          <button class="btn btn-ghost btn-sm" onclick="ebAddFromCatalog()">+ From Templates</button>
-        </div>
-        <div class="section-card-body" style="padding:0">
-          <table style="width:100%;border-collapse:collapse">
-            <thead>
-              <tr style="background:var(--surface2)">
-                <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px">DESCRIPTION</th>
-                <th style="padding:10px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;width:80px">QTY</th>
-                <th style="padding:10px 8px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;width:120px">UNIT PRICE</th>
-                <th style="padding:10px 8px;text-align:right;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;width:100px">TOTAL</th>
-                <th style="width:40px"></th>
-              </tr>
-            </thead>
-            <tbody id="eb-items"></tbody>
-          </table>
-          <div style="padding:12px 16px;border-top:1px solid var(--border)">
-            <button class="btn btn-ghost" onclick="ebAddItem()" style="width:100%;justify-content:center;border:2px dashed var(--border2);border-radius:8px;padding:10px">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Add Service
-            </button>
-          </div>
-        </div>
+  <!-- Estimate Details card -->
+  <div class="section-card" style="margin-bottom:12px">
+    <div class="section-card-hd">
+      <div class="section-card-icon" style="background:var(--blue-bg)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#58a6ff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       </div>
-
-      <!-- Notes -->
-      <div class="section-card">
-        <div class="section-card-hd">
-          <div class="section-card-title">Notes & Terms</div>
-        </div>
-        <div class="section-card-body">
-          <div class="form-row cols-2">
-            <div class="form-group">
-              <label>Notes to Client</label>
-              <textarea id="eb-notes" rows="3" placeholder="Any additional notes for the client..."></textarea>
-            </div>
-            <div class="form-group">
-              <label>Payment Terms</label>
-              <textarea id="eb-terms" rows="3" placeholder="e.g. Due on receipt. 50% deposit required."></textarea>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Actions -->
-      <div style="display:flex;gap:10px;margin-top:4px">
-        <button class="btn btn-secondary" style="flex:1;justify-content:center;padding:14px" onclick="ebSave('Draft')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 12 7 12"/><polyline points="7 3 7 8 15 8"/></svg>
-          Save as Draft
-        </button>
-        <button class="btn btn-primary" style="flex:1;justify-content:center;padding:14px" onclick="ebSave('Send')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          Save & Send
-        </button>
+      <div>
+        <div class="section-card-title">Estimate Details</div>
+        <div class="section-card-sub">Name your estimate and select a client</div>
       </div>
     </div>
-
-    <!-- Right: summary -->
-    <div class="est-builder-side">
-      <div class="section-card" style="position:sticky;top:70px">
-        <div class="section-card-hd">
-          <div class="section-card-title">Summary</div>
+    <div class="section-card-body">
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label>Estimate Name</label>
+          <input type="text" id="eb-desc" placeholder="e.g. Backyard Renovation">
         </div>
-        <div class="section-card-body">
+        <div class="form-group" style="position:relative">
+          <label>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:3px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Client
+          </label>
+          <input type="text" id="eb-client-search" placeholder="Type to search clients..." oninput="ebSearchClient(this.value)" autocomplete="off">
+          <input type="hidden" id="eb-client-id">
+          <div id="eb-client-dropdown" class="client-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:300"></div>
+        </div>
+      </div>
+      <div class="form-row cols-3">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="eb-date">
+        </div>
+        <div class="form-group">
+          <label>Tax (%)</label>
+          <input type="number" id="eb-tax" placeholder="0" value="0" min="0" max="100" oninput="ebCalcSummary()">
+        </div>
+        <div class="form-group">
+          <label>Discount ($)</label>
+          <input type="number" id="eb-discount" placeholder="0" value="0" min="0" oninput="ebCalcSummary()">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Services container -->
+  <div id="eb-services-wrap"></div>
+
+  <!-- Add Service button -->
+  <div style="margin-bottom:12px">
+    <button class="btn btn-ghost" onclick="ebAddService()" style="width:100%;justify-content:center;border:2px dashed var(--border2);border-radius:10px;padding:14px;font-size:13px;gap:8px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Service
+    </button>
+  </div>
+
+  <!-- Notes & Terms -->
+  <div class="section-card" style="margin-bottom:12px">
+    <div class="section-card-hd">
+      <div class="section-card-title">Notes & Terms</div>
+    </div>
+    <div class="section-card-body">
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label>Notes to Client</label>
+          <textarea id="eb-notes" rows="3" placeholder="Any additional notes..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Payment Terms</label>
+          <textarea id="eb-terms" rows="3" placeholder="e.g. Due on receipt. 50% deposit required."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary + Actions -->
+  <div class="section-card" style="margin-bottom:12px">
+    <div class="section-card-body">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+        <div style="min-width:260px">
           <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)">
             <span style="color:var(--text2)">Subtotal</span><span id="eb-subtotal" style="color:var(--text)">$0.00</span>
           </div>
@@ -3518,23 +3091,30 @@ if(!window.location.search.includes('view=')){
           <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)">
             <span style="color:var(--text2)">Discount</span><span id="eb-disc-amt" style="color:var(--text)">-$0.00</span>
           </div>
-          <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:16px;font-weight:700;color:var(--text)">
-            <span>Total</span><span id="eb-total" style="color:var(--brand)">$0.00</span>
+          <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:16px;font-weight:700">
+            <span style="color:var(--text)">Total</span><span id="eb-total" style="color:var(--brand)">$0.00</span>
           </div>
         </div>
-        <div style="padding:0 20px 16px">
-          <div id="eb-editing-badge" style="display:none;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--amber);margin-bottom:10px">
-            ✏️ Editing existing estimate
-          </div>
-          <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center" onclick="ebClear()">Clear Form</button>
-        </div>
+      </div>
+      <div id="eb-editing-badge" style="display:none;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--amber);margin-bottom:12px">
+        ✏️ Editing existing estimate
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-secondary" style="flex:1;justify-content:center;padding:13px" onclick="ebSave('Draft')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 12 7 12"/></svg>
+          Save as Draft
+        </button>
+        <button class="btn btn-primary" style="flex:1;justify-content:center;padding:13px" onclick="ebSave('Send')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Save & Send
+        </button>
       </div>
     </div>
   </div>
+
 </div>
 </div>
 
-<!-- CALENDAR PAGE -->
 <div class="page" id="page-calendar">
 <div class="content" style="padding:0">
   <div class="cal-wrap">
