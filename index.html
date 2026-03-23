@@ -2960,6 +2960,133 @@ function initOverhead(){
 }
 
 
+
+// ══════════════════════════════════════════════════════════
+// SHARE LINK & CLIENT PAGE
+// ══════════════════════════════════════════════════════════
+function checkShareLink(){
+  try{
+    const params=new URLSearchParams(window.location.search);
+    const encoded=params.get('view');
+    if(!encoded)return;
+    const est=JSON.parse(atob(decodeURIComponent(encoded)));
+    const app=document.getElementById('main-app');
+    const cp=document.getElementById('client-page');
+    if(app)app.style.display='none';
+    if(cp){cp.style.display='';renderClientPage(est);}
+  }catch(e){console.warn('Share link parse error:',e);}
+}
+
+// ══════════════════════════════════════════════════════════
+// SETTINGS PIN
+// ══════════════════════════════════════════════════════════
+function saveOwnerPin(){
+  const p=document.getElementById('s-pin')?.value;
+  if(p&&p.replace(/•/g,'').length>0&&p.replace(/•/g,'').length<4){
+    toast('PIN must be at least 4 characters','t-error');return;
+  }
+  if(p&&!p.includes('•'))db.settings.ownerPin=p;
+  save();toast('PIN saved!','t-success');
+}
+function clearOwnerPin(){
+  db.settings.ownerPin='';save();
+  const el=document.getElementById('s-pin');if(el)el.value='';
+  toast('PIN cleared');
+}
+
+// ══════════════════════════════════════════════════════════
+// CLOUD SYNC HELPERS
+// ══════════════════════════════════════════════════════════
+function openSupabaseSetup(){go('cloud');}
+function cloudBackup(){saveToSupabase();}
+function testCloudSync(){
+  if(!sbClient||!currentUser){toast('Sign in to cloud sync first','t-error');return;}
+  saveToSupabase();toast('Syncing...','');
+}
+function saveSupabaseKeys(){
+  const url=document.getElementById('supa-url')?.value.trim();
+  const key=document.getElementById('supa-key')?.value.trim();
+  if(!url||!key){toast('Enter both URL and anon key','t-error');return;}
+  localStorage.setItem('ep2_supa_url',url);
+  localStorage.setItem('ep2_supa_anon',key);
+  initSupabase();
+  toast('Keys saved! Now sign in below.','t-success');
+}
+function supaTab(tab){
+  ['setup','signin','signup'].forEach(t=>{
+    const el=document.getElementById('supa-tab-'+t);
+    if(el)el.style.display=t===tab?'':'none';
+  });
+}
+async function supaForgot(){
+  if(!sbClient)return;
+  const email=document.getElementById('supa-email')?.value.trim()||
+               document.getElementById('supa-signin-email')?.value.trim();
+  if(!email){toast('Enter your email first','t-error');return;}
+  await sbClient.auth.resetPasswordForEmail(email);
+  toast('Password reset email sent!','t-success');
+}
+function supaMsg(id,msg,ok){
+  const el=document.getElementById(id);
+  if(el){el.textContent=msg;el.style.color=ok?'var(--green)':'var(--red)';}
+}
+
+// ══════════════════════════════════════════════════════════
+// FOLLOW-UPS & ACTIVITY & POLLING
+// ══════════════════════════════════════════════════════════
+function logActivity(type,clientName,desc,estId){
+  if(!db.activity)db.activity=[];
+  db.activity.unshift({type,clientName,desc,estId,ts:new Date().toISOString()});
+  db.activity=db.activity.slice(0,50);
+}
+function checkFollowUps(){
+  const ej=db.emailjs||{};
+  if(!ej.pubkey||!ej.service||!ej.fuTemplate)return;
+  if(typeof emailjs==='undefined')return;
+  const now=new Date();
+  (db.estimates||[]).forEach(e=>{
+    if(!['Sent','Viewed'].includes(e.status)||e.followUpSent)return;
+    const fuDate=e.followUpDate?new Date(e.followUpDate):null;
+    if(!fuDate||fuDate>now)return;
+    emailjs.init(ej.pubkey);
+    emailjs.send(ej.service,ej.fuTemplate,{
+      to_email:e.clientEmail||'',to_name:e.clientName||'Client',
+      from_name:db.settings.co||'EstimatePro',
+      estimate_number:estNum(e),estimate_total:$f(calcEst(e).total),
+      estimate_link:genShareLink(e),message:ej.fuMsg||'Following up on your estimate.'
+    }).then(()=>{e.followUpSent=true;save();logActivity('followup',e.clientName,e.desc,e.id);});
+  });
+}
+function pollForViewEvents(){
+  // Pipedream webhook polling - events come via webhook, stored in activity
+}
+
+// ══════════════════════════════════════════════════════════
+// CATALOG PICKER (load catalog items into estimate modal)
+// ══════════════════════════════════════════════════════════
+function renderPicker(){
+  const el=document.getElementById('picker-list');if(!el)return;
+  const items=db.catalog||[];
+  if(!items.length){
+    el.innerHTML='<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">No catalog items yet. Add items in Templates first.</div>';
+    return;
+  }
+  el.innerHTML=items.map(c=>`<div class="picker-item" onclick="addItemFromCatalog('${c.id}')">
+    <div style="font-weight:500;color:var(--text);font-size:13px">${c.desc}</div>
+    <div style="display:flex;justify-content:space-between;margin-top:4px">
+      <span style="font-size:11px;color:var(--text3)">${c.unit||'each'}</span>
+      <span style="font-size:13px;font-weight:600;color:var(--brand)">${$f(c.price)}</span>
+    </div>
+  </div>`).join('');
+}
+function addItemFromCatalog(catId){
+  const c=(db.catalog||[]).find(x=>x.id===catId);
+  if(!c)return;
+  addItem({desc:c.desc,qty:1,unit:c.unit||'',price:c.price||0});
+  close$('modal-picker');
+  toast(c.desc+' added!','t-success');
+}
+
 // ── INIT ───────────────────────────────────────────────────────────────
 try{
 load();
