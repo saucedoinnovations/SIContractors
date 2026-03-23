@@ -1309,6 +1309,130 @@ function toast(msg,type=''){
   clearTimeout(el._t); el._t=setTimeout(()=>el.className='toast',3000);
 }
 function close$(id){ document.getElementById(id).style.display='none'; }
+
+function open$(id){ 
+  const el=document.getElementById(id);
+  if(el) el.style.display='flex';
+}
+
+function newEst(){
+  const d=id=>document.getElementById(id);
+  if(d('eid')) d('eid').value='';
+  if(d('est-modal-title')) d('est-modal-title').textContent='New Estimate';
+  const today=new Date().toISOString().split('T')[0];
+  if(d('e-date')) d('e-date').value=today;
+  if(d('e-valid')){const v=new Date();v.setDate(v.getDate()+30);d('e-valid').value=v.toISOString().split('T')[0];}
+  if(d('e-status')) d('e-status').value='Draft';
+  if(d('e-desc')) d('e-desc').value='';
+  if(d('e-cname')) d('e-cname').value='';
+  if(d('e-cemail')) d('e-cemail').value='';
+  if(d('e-addr')) d('e-addr').value='';
+  if(d('e-tax')) d('e-tax').value=db.settings.tax||0;
+  if(d('e-discount')) d('e-discount').value=0;
+  if(d('e-notes')) d('e-notes').value=db.settings.notes||'';
+  if(d('e-terms')) d('e-terms').value=db.settings.terms||'';
+  // Populate client dropdown
+  if(d('e-client')){
+    d('e-client').innerHTML='<option value="">— Select Client —</option>'+
+      (db.clients||[]).map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  }
+  // Clear line items and add one blank
+  const tbody=d('items-body');
+  if(tbody){
+    tbody.innerHTML='';
+    addItem();
+  }
+  open$('modal-est');
+}
+
+function editEst(id){
+  const e=db.estimates.find(x=>x.id===id);
+  if(!e) return;
+  const d=el=>document.getElementById(el);
+  if(d('eid')) d('eid').value=e.id;
+  if(d('est-modal-title')) d('est-modal-title').textContent='Edit Estimate';
+  if(d('e-date')) d('e-date').value=e.date||'';
+  if(d('e-valid')) d('e-valid').value=e.validUntil||'';
+  if(d('e-status')) d('e-status').value=e.status||'Draft';
+  if(d('e-desc')) d('e-desc').value=e.desc||'';
+  if(d('e-cname')) d('e-cname').value=e.clientName||'';
+  if(d('e-cemail')) d('e-cemail').value=e.clientEmail||'';
+  if(d('e-addr')) d('e-addr').value=e.jobAddr||'';
+  if(d('e-tax')) d('e-tax').value=e.tax||0;
+  if(d('e-discount')) d('e-discount').value=e.discount||0;
+  if(d('e-notes')) d('e-notes').value=e.notes||'';
+  if(d('e-terms')) d('e-terms').value=e.terms||'';
+  if(d('e-client')){
+    d('e-client').innerHTML='<option value="">— Select Client —</option>'+
+      (db.clients||[]).map(c=>`<option value="${c.id}"${c.id===e.clientId?' selected':''}>${c.name}</option>`).join('');
+  }
+  const tbody=d('items-body');
+  if(tbody){
+    tbody.innerHTML='';
+    (e.items||[{desc:'',qty:1,unit:'',price:0}]).forEach(it=>addItem(it));
+  }
+  open$('modal-est');
+}
+
+function getEstFromForm(){
+  const g=id=>document.getElementById(id)?.value||'';
+  const clientId=g('e-client');
+  const client=(db.clients||[]).find(c=>c.id===clientId);
+  const items=[];
+  document.querySelectorAll('#items-body tr').forEach(row=>{
+    const inputs=row.querySelectorAll('input');
+    if(inputs.length>=3){
+      const desc=(inputs[0]?.value||'').trim();
+      const qty=+inputs[1]?.value||1;
+      const unit=inputs[2]?.value||'';
+      const price=+inputs[3]?.value||0;
+      if(desc||price) items.push({desc,qty,unit,price});
+    }
+  });
+  return{
+    desc:g('e-desc'),
+    clientId,
+    clientName:client?client.name:g('e-cname'),
+    clientEmail:client?client.email:g('e-cemail'),
+    jobAddr:g('e-addr'),
+    date:g('e-date'),
+    validUntil:g('e-valid'),
+    status:g('e-status')||'Draft',
+    tax:+g('e-tax')||0,
+    discount:+g('e-discount')||0,
+    notes:g('e-notes'),
+    terms:g('e-terms'),
+    items:items.length?items:[{desc:'Service',qty:1,unit:'',price:0}]
+  };
+}
+
+function saveEst(){
+  const data=getEstFromForm();
+  if(!data.desc.trim()){toast('Please enter a job description','t-error');return;}
+  const id=document.getElementById('eid')?.value;
+  if(id){
+    const existing=db.estimates.find(e=>e.id===id);
+    if(existing) Object.assign(existing,data);
+  } else {
+    db.estimates.push({id:uid(),...data,created:new Date().toISOString()});
+  }
+  save();
+  close$('modal-est');
+  renderEstList();
+  toast((id?'Estimate updated':'Estimate created')+'!','t-success');
+}
+
+function fillClientFromSelect(){
+  const sel=document.getElementById('e-client');
+  const client=(db.clients||[]).find(c=>c.id===sel?.value);
+  if(client){
+    const nm=document.getElementById('e-cname');
+    const em=document.getElementById('e-cemail');
+    if(nm) nm.value=client.name;
+    if(em) em.value=client.email||'';
+  }
+}
+
 function closeOverlay(e,id){ if(e.target.id===id) close$(id); }
 function estNum(e){ const idx=db.estimates.findIndex(x=>x.id===e.id); return 'EST-'+String(idx+1).padStart(4,'0'); }
 function calcEst(e){
@@ -2943,6 +3067,98 @@ function deleteLead(id){
   if(!confirm('Delete this lead?')) return;
   db.leads=(db.leads||[]).filter(x=>x.id!==id);
   save();renderLeads();toast('Lead deleted');
+}
+
+
+// ── LINE ITEMS (modal estimate form) ──
+function addItem(it){
+  const tbody=document.getElementById('items-body');
+  if(!tbody) return;
+  const tr=document.createElement('tr');
+  tr.innerHTML=`
+    <td><input type="text" value="${(it?.desc||'').replace(/"/g,'&quot;')}" placeholder="Description" style="width:100%"></td>
+    <td><input type="number" value="${it?.qty||1}" min="0" step="0.01" style="width:70px" oninput="recalcEst()"></td>
+    <td><input type="text" value="${it?.unit||''}" placeholder="ea" style="width:60px"></td>
+    <td><input type="number" value="${it?.price||0}" min="0" step="0.01" style="width:90px" oninput="recalcEst()"></td>
+    <td class="text-gold" style="text-align:right;white-space:nowrap">$${((it?.qty||1)*(it?.price||0)).toFixed(2)}</td>
+    <td><button class="btn btn-ghost btn-sm" onclick="this.closest('tr').remove();recalcEst()">✕</button></td>`;
+  tbody.appendChild(tr);
+  recalcEst();
+}
+
+function recalcEst(){
+  let sub=0;
+  document.querySelectorAll('#items-body tr').forEach(row=>{
+    const inputs=row.querySelectorAll('input[type=number]');
+    const qty=+inputs[0]?.value||0;
+    const price=+inputs[1]?.value||0;
+    const lineTotal=qty*price;
+    sub+=lineTotal;
+    const totalCell=row.querySelector('.text-gold');
+    if(totalCell) totalCell.textContent='$'+lineTotal.toFixed(2);
+  });
+  const taxPct=+(document.getElementById('e-tax')?.value||0)/100;
+  const disc=+(document.getElementById('e-discount')?.value||0);
+  const tax=sub*taxPct;
+  const total=Math.max(0,sub+tax-disc);
+  setText('est-subtotal','$'+sub.toFixed(2));
+  setText('est-tax-amt','$'+tax.toFixed(2));
+  setText('est-disc-amt','-$'+disc.toFixed(2));
+  setText('est-total','$'+total.toFixed(2));
+}
+
+function openCatalogPicker(){
+  const modal=document.getElementById('modal-picker');
+  if(!modal) return;
+  renderPicker();
+  open$('modal-picker');
+}
+
+// ── CLIENT MODAL ──
+function newClientModal(){ openClient(null); }
+
+// ── PHOTO UPLOAD ──
+function uploadPhoto(){
+  const input=document.getElementById('photo-file-input');
+  if(input) input.click();
+}
+
+// ── OVERHEAD FUNCTIONS (if not already defined) ──
+function ohAddTeam(){
+  if(typeof ohTeam==='undefined') return;
+  ohTeam.push({name:'',rate:0,hrs:40});
+  ohRenderTeam();ohCalc();
+}
+function ohSetPeriod(p){
+  if(typeof ohPeriod==='undefined') return;
+  ohPeriod=p;
+  ['monthly','annual'].forEach(x=>{
+    const btn=document.getElementById('oh-'+x+'-btn');
+    if(btn) btn.className='btn btn-'+(x===p?'primary':'ghost')+' btn-sm';
+  });
+  const hd=document.getElementById('oh-col-hd');
+  if(hd) hd.textContent=p==='annual'?'ANNUAL AMOUNT ($)':'MONTHLY AMOUNT ($)';
+  ohRenderCats();ohCalc();
+}
+function ohAddCat(){
+  if(typeof ohCats==='undefined') return;
+  ohCats.push({name:'Custom Expense',amt:0});
+  ohRenderCats();
+}
+function ohClearDefaults(){
+  if(typeof ohCats==='undefined') return;
+  if(confirm('Clear all overhead categories?')){ohCats=[];ohRenderCats();ohCalc();}
+}
+function ohRevMode(m){
+  const tg=document.getElementById('oh-rev-total-group');
+  const hg=document.getElementById('oh-rev-hrs-group');
+  if(tg) tg.style.display=m==='total'?'':'none';
+  if(hg) hg.style.display=m==='hours'?'':'none';
+  const tb=document.getElementById('oh-rev-total-btn');
+  const hb=document.getElementById('oh-rev-hrs-btn');
+  if(tb) tb.className='btn btn-'+(m==='total'?'primary':'ghost')+' btn-sm';
+  if(hb) hb.className='btn btn-'+(m==='hours'?'primary':'ghost')+' btn-sm';
+  if(typeof ohCalc==='function') ohCalc();
 }
 
 // ── INIT ───────────────────────────────────────────────────────────────
