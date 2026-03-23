@@ -1277,7 +1277,7 @@ tr:last-child td{border-bottom:none}
 <div class="modal" onclick="event.stopPropagation()">
   <div class="modal-hd"><h2>Load from Catalog</h2><button class="x-btn" onclick="close$('modal-picker')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="modal-body">
-    <input id="picker-search" placeholder="Search items…" oninput="renderPicker()" style="margin-bottom:12px">
+    <input id="picker-search" placeholder="Search items…" oninput="renderPicker()" style="width:100%;background:var(--surface2);border:1px solid var(--brand);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;margin-bottom:12px;outline:none;box-sizing:border-box">
     <div class="table-wrap"><table><thead><tr><th>Description</th><th>Unit</th><th>Price</th><th></th></tr></thead><tbody id="picker-body"></tbody></table></div>
   </div>
 </div>
@@ -2129,6 +2129,9 @@ function delPhoto(id){
 
 // ── CATALOG ────────────────────────────────────────────────────────────
 function renderCatalog() {
+  // Also refresh picker if it's open
+  const pickerModal=document.getElementById('modal-picker');
+  if(pickerModal&&pickerModal.style.display!=='none') renderPicker();
   const el = document.getElementById('catalog-content');
   if(!el) return;
   const q = (document.getElementById('catalog-search-input')?.value||'').toLowerCase();
@@ -2473,8 +2476,11 @@ function ohClearDefaults(){
 function openCatalogPicker(){
   const modal=document.getElementById('modal-picker');
   if(!modal) return;
+  const searchEl=document.getElementById('picker-search');
+  if(searchEl) searchEl.value='';
   renderPicker();
   open$('modal-picker');
+  setTimeout(()=>searchEl?.focus(), 100);
 }
 
 // ══════════════════════════════════════════════════════════
@@ -3074,19 +3080,21 @@ function pollForViewEvents(){
 // CATALOG PICKER (load catalog items into estimate modal)
 // ══════════════════════════════════════════════════════════
 function renderPicker(){
-  const el=document.getElementById('picker-list');if(!el)return;
-  const items=db.catalog||[];
+  // Search filter
+  const q=(document.getElementById('picker-search')?.value||'').toLowerCase();
+  let items=(db.catalog||[]).filter(c=>!q||(c.desc||'').toLowerCase().includes(q));
+  const el=document.getElementById('picker-body');
+  if(!el) return;
   if(!items.length){
-    el.innerHTML='<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">No catalog items yet. Add items in Templates first.</div>';
+    el.innerHTML='<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text3);font-size:13px">'+(q?'No matches':'No catalog items yet — add them in Templates first.')+'</td></tr>';
     return;
   }
-  el.innerHTML=items.map(c=>`<div class="picker-item" onclick="addItemFromCatalog('${c.id}')">
-    <div style="font-weight:500;color:var(--text);font-size:13px">${c.desc}</div>
-    <div style="display:flex;justify-content:space-between;margin-top:4px">
-      <span style="font-size:11px;color:var(--text3)">${c.unit||'each'}</span>
-      <span style="font-size:13px;font-weight:600;color:var(--brand)">${$f(c.price)}</span>
-    </div>
-  </div>`).join('');
+  el.innerHTML=items.map(c=>`<tr style="cursor:pointer" onclick="addItemFromCatalog('${c.id}')">
+    <td style="font-weight:500;color:var(--text)">${c.desc||'<em style=\'color:var(--text3)\'>Untitled</em>'}</td>
+    <td style="color:var(--text2)">${c.unit||'—'}</td>
+    <td style="color:var(--brand);font-weight:600">${$f(+c.price||0)}</td>
+    <td><button class="btn btn-primary btn-sm" onclick="event.stopPropagation();addItemFromCatalog('${c.id}')">Add</button></td>
+  </tr>`).join('');
 }
 function addItemFromCatalog(catId){
   const c=(db.catalog||[]).find(x=>x.id===catId);
@@ -3149,8 +3157,7 @@ if(!window.location.search.includes('view=')){
   }
 }
 </script>
-</body>
-</html><!-- ESTIMATOR PAGE -->
+<!-- ESTIMATOR PAGE -->
 <div class="page" id="page-estimator">
 <div class="content" style="max-width:900px">
 
@@ -3308,5 +3315,5 @@ if(!window.location.search.includes('view=')){
   </div>
 </div>
 </div>
-
-
+</body>
+</html>
