@@ -412,6 +412,11 @@ tr:last-child td{border-bottom:none}
 
 /* ── FORM COLS ── */
 .cols-3{grid-template-columns:repeat(3,1fr)!important}
+
+/* ── ITEM ROWS ── */
+.item-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)}
+.item-row input{background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px}
+.item-row input:focus{outline:none;border-color:var(--brand)}
 @media print{
   .sidebar,.mob-nav,.mob-fab,.btn,.x-btn,.overlay,.toast,.topbar{display:none!important}
   .main{margin-left:0}
@@ -1337,9 +1342,9 @@ function newEst(){
       (db.clients||[]).map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   }
   // Clear line items and add one blank
-  const tbody=d('items-body');
-  if(tbody){
-    tbody.innerHTML='';
+  const wrap=d('items-wrap');
+  if(wrap){
+    wrap.innerHTML='';
     addItem();
   }
   open$('modal-est');
@@ -1366,9 +1371,9 @@ function editEst(id){
     d('e-client').innerHTML='<option value="">— Select Client —</option>'+
       (db.clients||[]).map(c=>`<option value="${c.id}"${c.id===e.clientId?' selected':''}>${c.name}</option>`).join('');
   }
-  const tbody=d('items-body');
-  if(tbody){
-    tbody.innerHTML='';
+  const wrap2=d('items-wrap');
+  if(wrap2){
+    wrap2.innerHTML='';
     (e.items||[{desc:'',qty:1,unit:'',price:0}]).forEach(it=>addItem(it));
   }
   open$('modal-est');
@@ -1379,15 +1384,12 @@ function getEstFromForm(){
   const clientId=g('e-client');
   const client=(db.clients||[]).find(c=>c.id===clientId);
   const items=[];
-  document.querySelectorAll('#items-body tr').forEach(row=>{
-    const inputs=row.querySelectorAll('input');
-    if(inputs.length>=3){
-      const desc=(inputs[0]?.value||'').trim();
-      const qty=+inputs[1]?.value||1;
-      const unit=inputs[2]?.value||'';
-      const price=+inputs[3]?.value||0;
-      if(desc||price) items.push({desc,qty,unit,price});
-    }
+  document.querySelectorAll('#items-wrap .item-row').forEach(row=>{
+    const desc=(row.querySelector('.item-desc')?.value||'').trim();
+    const qty=+row.querySelector('.item-qty')?.value||1;
+    const unit=row.querySelector('.item-unit')?.value||'';
+    const price=+row.querySelector('.item-price')?.value||0;
+    if(desc||price) items.push({desc,qty,unit,price});
   });
   return{
     desc:g('e-desc'),
@@ -2274,192 +2276,306 @@ function ohSaveSettings() {
 }
 
 // Load saved overhead settings
-function initOverhead(){
-  if(db.settings?.ohTeam && db.settings.ohTeam.length) ohTeam=db.settings.ohTeam;
-  if(db.settings?.ohCats && db.settings.ohCats.length) ohCats=db.settings.ohCats;
-  if(db.settings?.ohPeriod) { ohPeriod=db.settings.ohPeriod; ohSetPeriod(ohPeriod); }
-  setTimeout(()=>{
-    ohRenderTeam();ohRenderCats();
-    if(db.settings?.ohProfitPct) { const el=document.getElementById('oh-profit-pct'); if(el) el.value=db.settings.ohProfitPct; }
-    if(db.settings?.ohWeeks) { const el=document.getElementById('oh-weeks'); if(el) el.value=db.settings.ohWeeks; }
-    if(db.settings?.ohRevTotal) { const el=document.getElementById('oh-rev-total'); if(el) el.value=db.settings.ohRevTotal; }
-    ohCalc();
-  },10);
+
+// ══════════════════════════════════════════════════════════
+// OVERHEAD CALCULATOR - variables and render functions
+// ══════════════════════════════════════════════════════════
+let ohPeriod='annual';
+let ohTeam=[{name:'',rate:0,hrs:40}];
+let ohCats=[
+  {name:'Office / Shop Rent',amt:0},
+  {name:'Insurance (Liability, Workers Comp, Vehicle)',amt:0},
+  {name:'Utilities (Electric, Water, Gas, Internet, Phone)',amt:0},
+  {name:'Office Staff / Admin Salaries',amt:0},
+  {name:'Vehicle Costs (Fuel, Maintenance, Payments)',amt:0},
+  {name:'Tools & Equipment (Purchases, Repairs, Rentals)',amt:0},
+  {name:'Licenses & Permits',amt:0},
+  {name:'Accounting / Legal / Professional Services',amt:0},
+  {name:'Marketing & Advertising',amt:0},
+  {name:'Other Fixed Overhead Costs',amt:0}
+];
+let ohRevMode_='total';
+
+function ohDelTeam(i){
+  ohTeam.splice(i,1);
+  if(!ohTeam.length) ohTeam=[{name:'',rate:0,hrs:40}];
+  ohRenderTeam();ohCalc();
+}
+function ohDelCat(i){ohCats.splice(i,1);ohRenderCats();ohCalc();}
+function ohRenderTeamHero(){}
+
+function ohRenderTeam(){
+  const el=document.getElementById('oh-team-rows');
+  if(!el) return;
+  el.innerHTML=ohTeam.map((t,i)=>`<tr>
+    <td style="padding:6px 0">
+      <input type="text" placeholder="Employee name" value="${(t.name||'').replace(/"/g,'&quot;')}"
+        oninput="ohTeam[${i}].name=this.value"
+        style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;width:100%">
+    </td>
+    <td style="padding:6px 6px">
+      <input type="number" value="${t.rate||0}"
+        oninput="ohTeam[${i}].rate=+this.value;ohCalc()"
+        style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;width:90px">
+    </td>
+    <td style="padding:6px 6px">
+      <input type="number" value="${t.hrs||40}"
+        oninput="ohTeam[${i}].hrs=+this.value;ohCalc()"
+        style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;width:80px">
+    </td>
+    <td style="padding:6px 0">
+      <button class="btn btn-ghost btn-sm" onclick="ohDelTeam(${i})">🗑</button>
+    </td>
+  </tr>`).join('');
 }
 
+function ohRenderCats(){
+  const el=document.getElementById('oh-cat-rows');
+  if(!el) return;
+  el.innerHTML=ohCats.map((c,i)=>`<tr>
+    <td style="padding:8px 0;color:var(--text2);font-size:13px">${c.name}</td>
+    <td style="padding:8px 4px">
+      <input type="number" value="${c.amt||0}"
+        oninput="ohCats[${i}].amt=+this.value;ohCalc()"
+        style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;width:120px">
+    </td>
+    <td style="padding:8px 4px;color:var(--text3);font-size:13px" id="oh-cat-m-${i}">
+      ${$f(ohPeriod==='annual'?(c.amt||0)/12:((c.amt||0)*12))}
+    </td>
+    <td><button class="btn btn-ghost btn-sm" onclick="ohDelCat(${i})">🗑</button></td>
+  </tr>`).join('');
+}
+
+function ohCalc(){
+  const weeks=+(document.getElementById('oh-weeks')?.value||52);
+  const totalHrsWeek=ohTeam.reduce((s,t)=>s+(+t.hrs||0),0);
+  const billableHrsMonth=Math.round(totalHrsWeek*(weeks/12));
+  const laborMonthly=ohTeam.reduce((s,t)=>s+((+t.rate||0)*(+t.hrs||0)*weeks/12),0);
+  const totalOhAnnual=ohCats.reduce((s,c)=>s+(ohPeriod==='annual'?(+c.amt||0):(+c.amt||0)*12),0);
+  const totalOhMonthly=totalOhAnnual/12;
+
+  // Update monthly column in cats
+  ohCats.forEach((c,i)=>{
+    const el=document.getElementById('oh-cat-m-'+i);
+    if(el) el.textContent=$f(ohPeriod==='annual'?(+c.amt||0)/12:((+c.amt||0)*12));
+  });
+
+  const totalMonthly=laborMonthly+totalOhMonthly;
+  const profitPct=+(document.getElementById('oh-profit-pct')?.value||0)/100;
+  const revenueNeeded=profitPct<1?totalMonthly/(1-profitPct):totalMonthly;
+  const billableRate=billableHrsMonth>0?revenueNeeded/billableHrsMonth:0;
+
+  // Revenue for overhead rate
+  let annualRev=0;
+  if(ohRevMode_==='total'){
+    annualRev=+(document.getElementById('oh-rev-total')?.value||0);
+  } else {
+    const h=+(document.getElementById('oh-rev-hrs')?.value||0);
+    const r=+(document.getElementById('oh-rev-rate')?.value||0);
+    annualRev=h*r*weeks;
+  }
+  const ohRate=annualRev>0?Math.round(totalOhAnnual/annualRev*100):0;
+  const cpp=annualRev>0?totalOhAnnual/annualRev:0;
+
+  setText('oh-hero-rate','$'+billableRate.toFixed(2));
+  setText('oh-hero-hrs',billableHrsMonth.toString());
+  setText('oh-hero-rev',$f(revenueNeeded));
+  setText('oh-bd-labor',$f(billableHrsMonth>0?laborMonthly/Math.max(billableHrsMonth,1):0));
+  setText('oh-bd-overhead',$f(billableHrsMonth>0?totalOhMonthly/billableHrsMonth:0));
+  setText('oh-bd-rate','$'+billableRate.toFixed(2));
+  setText('oh-sum-annual',$f(totalOhAnnual));
+  setText('oh-sum-monthly',$f(totalOhMonthly));
+  setText('oh-sum-ohrate',ohRate+'%');
+  setText('oh-sum-cpp','$'+cpp.toFixed(3));
+  setText('oh-ms-labor-lbl','Labor ('+ohTeam.length+')');
+  setText('oh-ms-labor',$f(laborMonthly));
+  setText('oh-ms-overhead',$f(totalOhMonthly));
+  setText('oh-ms-total',$f(totalMonthly));
+  setText('oh-ms-needed',$f(revenueNeeded));
+  setText('oh-ms-hrs',billableHrsMonth+' hrs');
+  setText('oh-total-annual',$f(totalOhAnnual));
+  setText('oh-total-monthly',$f(totalOhMonthly));
+}
+
+
+// ── LINE ITEMS (estimate modal) ──
+function addItem(it){
+  const wrap=document.getElementById('items-wrap');
+  if(!wrap) return;
+  const rowId='item_'+Date.now()+'_'+Math.floor(Math.random()*9999);
+  const row=document.createElement('div');
+  row.className='item-row'; row.id=rowId;
+  const qty=it?.qty||1; const price=it?.price||0;
+  row.innerHTML=`<input type="text" class="item-desc" value="${(it?.desc||'').replace(/"/g,'&quot;')}" placeholder="Description" style="flex:3;min-width:0">
+    <input type="number" class="item-qty" value="${qty}" min="0" step="0.01" style="width:65px" oninput="recalcEst()">
+    <input type="text" class="item-unit" value="${it?.unit||''}" placeholder="ea" style="width:55px">
+    <input type="number" class="item-price" value="${price}" min="0" step="0.01" style="width:90px" oninput="recalcEst()">
+    <span class="item-total text-gold" style="width:80px;text-align:right;font-size:13px;font-weight:600">$${(qty*price).toFixed(2)}</span>
+    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('${rowId}').remove();recalcEst()" style="padding:4px 8px">✕</button>`;
+  wrap.appendChild(row);
+  recalcEst();
+}
+
+function recalcEst(){
+  let sub=0;
+  document.querySelectorAll('#items-wrap .item-row').forEach(row=>{
+    const qty=+row.querySelector('.item-qty')?.value||0;
+    const price=+row.querySelector('.item-price')?.value||0;
+    const lt=qty*price; sub+=lt;
+    const t=row.querySelector('.item-total'); if(t) t.textContent='$'+lt.toFixed(2);
+  });
+  const taxPct=+(document.getElementById('e-tax')?.value||0)/100;
+  const disc=+(document.getElementById('e-discount')?.value||0);
+  const tax=sub*taxPct; const total=Math.max(0,sub+tax-disc);
+  setText('est-subtotal','$'+sub.toFixed(2));
+  setText('est-tax-amt','$'+tax.toFixed(2));
+  setText('est-disc-amt','-$'+disc.toFixed(2));
+  setText('est-total','$'+total.toFixed(2));
+}
+
+// ── OVERHEAD BUTTON FUNCTIONS ──
+function ohSetPeriod(p){
+  ohPeriod=p;
+  ['monthly','annual'].forEach(x=>{
+    const btn=document.getElementById('oh-'+x+'-btn');
+    if(btn) btn.className='btn btn-'+(x===p?'primary':'ghost')+' btn-sm';
+  });
+  const hd=document.getElementById('oh-col-hd');
+  if(hd) hd.textContent=p==='annual'?'ANNUAL AMOUNT ($)':'MONTHLY AMOUNT ($)';
+  ohRenderCats(); ohCalc();
+}
+function ohRevMode(m){
+  ohRevMode_=m;
+  const tg=document.getElementById('oh-rev-total-group');
+  const hg=document.getElementById('oh-rev-hrs-group');
+  if(tg) tg.style.display=m==='total'?'':'none';
+  if(hg) hg.style.display=m==='hours'?'':'none';
+  const tb=document.getElementById('oh-rev-total-btn');
+  const hb=document.getElementById('oh-rev-hrs-btn');
+  if(tb) tb.className='btn btn-'+(m==='total'?'primary':'ghost')+' btn-sm';
+  if(hb) hb.className='btn btn-'+(m==='hours'?'primary':'ghost')+' btn-sm';
+  ohCalc();
+}
+function ohAddTeam(){
+  ohTeam.push({name:'',rate:0,hrs:40});
+  ohRenderTeam(); ohCalc();
+}
+function ohAddCat(){
+  ohCats.push({name:'Custom Expense',amt:0});
+  ohRenderCats();
+}
+function ohClearDefaults(){
+  if(confirm('Clear all overhead categories?')){ohCats=[];ohRenderCats();ohCalc();}
+}
+
+// ── CATALOG PICKER (from catalog into estimate) ──
+function openCatalogPicker(){
+  const modal=document.getElementById('modal-picker');
+  if(!modal) return;
+  renderPicker();
+  open$('modal-picker');
+}
+
+// ══════════════════════════════════════════════════════════
+// CORE UTILITIES
+// ══════════════════════════════════════════════════════════
+function setText(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
 
 // ══════════════════════════════════════════════════════════
 // SETTINGS & EMAIL
 // ══════════════════════════════════════════════════════════
 function loadSettings(){
-  const s=db.settings;
-  ['co','own','ph','em','addr','web','lic'].forEach(k=>{
-    const el=document.getElementById('s-'+k);
-    if(el) el.value=s[k]||'';
-  });
-  const t=document.getElementById('s-tax');if(t) t.value=s.tax||0;
-  const tn=document.getElementById('s-terms');if(tn) tn.value=s.terms||'';
-  const n=document.getElementById('s-notes');if(n) n.value=s.notes||'';
-  const p=document.getElementById('s-pin');if(p) p.value=s.ownerPin?'••••••':'';
+  const s=db.settings||{};
+  ['co','own','ph','em','addr','web','lic'].forEach(k=>{const el=document.getElementById('s-'+k);if(el)el.value=s[k]||'';});
+  const t=document.getElementById('s-tax');if(t)t.value=s.tax||0;
+  const tn=document.getElementById('s-terms');if(tn)tn.value=s.terms||'';
+  const n=document.getElementById('s-notes');if(n)n.value=s.notes||'';
+  const p=document.getElementById('s-pin');if(p)p.value=s.ownerPin?'••••••':'';
 }
 function saveSettings(){
-  ['co','own','ph','em','addr','web','lic'].forEach(k=>{
-    const el=document.getElementById('s-'+k);
-    if(el) db.settings[k]=el.value;
-  });
-  const t=document.getElementById('s-tax');if(t) db.settings.tax=+t.value||0;
-  const tn=document.getElementById('s-terms');if(tn) db.settings.terms=tn.value;
-  const n=document.getElementById('s-notes');if(n) db.settings.notes=n.value;
-  save(); toast('Settings saved!','t-success');
+  ['co','own','ph','em','addr','web','lic'].forEach(k=>{const el=document.getElementById('s-'+k);if(el)db.settings[k]=el.value;});
+  const t=document.getElementById('s-tax');if(t)db.settings.tax=+t.value||0;
+  const tn=document.getElementById('s-terms');if(tn)db.settings.terms=tn.value;
+  const n=document.getElementById('s-notes');if(n)db.settings.notes=n.value;
+  save();toast('Settings saved!','t-success');
 }
 function loadEmailSettings(){
-  const ej=db.emailjs;
+  const ej=db.emailjs||{};
   const f=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
   f('ej-pubkey',ej.pubkey);f('ej-service',ej.service);f('ej-template',ej.template);
   f('ej-msg',ej.message);f('ej-webhook',ej.webhook);
-  f('ej-fu-template',ej.fuTemplate);f('ej-fu-msg',ej.fuMsg);
-  f('ej-fu-days',ej.fuDays||3);
+  f('ej-fu-template',ej.fuTemplate);f('ej-fu-msg',ej.fuMsg);f('ej-fu-days',ej.fuDays||3);
 }
 function saveEmailSettings(){
   const g=id=>document.getElementById(id)?.value||'';
   db.emailjs={pubkey:g('ej-pubkey'),service:g('ej-service'),template:g('ej-template'),
     message:g('ej-msg'),webhook:g('ej-webhook'),fuTemplate:g('ej-fu-template'),
     fuMsg:g('ej-fu-msg'),fuDays:+g('ej-fu-days')||3};
-  save(); toast('Email settings saved!','t-success');
-}
-function testEmail(){
-  const ej=db.emailjs;
-  if(!ej.pubkey||!ej.service||!ej.template){toast('Configure EmailJS settings first','t-error');return;}
-  emailjs.init(ej.pubkey);
-  emailjs.send(ej.service,ej.template,{
-    to_email:db.settings.em||'test@example.com',to_name:'Test',
-    from_name:db.settings.co||'EstimatePro',estimate_number:'EST-001',
-    estimate_total:'$1,000.00',estimate_link:window.location.href,message:'Test email!'
-  }).then(()=>toast('✅ Test email sent!','t-success')).catch(e=>toast('❌ '+e.text,'t-error'));
+  save();toast('Email settings saved!','t-success');
 }
 
 // ══════════════════════════════════════════════════════════
 // TEAM
 // ══════════════════════════════════════════════════════════
 function renderTeam(){
-  if(!db.team) db.team=[];
+  if(!db.team)db.team=[];
   const el=document.getElementById('team-list');if(!el)return;
-  if(!db.team.length){
-    el.innerHTML='<div style="text-align:center;padding:24px;color:var(--text3);font-size:12px">No team members yet.</div>';
-    return;
-  }
+  if(!db.team.length){el.innerHTML='<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">No team members yet.</div>';return;}
   el.innerHTML=db.team.map(m=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)">
-    <div>
-      <div style="font-weight:500;color:var(--text)">${m.name}</div>
-      <div style="font-size:11px;color:var(--text3)">${m.role||'Member'} · PIN: ${m.pin?'••••':'Not set'}</div>
-    </div>
-    <div style="display:flex;gap:6px">
-      <button class="btn btn-ghost btn-sm" onclick="toggleMember('${m.id}')">
-        ${m.active?'Deactivate':'Activate'}
-      </button>
+    <div><div style="font-weight:500;color:var(--text)">${m.name}</div><div style="font-size:11px;color:var(--text3)">${m.role||'Member'} · PIN: ${m.pin?'••••':'Not set'}</div></div>
+    <div class="flex-gap">
+      <button class="btn btn-ghost btn-sm" onclick="toggleMember('${m.id}')">${m.active?'Deactivate':'Activate'}</button>
       <button class="btn btn-danger btn-sm" onclick="deleteMember('${m.id}')">Remove</button>
-    </div>
-  </div>`).join('');
+    </div></div>`).join('');
 }
 function openAddMember(){
-  const name=prompt('Team member name:');
-  if(!name) return;
-  const role=prompt('Role (e.g. Foreman, Estimator):','Member')||'Member';
+  const name=prompt('Team member name:');if(!name)return;
+  const role=prompt('Role:','Member')||'Member';
   const pin=prompt('4-digit PIN (optional):','')||'';
-  if(!db.team) db.team=[];
+  if(!db.team)db.team=[];
   db.team.push({id:uid(),name,role,pin,active:true});
-  save(); renderTeam(); toast(`${name} added to team!`,'t-success');
+  save();renderTeam();toast(name+' added!','t-success');
 }
-function newTeamMember(){ openAddMember(); }
-function toggleMember(id){
-  const m=(db.team||[]).find(x=>x.id===id);
-  if(m){m.active=!m.active;save();renderTeam();}
-}
-function deleteMember(id){
-  if(!confirm('Remove this team member?')) return;
-  db.team=(db.team||[]).filter(x=>x.id!==id);
-  save(); renderTeam(); toast('Member removed');
-}
-function checkPinLock(){return true;}
-function saveOwnerPin(){
-  const p=document.getElementById('s-pin')?.value;
-  if(p&&p.length<4){toast('PIN must be at least 4 characters','t-error');return;}
-  db.settings.ownerPin=p||'';save();toast('PIN saved!','t-success');
-}
-function clearOwnerPin(){db.settings.ownerPin='';save();const el=document.getElementById('s-pin');if(el)el.value='';toast('PIN cleared');}
+function newTeamMember(){openAddMember();}
+function toggleMember(id){const m=(db.team||[]).find(x=>x.id===id);if(m){m.active=!m.active;save();renderTeam();}}
+function deleteMember(id){if(!confirm('Remove?'))return;db.team=(db.team||[]).filter(x=>x.id!==id);save();renderTeam();toast('Removed');}
+function newClientModal(){openClient(null);}
+function uploadPhoto(){const i=document.getElementById('photo-file-input');if(i)i.click();}
 
 // ══════════════════════════════════════════════════════════
-// DATA / EXPORT / IMPORT
+// DATA
 // ══════════════════════════════════════════════════════════
 function exportData(){
   const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='estimatepro-backup-'+new Date().toISOString().split('T')[0]+'.json';
-  a.click();
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='estimatepro-'+new Date().toISOString().split('T')[0]+'.json';a.click();
   toast('Backup downloaded!','t-success');
 }
 function importData(){
-  const input=document.createElement('input');
-  input.type='file';input.accept='.json';
+  const input=document.createElement('input');input.type='file';input.accept='.json';
   input.onchange=e=>{
-    const file=e.target.files[0];if(!file)return;
     const reader=new FileReader();
     reader.onload=ev=>{
-      try{
-        const data=JSON.parse(ev.target.result);
-        Object.assign(db,data);save();renderDash();
-        toast('Data imported successfully!','t-success');
-      } catch(err){toast('Invalid backup file','t-error');}
+      try{Object.assign(db,JSON.parse(ev.target.result));save();renderDash();toast('Imported!','t-success');}
+      catch(err){toast('Invalid file','t-error');}
     };
-    reader.readAsText(file);
+    reader.readAsText(e.target.files[0]);
   };
   input.click();
 }
 function nukeData(){
-  if(!confirm('DELETE ALL DATA? This cannot be undone!')) return;
-  if(!confirm('Are you absolutely sure? All estimates, clients, and settings will be lost.')) return;
-  localStorage.removeItem('ep2_db');
-  location.reload();
+  if(!confirm('DELETE ALL DATA? Cannot be undone!'))return;
+  if(!confirm('Are you absolutely sure?'))return;
+  localStorage.removeItem(DBKEY);location.reload();
+}
+function signOut(){
+  if(sbClient)sbClient.auth.signOut();
+  currentUser=null;updateSyncStatus('offline');toast('Signed out');
 }
 
 // ══════════════════════════════════════════════════════════
-// FOLLOW-UPS & ACTIVITY
+// CLOUD SYNC
 // ══════════════════════════════════════════════════════════
-function logActivity(type,clientName,desc,estId){
-  if(!db.activity) db.activity=[];
-  db.activity.unshift({type,clientName,desc,estId,ts:new Date().toISOString()});
-  db.activity=db.activity.slice(0,50);
-}
-function checkFollowUps(){
-  const ej=db.emailjs;
-  if(!ej.pubkey||!ej.service||!ej.fuTemplate) return;
-  const now=new Date();
-  db.estimates.forEach(e=>{
-    if(!['Sent','Viewed'].includes(e.status)) return;
-    if(e.followUpSent) return;
-    const fuDate=e.followUpDate?new Date(e.followUpDate):null;
-    if(fuDate&&fuDate<=now){
-      emailjs.init(ej.pubkey);
-      emailjs.send(ej.service,ej.fuTemplate,{
-        to_email:e.clientEmail||'',to_name:e.clientName||'Client',
-        from_name:db.settings.co||'EstimatePro',
-        estimate_number:estNum(e),estimate_total:$f(calcEst(e).total),
-        estimate_link:genShareLink(e),message:ej.fuMsg||'Following up on your estimate.'
-      }).then(()=>{e.followUpSent=true;save();logActivity('followup',e.clientName,e.desc,e.id);});
-    }
-  });
-}
-function pollForViewEvents(){
-  const ej=db.emailjs;
-  if(!ej.webhook) return;
-  // Webhook polling handled by Pipedream - just check localStorage for queued events
-}
-
-// ══════════════════════════════════════════════════════════
-// CLOUD SYNC (Supabase)
-// ══════════════════════════════════════════════════════════
-// sbClient, currentUser, DBKEY declared earlier
 function initSupabase(){
   try{
     const url=localStorage.getItem('ep2_supa_url');
@@ -2467,53 +2583,27 @@ function initSupabase(){
     if(!url||!key||!window.supabase){updateSyncStatus('offline');return;}
     sbClient=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
     updateSyncStatus('offline');
-  } catch(e){updateSyncStatus('offline');}
+  }catch(e){updateSyncStatus('offline');}
 }
 function updateSyncStatus(status,email){
-  const el=document.getElementById('sync-status');
-  if(!el) return;
+  const el=document.getElementById('sync-status');if(!el)return;
   const map={connected:'🟢 Connected'+(email?' · '+email:''),offline:'⚪ Not connected',syncing:'🔄 Syncing...'};
   el.textContent=map[status]||status;
 }
 async function saveToSupabase(){
-  if(!sbClient||!currentUser) return;
+  if(!sbClient||!currentUser)return;
   try{
     updateSyncStatus('syncing');
     await sbClient.from('estimatepro_data').upsert({user_id:currentUser.id,data:JSON.stringify(db),updated_at:new Date().toISOString()});
     updateSyncStatus('connected',currentUser.email);
-  } catch(e){updateSyncStatus('offline');}
+  }catch(e){updateSyncStatus('offline');}
 }
 async function loadFromSupabase(){
-  if(!sbClient||!currentUser) return;
+  if(!sbClient||!currentUser)return;
   try{
     const {data}=await sbClient.from('estimatepro_data').select('data').eq('user_id',currentUser.id).single();
     if(data?.data){Object.assign(db,JSON.parse(data.data));save();}
-  } catch(e){}
-}
-function supaTab(tab){
-  ['setup','signin','signup','forgot'].forEach(t=>{
-    const el=document.getElementById('supa-tab-'+t);
-    if(el) el.style.display=t===tab?'':'none';
-  });
-}
-function openSupabaseSetup(){go('cloud');}
-function saveSupabaseKeys(){
-  const url=document.getElementById('supa-url')?.value.trim();
-  const key=document.getElementById('supa-key')?.value.trim();
-  if(!url||!key){toast('Enter both URL and key','t-error');return;}
-  localStorage.setItem('ep2_supa_url',url);
-  localStorage.setItem('ep2_supa_anon',key);
-  initSupabase();
-  toast('Keys saved! Now sign in below.','t-success');
-}
-async function supaSignUp(){
-  if(!sbClient){toast('Save your Supabase keys first','t-error');return;}
-  const email=document.getElementById('supa-email')?.value.trim();
-  const pass=document.getElementById('supa-pass')?.value;
-  if(!email||!pass){toast('Enter email and password','t-error');return;}
-  const {error}=await sbClient.auth.signUp({email,password:pass});
-  if(error) toast('❌ '+error.message,'t-error');
-  else toast('✅ Check your email to confirm your account!','t-success');
+  }catch(e){}
 }
 async function supaSignIn(){
   if(!sbClient){toast('Configure Supabase first','t-error');return;}
@@ -2522,497 +2612,25 @@ async function supaSignIn(){
   if(!email||!pass){toast('Enter email and password','t-error');return;}
   const {data,error}=await sbClient.auth.signInWithPassword({email,password:pass});
   if(error){toast('❌ '+error.message,'t-error');return;}
-  currentUser=data.user;
-  updateSyncStatus('connected',email);
-  await loadFromSupabase();
-  toast('✅ Signed in!','t-success');
-  renderDash();
+  currentUser=data.user;updateSyncStatus('connected',email);
+  await loadFromSupabase();toast('✅ Signed in!','t-success');renderDash();
 }
-async function supaForgot(){
-  if(!sbClient) return;
+async function supaSignUp(){
+  if(!sbClient){toast('Save your Supabase keys first','t-error');return;}
   const email=document.getElementById('supa-email')?.value.trim();
-  if(!email){toast('Enter your email first','t-error');return;}
-  await sbClient.auth.resetPasswordForEmail(email);
-  toast('Password reset email sent!','t-success');
-}
-async function supaMsg(id,msg,ok){const el=document.getElementById(id);if(el){el.textContent=msg;el.style.color=ok?'var(--green)':'var(--red)';}}
-function testCloudSync(){if(!sbClient||!currentUser){toast('Sign in first','t-error');return;}saveToSupabase();toast('Syncing...','');}
-function cloudBackup(){saveToSupabase();}
-async function signOut(){
-  if(sbClient) await sbClient.auth.signOut();
-  currentUser=null;updateSyncStatus('offline');toast('Signed out');
+  const pass=document.getElementById('supa-pass')?.value;
+  if(!email||!pass){toast('Enter email and password','t-error');return;}
+  const {error}=await sbClient.auth.signUp({email,password:pass});
+  if(error)toast('❌ '+error.message,'t-error');
+  else toast('✅ Check email to confirm!','t-success');
 }
 
 // ══════════════════════════════════════════════════════════
-// SHARE LINK & PREVIEW POLLING
-// ══════════════════════════════════════════════════════════
-function checkShareLink(){
-  const params=new URLSearchParams(window.location.search);
-  const encoded=params.get('view');
-  if(!encoded) return;
-  try{
-    const est=JSON.parse(atob(encoded));
-    document.getElementById('main-app').style.display='none';
-    const cp=document.getElementById('client-page');
-    if(cp){cp.style.display='';renderClientPage(est);}
-  } catch(e){}
-}
-
-// ══════════════════════════════════════════════════════════
-// ESTIMATOR PAGE (Full Page Form)
-// ══════════════════════════════════════════════════════════
-let ebServices=[]; // [{id,name,desc,qty,price,photos,collapsed}]
-let ebEditId=null;
-const ICONS=['🔧','🔨','🪚','🪛','⚡','🔌','🪠','🖌️','🏗️','🌿','🚿','🏠','🔩'];
-
-function initEstimator(existingEst){
-  ebEditId=existingEst?existingEst.id:null;
-  const today=new Date().toISOString().split('T')[0];
-  const d=id=>document.getElementById(id);
-  if(d('eb-desc')) d('eb-desc').value=existingEst?(existingEst.desc||''):'';
-  if(d('eb-date')) d('eb-date').value=existingEst?(existingEst.date||today):today;
-  if(d('eb-tax')) d('eb-tax').value=existingEst?(existingEst.tax||0):(db.settings.tax||0);
-  if(d('eb-discount')) d('eb-discount').value=existingEst?(existingEst.discount||0):0;
-  if(d('eb-notes')) d('eb-notes').value=existingEst?(existingEst.notes||''):(db.settings.notes||'');
-  if(d('eb-terms')) d('eb-terms').value=existingEst?(existingEst.terms||''):(db.settings.terms||'');
-  if(d('eb-client-search')) d('eb-client-search').value=existingEst?(existingEst.clientName||''):'';
-  if(d('eb-client-id')) d('eb-client-id').value=existingEst?(existingEst.clientId||''):'';
-  const badge=d('eb-editing-badge');if(badge) badge.style.display=ebEditId?'':'none';
-  // Build services from items
-  if(existingEst&&existingEst.items&&existingEst.items.length){
-    ebServices=existingEst.items.map((it,i)=>({
-      id:'s'+Date.now()+i, name:it.desc||'', desc:'', qty:it.qty||1,
-      price:it.price||0, photos:[], collapsed:false
-    }));
-  } else {
-    ebServices=[{id:'s'+Date.now(),name:'',desc:'',qty:1,price:0,photos:[],collapsed:false}];
-  }
-  ebRenderServices();
-  ebCalcSummary();
-}
-
-function ebAddService(){
-  ebServices.push({id:'s'+Date.now(),name:'',desc:'',qty:1,price:0,photos:[],collapsed:false});
-  ebRenderServices();
-  // Scroll to new service
-  const wrap=document.getElementById('eb-services-wrap');
-  if(wrap) setTimeout(()=>wrap.lastElementChild?.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
-}
-
-function ebRemoveService(id){
-  ebServices=ebServices.filter(s=>s.id!==id);
-  if(!ebServices.length) ebAddService();
-  else ebRenderServices();
-}
-
-function ebToggleService(id){
-  const s=ebServices.find(x=>x.id===id);
-  if(s){s.collapsed=!s.collapsed;ebRenderServices();}
-}
-
-function ebUpdateService(id,field,val){
-  const s=ebServices.find(x=>x.id===id);
-  if(s){s[field]=field==='qty'||field==='price'?+val:val;ebCalcSummary();}
-}
-
-function ebRenderServices(){
-  const wrap=document.getElementById('eb-services-wrap');
-  if(!wrap) return;
-  const catalogOpts='<option value="">Select a template...</option>'+
-    (db.catalog||[]).map(c=>`<option value="${c.id}">${c.desc} — ${$f(c.price)}</option>`).join('');
-  
-  wrap.innerHTML=ebServices.map((s,idx)=>{
-    const icon=ICONS[idx%ICONS.length];
-    const total=(s.qty||1)*(s.price||0);
-    return`<div class="section-card" style="margin-bottom:10px" id="svc-${s.id}">
-      <div class="section-card-hd" style="cursor:pointer" onclick="ebToggleService('${s.id}')">
-        <div class="section-card-icon" style="background:var(--purple-bg);font-size:16px">${icon}</div>
-        <div style="flex:1">
-          <div class="section-card-title">${s.name||'Service #'+(idx+1)}</div>
-          ${s.price?`<div class="section-card-sub">${$f(total)}</div>`:'<div class="section-card-sub">No price set</div>'}
-        </div>
-        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();ebRemoveService('${s.id}')" title="Remove service">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-        </button>
-        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();ebToggleService('${s.id}')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${s.collapsed?'<polyline points="6 9 12 15 18 9"/>':'<polyline points="18 15 12 9 6 15"/>'}</svg>
-        </button>
-      </div>
-      ${s.collapsed?'':`<div class="section-card-body">
-        <div class="form-row cols-2" style="margin-bottom:12px">
-          <div class="form-group">
-            <label>Service Name</label>
-            <input type="text" value="${(s.name||'').replace(/"/g,'&quot;')}" placeholder="e.g. Patio Installation"
-              oninput="ebUpdateService('${s.id}','name',this.value);document.querySelector('#svc-${s.id} .section-card-title').textContent=this.value||'Service #${idx+1}'">
-          </div>
-          <div class="form-group">
-            <label>Template</label>
-            <select onchange="ebApplyTemplate('${s.id}',this.value)" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:8px 10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;width:100%">
-              ${catalogOpts}
-            </select>
-          </div>
-        </div>
-        <div class="form-group" style="margin-bottom:12px">
-          <label>Service Description</label>
-          <div class="rich-editor-wrap">
-            <div class="rich-editor-toolbar">
-              <button class="re-btn" onclick="event.preventDefault();reCmd('bold')" title="Bold"><b>B</b></button>
-              <button class="re-btn" onclick="event.preventDefault();reCmd('italic')" title="Italic"><i>I</i></button>
-              <button class="re-btn" onclick="event.preventDefault();reCmd('underline')" title="Underline"><u>U</u></button>
-              <button class="re-btn" onclick="event.preventDefault();reCmd('strikeThrough')" title="Strike"><s>S</s></button>
-              <div class="re-sep"></div>
-              <button class="re-btn" onclick="event.preventDefault();reCmd('justifyLeft')" title="Align Left">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="5" width="18" height="2"/><rect x="3" y="10" width="12" height="2"/><rect x="3" y="15" width="16" height="2"/><rect x="3" y="20" width="10" height="2"/></svg>
-              </button>
-              <button class="re-btn" onclick="event.preventDefault();reCmd('justifyCenter')" title="Center">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="5" width="18" height="2"/><rect x="6" y="10" width="12" height="2"/><rect x="4" y="15" width="16" height="2"/><rect x="7" y="20" width="10" height="2"/></svg>
-              </button>
-              <button class="re-btn" onclick="event.preventDefault();reCmd('insertUnorderedList')" title="Bullet list">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="7" r="2"/><rect x="9" y="6" width="12" height="2"/><circle cx="5" cy="13" r="2"/><rect x="9" y="12" width="12" height="2"/><circle cx="5" cy="19" r="2"/><rect x="9" y="18" width="12" height="2"/></svg>
-              </button>
-              <button class="re-btn" onclick="event.preventDefault();reCmd('insertOrderedList')" title="Numbered list">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
-              </button>
-              <div class="re-sep"></div>
-              <button class="re-btn" onclick="event.preventDefault();document.execCommand('undo')" title="Undo">↩</button>
-              <button class="re-btn" onclick="event.preventDefault();document.execCommand('redo')" title="Redo">↪</button>
-            </div>
-            <div class="rich-editor" contenteditable="true" data-svc-id="${s.id}"
-              oninput="ebUpdateService('${s.id}','desc',this.innerHTML)"
-              style="min-height:100px;padding:12px;outline:none;font-size:13px;line-height:1.6;color:var(--text)">${s.desc||''}</div>
-          </div>
-        </div>
-        <div class="form-row cols-2" style="margin-bottom:12px">
-          <div class="form-group">
-            <label>Quantity</label>
-            <input type="number" value="${s.qty||1}" min="0.01" step="0.01"
-              oninput="ebUpdateService('${s.id}','qty',this.value)">
-          </div>
-          <div class="form-group">
-            <label>Unit Price ($)</label>
-            <input type="number" value="${s.price||0}" min="0" step="0.01"
-              oninput="ebUpdateService('${s.id}','price',this.value)">
-          </div>
-        </div>
-        <div class="form-group">
-          <label style="display:flex;align-items:center;gap:6px">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            Photos (${(s.photos||[]).length}/8)
-          </label>
-          <div class="eb-photos-wrap" id="eb-photos-${s.id}">
-            ${(s.photos||[]).map((p,pi)=>`<div class="eb-photo-thumb" style="background-image:url(${p})">
-              <button class="eb-photo-del" onclick="ebRemovePhoto('${s.id}',${pi})">×</button>
-            </div>`).join('')}
-            ${(s.photos||[]).length<8?`<label class="eb-photos-add">
-              <input type="file" accept="image/*" multiple style="display:none" onchange="ebHandlePhotos('${s.id}',this)">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <div style="font-size:11px;margin-top:4px">Add Photos</div>
-            </label>`:''}
-          </div>
-        </div>
-      </div>`}
-    </div>`;
-  }).join('');
-  ebCalcSummary();
-}
-
-function ebApplyTemplate(svcId,catId){
-  if(!catId) return;
-  const cat=db.catalog.find(c=>c.id===catId);
-  if(!cat) return;
-  const s=ebServices.find(x=>x.id===svcId);
-  if(!s) return;
-  s.name=cat.desc;s.price=cat.price;s.qty=1;
-  ebRenderServices();toast('Template applied!','t-success');
-}
-
-function ebHandlePhotos(svcId,input){
-  const s=ebServices.find(x=>x.id===svcId);
-  if(!s) return;
-  const files=Array.from(input.files).slice(0,8-(s.photos||[]).length);
-  let loaded=0;
-  files.forEach(file=>{
-    const reader=new FileReader();
-    reader.onload=e=>{
-      if(!s.photos) s.photos=[];
-      s.photos.push(e.target.result);
-      loaded++;
-      if(loaded===files.length) ebRenderServices();
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-function ebRemovePhoto(svcId,idx){
-  const s=ebServices.find(x=>x.id===svcId);
-  if(s&&s.photos){s.photos.splice(idx,1);ebRenderServices();}
-}
-
-function ebCalcSummary(){
-  const sub=ebServices.reduce((sum,s)=>sum+(+s.qty||1)*(+s.price||0),0);
-  const taxPct=+(document.getElementById('eb-tax')?.value||0)/100;
-  const disc=+(document.getElementById('eb-discount')?.value||0);
-  const taxAmt=sub*taxPct;
-  const total=Math.max(0,sub+taxAmt-disc);
-  setText('eb-subtotal','$'+sub.toFixed(2));
-  setText('eb-tax-amt','$'+taxAmt.toFixed(2));
-  setText('eb-disc-amt','-$'+disc.toFixed(2));
-  setText('eb-total','$'+total.toFixed(2));
-}
-function ebCalc(){ebCalcSummary();}
-
-function ebSearchClient(q){
-  const dd=document.getElementById('eb-client-dropdown');
-  if(!q||q.length<1){if(dd)dd.style.display='none';return;}
-  const matches=(db.clients||[]).filter(c=>
-    c.name.toLowerCase().includes(q.toLowerCase())||
-    (c.email||'').toLowerCase().includes(q.toLowerCase())).slice(0,6);
-  if(!matches.length){if(dd)dd.style.display='none';return;}
-  if(dd){
-    dd.innerHTML=matches.map(c=>`<div class="client-dropdown-item" onclick="ebSelectClient('${c.id}','${c.name.replace(/'/g,"\\'").replace(/"/g,"&quot;")}')">
-      <div style="font-weight:500;color:var(--text)">${c.name}</div>
-      ${c.email?`<div style="font-size:11px;color:var(--text3)">${c.email}</div>`:''}
-    </div>`).join('');
-    dd.style.display='';
-  }
-}
-
-function ebSelectClient(id,name){
-  const idEl=document.getElementById('eb-client-id');
-  const srchEl=document.getElementById('eb-client-search');
-  const dd=document.getElementById('eb-client-dropdown');
-  if(idEl) idEl.value=id;
-  if(srchEl) srchEl.value=name;
-  if(dd) dd.style.display='none';
-}
-
-function ebClear(){
-  ebEditId=null;
-  initEstimator(null);
-  toast('Form cleared');
-}
-
-function editEstInPage(id){
-  const est=db.estimates.find(e=>e.id===id);
-  if(!est) return;
-  go('estimator');
-  setTimeout(()=>initEstimator(est),50);
-}
-
-function ebSave(mode){
-  const desc=(document.getElementById('eb-desc')?.value||'').trim();
-  if(!desc){toast('Please add an estimate name','t-error');return;}
-  const clientId=document.getElementById('eb-client-id')?.value||'';
-  const clientName=(document.getElementById('eb-client-search')?.value||'').trim();
-  const client=db.clients.find(c=>c.id===clientId);
-  const clientEmail=client?client.email:'';
-  const tax=+(document.getElementById('eb-tax')?.value||0);
-  const discount=+(document.getElementById('eb-discount')?.value||0);
-  const notes=document.getElementById('eb-notes')?.value||'';
-  const terms=document.getElementById('eb-terms')?.value||'';
-  const date=document.getElementById('eb-date')?.value||new Date().toISOString().split('T')[0];
-  const items=ebServices.filter(s=>s.name||s.price).map(s=>({
-    desc:s.name||'Service',qty:s.qty||1,price:s.price||0,
-    notes:s.desc||'',photos:s.photos||[]
-  }));
-  if(!items.length){toast('Please add at least one service','t-error');return;}
-  if(ebEditId){
-    const est=db.estimates.find(e=>e.id===ebEditId);
-    if(est) Object.assign(est,{desc,clientName,clientEmail,clientId,items,tax,discount,notes,terms,date});
-  } else {
-    db.estimates.push({id:'e'+Date.now(),desc,clientName,clientEmail,clientId,
-      items,tax,discount,notes,terms,date,status:'Draft',created:new Date().toISOString()});
-  }
-  save();
-  toast((ebEditId?'Estimate updated':'Estimate created')+' successfully!','t-success');
-  const savedId=ebEditId||db.estimates[db.estimates.length-1]?.id;
-  ebEditId=null;
-  if(mode==='Send'){
-    go('estimates');
-    setTimeout(()=>{if(savedId) openEmailModal(savedId);},200);
-  } else {
-    go('estimates');
-  }
-}
-
-// ══════════════════════════════════════════════════════════
-// CALENDAR
-// ══════════════════════════════════════════════════════════
-let calDate=new Date(),calView='month',calAppts=[];
-
-function initCalendar(){
-  calAppts=db.calAppts||[];
-  calDate=new Date();
-  renderCalendar();
-  renderCalQueue();
-  updateCalTopbar();
-}
-function updateCalTopbar(){
-  const jobs=(db.estimates||[]).filter(e=>e.status==='Signed'&&!e.scheduledDate).length;
-  const appts=(db.calAppts||[]).length;
-  const el=document.getElementById('topbar-sub');
-  if(el&&document.getElementById('page-calendar')?.classList.contains('active'))
-    el.textContent=`${jobs} job${jobs!==1?'s':''} in queue · ${appts} appointment${appts!==1?'s':''}`;
-}
-function calToday(){calDate=new Date();renderCalendar();}
-function calNav(dir){
-  if(calView==='month') calDate=new Date(calDate.getFullYear(),calDate.getMonth()+dir,1);
-  else{calDate=new Date(calDate);calDate.setDate(calDate.getDate()+(dir*7));}
-  renderCalendar();
-}
-function calSetView(v){
-  calView=v;
-  ['month','week','queue'].forEach(x=>{
-    const b=document.getElementById('cal-view-'+x);
-    if(b) b.className='btn '+(x===v?'btn-secondary':'btn-ghost')+' btn-sm';
-  });
-  renderCalendar();
-}
-function renderCalendar(){
-  const grid=document.getElementById('cal-grid');if(!grid)return;
-  const now=new Date();
-  const mNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const titleEl=document.getElementById('cal-title');
-  if(calView==='month'){
-    if(titleEl) titleEl.textContent=mNames[calDate.getMonth()]+' '+calDate.getFullYear();
-    const first=new Date(calDate.getFullYear(),calDate.getMonth(),1);
-    const last=new Date(calDate.getFullYear(),calDate.getMonth()+1,0);
-    const pad=first.getDay();
-    let html='<div class="cal-grid-month">';
-    ['SUN','MON','TUE','WED','THU','FRI','SAT'].forEach(d=>html+=`<div class="cal-day-header">${d}</div>`);
-    for(let i=0;i<pad;i++){
-      const d=new Date(calDate.getFullYear(),calDate.getMonth(),-pad+i+1);
-      html+=`<div class="cal-day other-month"><div class="cal-day-num">${d.getDate()}</div></div>`;
-    }
-    for(let d=1;d<=last.getDate();d++){
-      const isToday=d===now.getDate()&&calDate.getMonth()===now.getMonth()&&calDate.getFullYear()===now.getFullYear();
-      const ds=`${calDate.getFullYear()}-${String(calDate.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const da=calAppts.filter(a=>a.date===ds);
-      const de=(db.estimates||[]).filter(e=>e.status==='Signed'&&e.scheduledDate===ds);
-      html+=`<div class="cal-day${isToday?' today':''}" onclick="calDayClick('${ds}')">
-        <div class="cal-day-num${isToday?' today-num':''}">${d}</div>
-        ${da.map(a=>`<div class="cal-event" onclick="event.stopPropagation();editAppt('${a.id}')">${a.title||'Appt'}</div>`).join('')}
-        ${de.map(e=>`<div class="cal-event green">${e.clientName||e.desc||'Job'}</div>`).join('')}
-      </div>`;
-    }
-    const remaining=(7-(pad+last.getDate())%7)%7;
-    for(let i=1;i<=remaining;i++) html+=`<div class="cal-day other-month"><div class="cal-day-num">${i}</div></div>`;
-    html+='</div>';
-    grid.innerHTML=html;
-  } else if(calView==='week'){
-    const ws=new Date(calDate);ws.setDate(calDate.getDate()-calDate.getDay());
-    const we=new Date(ws);we.setDate(ws.getDate()+6);
-    if(titleEl) titleEl.textContent=mNames[ws.getMonth()]+' '+ws.getDate()+' – '+mNames[we.getMonth()]+' '+we.getDate();
-    let html='<div class="cal-grid-month">';
-    ['SUN','MON','TUE','WED','THU','FRI','SAT'].forEach((day,i)=>{
-      const d=new Date(ws);d.setDate(ws.getDate()+i);
-      const isTod=d.toDateString()===now.toDateString();
-      html+=`<div class="cal-day-header">${day}<br><span style="font-size:14px;font-weight:700;color:${isTod?'var(--brand)':'var(--text)'}">${d.getDate()}</span></div>`;
-    });
-    ['SUN','MON','TUE','WED','THU','FRI','SAT'].forEach((_,i)=>{
-      const d=new Date(ws);d.setDate(ws.getDate()+i);
-      const ds=d.toISOString().split('T')[0];
-      const isTod=d.toDateString()===now.toDateString();
-      const da=calAppts.filter(a=>a.date===ds);
-      html+=`<div class="cal-day${isTod?' today':''}" style="min-height:160px" onclick="calDayClick('${ds}')">
-        ${da.map(a=>`<div class="cal-event" onclick="event.stopPropagation();editAppt('${a.id}')">${a.title||'Appt'}</div>`).join('')}
-      </div>`;
-    });
-    html+='</div>';
-    grid.innerHTML=html;
-  } else {
-    if(titleEl) titleEl.textContent='Queue View';
-    grid.innerHTML='<div style="padding:24px;color:var(--text3);text-align:center;font-size:13px">Manage unscheduled jobs in the queue panel →</div>';
-  }
-  updateCalTopbar();
-}
-function renderCalQueue(){
-  const el=document.getElementById('cal-queue-items');if(!el)return;
-  const q=(document.getElementById('cal-queue-search')?.value||'').toLowerCase();
-  const sort=document.getElementById('cal-sort')?.value||'signed';
-  let items=(db.estimates||[]).filter(e=>e.status==='Signed'&&!e.scheduledDate);
-  if(q) items=items.filter(e=>(e.clientName||'').toLowerCase().includes(q)||(e.desc||'').toLowerCase().includes(q));
-  if(sort==='amount') items.sort((a,b)=>calcEst(b).total-calcEst(a).total);
-  else if(sort==='client') items.sort((a,b)=>(a.clientName||'').localeCompare(b.clientName||''));
-  setText('cal-queue-count',items.length.toString());
-  if(!items.length){
-    el.innerHTML=`<div class="cal-queue-empty">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:8px;display:block;margin-left:auto;margin-right:auto"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      No unscheduled jobs
-    </div>`;
-    return;
-  }
-  el.innerHTML=items.map(e=>{
-    const {total}=calcEst(e);
-    return`<div class="cal-queue-item" onclick="calScheduleEst('${e.id}')">
-      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px">${e.clientName||'No client'}</div>
-      <div style="font-size:11px;color:var(--text3)">${e.desc||'No description'}</div>
-      <div style="font-size:12px;color:var(--brand);font-weight:600;margin-top:4px">${$f(total)}</div>
-    </div>`;
-  }).join('');
-}
-function calDayClick(ds){newApptModal(ds);}
-function calScheduleEst(estId){
-  const date=prompt('Schedule for date (YYYY-MM-DD):',new Date().toISOString().split('T')[0]);
-  if(!date) return;
-  const est=(db.estimates||[]).find(e=>e.id===estId);
-  if(est){est.scheduledDate=date;save();renderCalendar();renderCalQueue();toast('Job scheduled!','t-success');}
-}
-function newApptModal(date){
-  const d=date||new Date().toISOString().split('T')[0];
-  const title=prompt('Appointment title:','');if(!title) return;
-  const client=prompt('Client name (optional):','')||'';
-  if(!db.calAppts) db.calAppts=[];
-  db.calAppts.push({id:'a'+Date.now(),date:d,title,clientName:client,color:''});
-  calAppts=db.calAppts;save();renderCalendar();renderCalQueue();toast('Appointment added!','t-success');
-}
-function editAppt(id){
-  const a=(db.calAppts||[]).find(x=>x.id===id);if(!a)return;
-  const action=prompt(`"${a.title}" on ${a.date}\n\nEnter new title or type DELETE:`,'');
-  if(action===null) return;
-  if(action.toUpperCase()==='DELETE'){
-    db.calAppts=(db.calAppts||[]).filter(x=>x.id!==id);
-    calAppts=db.calAppts;save();renderCalendar();toast('Appointment removed');
-  } else if(action){a.title=action;save();renderCalendar();toast('Updated!','t-success');}
-}
-function toggleCalQueue(){
-  const q=document.getElementById('cal-queue');
-  if(q) q.style.display=q.style.display==='none'?'flex':'none';
-}
-
-// ══════════════════════════════════════════════════════════
-// DASHBOARD PERIOD FILTER
-// ══════════════════════════════════════════════════════════
-let dashPeriod='all';
-function dashSetPeriod(p){
-  dashPeriod=p;
-  document.querySelectorAll('.dash-period-btn').forEach(b=>b.classList.remove('active'));
-  const map={month:0,lastmonth:1,'3months':2,year:3,all:4};
-  const btns=document.querySelectorAll('.dash-period-btn');
-  if(btns[map[p]]) btns[map[p]].classList.add('active');
-  renderDash();
-}
-function dashFilterDate(ds){
-  if(!ds||dashPeriod==='all') return true;
-  const d=new Date(ds),now=new Date();
-  if(dashPeriod==='month') return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
-  if(dashPeriod==='lastmonth'){const lm=new Date(now.getFullYear(),now.getMonth()-1,1);return d.getMonth()===lm.getMonth()&&d.getFullYear()===lm.getFullYear();}
-  if(dashPeriod==='3months'){const c=new Date(now);c.setMonth(c.getMonth()-3);return d>=c;}
-  if(dashPeriod==='year') return d.getFullYear()===now.getFullYear();
-  return true;
-}
-
-// ══════════════════════════════════════════════════════════
-// RICH TEXT EDITOR HELPER
-// ══════════════════════════════════════════════════════════
-function reCmd(cmd,val){document.execCommand(cmd,false,val||null);}
-
-// ══════════════════════════════════════════════════════════
-// LEADS (simple CRM)
+// LEADS
 // ══════════════════════════════════════════════════════════
 function renderLeads(){
   const el=document.getElementById('leads-list');if(!el)return;
-  if(!db.leads) db.leads=[];
+  if(!db.leads)db.leads=[];
   if(!db.leads.length){
     el.innerHTML=`<div style="text-align:center;padding:60px;color:var(--text3)">
       <div style="font-size:40px;margin-bottom:12px">🎯</div>
@@ -3023,7 +2641,6 @@ function renderLeads(){
     return;
   }
   const stages=['New','Contacted','Qualified','Proposal','Won','Lost'];
-  const stageColors={New:'b-draft',Contacted:'b-sent',Qualified:'b-viewed',Proposal:'b-sent',Won:'b-signed',Lost:'b-declined'};
   el.innerHTML=`<div class="card"><div class="table-wrap"><table>
     <thead><tr><th>Name</th><th>Contact</th><th>Source</th><th>Stage</th><th>Value</th><th>Actions</th></tr></thead>
     <tbody>${db.leads.map(l=>`<tr>
@@ -3042,124 +2659,306 @@ function renderLeads(){
   </table></div></div>`;
 }
 function newLead(){
-  const name=prompt('Lead name:','');if(!name) return;
-  const email=prompt('Email (optional):','')||'';
-  const phone=prompt('Phone (optional):','')||'';
-  const source=prompt('Source (e.g. Referral, Website):','')||'';
+  const name=prompt('Lead name:','');if(!name)return;
+  const email=prompt('Email:','')||'';
+  const phone=prompt('Phone:','')||'';
+  const source=prompt('Source:','')||'';
   const value=prompt('Estimated value ($):','')||'0';
-  if(!db.leads) db.leads=[];
+  if(!db.leads)db.leads=[];
   db.leads.push({id:'l'+Date.now(),name,email,phone,source,value:+value||0,stage:'New',created:new Date().toISOString()});
-  save();renderLeads();toast(name+' added as lead!','t-success');
+  save();renderLeads();toast(name+' added!','t-success');
 }
-function updateLeadStage(id,stage){
-  const l=(db.leads||[]).find(x=>x.id===id);
-  if(l){l.stage=stage;save();toast('Stage updated','t-success');}
-}
+function updateLeadStage(id,stage){const l=(db.leads||[]).find(x=>x.id===id);if(l){l.stage=stage;save();}}
 function convertLeadToClient(id){
-  const l=(db.leads||[]).find(x=>x.id===id);
-  if(!l) return;
-  if(!confirm(`Convert "${l.name}" to a client?`)) return;
+  const l=(db.leads||[]).find(x=>x.id===id);if(!l)return;
+  if(!confirm(`Convert "${l.name}" to a client?`))return;
   db.clients.push({id:'c'+Date.now(),name:l.name,email:l.email||'',phone:l.phone||'',type:'Residential',address:''});
   db.leads=(db.leads||[]).filter(x=>x.id!==id);
-  save();renderLeads();renderClients();toast(l.name+' converted to client!','t-success');
+  save();renderLeads();renderClients();toast(l.name+' converted!','t-success');
 }
-function deleteLead(id){
-  if(!confirm('Delete this lead?')) return;
-  db.leads=(db.leads||[]).filter(x=>x.id!==id);
-  save();renderLeads();toast('Lead deleted');
+function deleteLead(id){if(!confirm('Delete?'))return;db.leads=(db.leads||[]).filter(x=>x.id!==id);save();renderLeads();toast('Deleted');}
+
+// ══════════════════════════════════════════════════════════
+// DASHBOARD PERIOD FILTER
+// ══════════════════════════════════════════════════════════
+let dashPeriod='all';
+function dashSetPeriod(p){
+  dashPeriod=p;
+  document.querySelectorAll('.dash-period-btn').forEach(b=>b.classList.remove('active'));
+  const map={month:0,lastmonth:1,'3months':2,year:3,all:4};
+  const btns=document.querySelectorAll('.dash-period-btn');
+  if(btns[map[p]])btns[map[p]].classList.add('active');
+  renderDash();
+}
+function dashFilterDate(ds){
+  if(!ds||dashPeriod==='all')return true;
+  const d=new Date(ds),now=new Date();
+  if(dashPeriod==='month')return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+  if(dashPeriod==='lastmonth'){const lm=new Date(now.getFullYear(),now.getMonth()-1,1);return d.getMonth()===lm.getMonth()&&d.getFullYear()===lm.getFullYear();}
+  if(dashPeriod==='3months'){const c=new Date(now);c.setMonth(c.getMonth()-3);return d>=c;}
+  if(dashPeriod==='year')return d.getFullYear()===now.getFullYear();
+  return true;
 }
 
+// ══════════════════════════════════════════════════════════
+// ESTIMATOR PAGE
+// ══════════════════════════════════════════════════════════
+let ebServices=[],ebEditId=null;
+const ICONS=['🔧','🔨','🪚','🪛','⚡','🔌','🖌️','🏗️','🌿','🚿','🏠'];
 
-// ── LINE ITEMS (modal estimate form) ──
-function addItem(it){
-  const tbody=document.getElementById('items-body');
-  if(!tbody) return;
-  const tr=document.createElement('tr');
-  tr.innerHTML=`
-    <td><input type="text" value="${(it?.desc||'').replace(/"/g,'&quot;')}" placeholder="Description" style="width:100%"></td>
-    <td><input type="number" value="${it?.qty||1}" min="0" step="0.01" style="width:70px" oninput="recalcEst()"></td>
-    <td><input type="text" value="${it?.unit||''}" placeholder="ea" style="width:60px"></td>
-    <td><input type="number" value="${it?.price||0}" min="0" step="0.01" style="width:90px" oninput="recalcEst()"></td>
-    <td class="text-gold" style="text-align:right;white-space:nowrap">$${((it?.qty||1)*(it?.price||0)).toFixed(2)}</td>
-    <td><button class="btn btn-ghost btn-sm" onclick="this.closest('tr').remove();recalcEst()">✕</button></td>`;
-  tbody.appendChild(tr);
-  recalcEst();
+function initEstimator(est){
+  ebEditId=est?est.id:null;
+  const today=new Date().toISOString().split('T')[0];
+  const d=id=>document.getElementById(id);
+  if(d('eb-desc'))d('eb-desc').value=est?(est.desc||''):'';
+  if(d('eb-date'))d('eb-date').value=est?(est.date||today):today;
+  if(d('eb-tax'))d('eb-tax').value=est?(est.tax||0):(db.settings.tax||0);
+  if(d('eb-discount'))d('eb-discount').value=est?(est.discount||0):0;
+  if(d('eb-notes'))d('eb-notes').value=est?(est.notes||''):(db.settings.notes||'');
+  if(d('eb-terms'))d('eb-terms').value=est?(est.terms||''):(db.settings.terms||'');
+  if(d('eb-client-search'))d('eb-client-search').value=est?(est.clientName||''):'';
+  if(d('eb-client-id'))d('eb-client-id').value=est?(est.clientId||''):'';
+  const badge=d('eb-editing-badge');if(badge)badge.style.display=ebEditId?'':'none';
+  ebServices=est&&est.items&&est.items.length?
+    est.items.map((it,i)=>({id:'s'+Date.now()+i,name:it.desc||'',desc:it.notes||'',qty:it.qty||1,price:it.price||0,photos:[],collapsed:false})):
+    [{id:'s'+Date.now(),name:'',desc:'',qty:1,price:0,photos:[],collapsed:false}];
+  ebRenderServices();ebCalcSummary();
 }
-
-function recalcEst(){
-  let sub=0;
-  document.querySelectorAll('#items-body tr').forEach(row=>{
-    const inputs=row.querySelectorAll('input[type=number]');
-    const qty=+inputs[0]?.value||0;
-    const price=+inputs[1]?.value||0;
-    const lineTotal=qty*price;
-    sub+=lineTotal;
-    const totalCell=row.querySelector('.text-gold');
-    if(totalCell) totalCell.textContent='$'+lineTotal.toFixed(2);
+function ebAddService(){
+  ebServices.push({id:'s'+Date.now(),name:'',desc:'',qty:1,price:0,photos:[],collapsed:false});
+  ebRenderServices();
+}
+function ebRemoveService(id){
+  ebServices=ebServices.filter(s=>s.id!==id);
+  if(!ebServices.length)ebAddService();else ebRenderServices();
+}
+function ebToggleService(id){const s=ebServices.find(x=>x.id===id);if(s){s.collapsed=!s.collapsed;ebRenderServices();}}
+function ebUpdateService(id,field,val){
+  const s=ebServices.find(x=>x.id===id);
+  if(s){s[field]=(field==='qty'||field==='price')?+val:val;ebCalcSummary();}
+}
+function ebApplyTemplate(svcId,catId){
+  if(!catId)return;
+  const cat=(db.catalog||[]).find(c=>c.id===catId);if(!cat)return;
+  const s=ebServices.find(x=>x.id===svcId);if(!s)return;
+  s.name=cat.desc;s.price=cat.price;s.qty=1;
+  ebRenderServices();toast('Template applied!','t-success');
+}
+function ebHandlePhotos(svcId,input){
+  const s=ebServices.find(x=>x.id===svcId);if(!s)return;
+  const files=Array.from(input.files).slice(0,8-(s.photos||[]).length);
+  let loaded=0;
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      if(!s.photos)s.photos=[];s.photos.push(e.target.result);
+      loaded++;if(loaded===files.length)ebRenderServices();
+    };reader.readAsDataURL(file);
   });
-  const taxPct=+(document.getElementById('e-tax')?.value||0)/100;
-  const disc=+(document.getElementById('e-discount')?.value||0);
-  const tax=sub*taxPct;
-  const total=Math.max(0,sub+tax-disc);
-  setText('est-subtotal','$'+sub.toFixed(2));
-  setText('est-tax-amt','$'+tax.toFixed(2));
-  setText('est-disc-amt','-$'+disc.toFixed(2));
-  setText('est-total','$'+total.toFixed(2));
+}
+function ebRemovePhoto(svcId,idx){const s=ebServices.find(x=>x.id===svcId);if(s&&s.photos){s.photos.splice(idx,1);ebRenderServices();}}
+function ebCalcSummary(){
+  const sub=ebServices.reduce((sum,s)=>sum+(+s.qty||1)*(+s.price||0),0);
+  const taxPct=+(document.getElementById('eb-tax')?.value||0)/100;
+  const disc=+(document.getElementById('eb-discount')?.value||0);
+  const taxAmt=sub*taxPct;const total=Math.max(0,sub+taxAmt-disc);
+  setText('eb-subtotal','$'+sub.toFixed(2));setText('eb-tax-amt','$'+taxAmt.toFixed(2));
+  setText('eb-disc-amt','-$'+disc.toFixed(2));setText('eb-total','$'+total.toFixed(2));
+}
+function ebCalc(){ebCalcSummary();}
+function ebSearchClient(q){
+  const dd=document.getElementById('eb-client-dropdown');
+  if(!q||q.length<1){if(dd)dd.style.display='none';return;}
+  const matches=(db.clients||[]).filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||(c.email||'').toLowerCase().includes(q.toLowerCase())).slice(0,6);
+  if(!matches.length){if(dd)dd.style.display='none';return;}
+  if(dd){dd.innerHTML=matches.map(c=>`<div class="client-dropdown-item" onclick="ebSelectClient('${c.id}','${c.name.replace(/'/g,"\\'")}')"><div style="font-weight:500;color:var(--text)">${c.name}</div>${c.email?`<div style="font-size:11px;color:var(--text3)">${c.email}</div>`:''}</div>`).join('');dd.style.display='';}
+}
+function ebSelectClient(id,name){
+  const i=document.getElementById('eb-client-id');const s=document.getElementById('eb-client-search');const dd=document.getElementById('eb-client-dropdown');
+  if(i)i.value=id;if(s)s.value=name;if(dd)dd.style.display='none';
+}
+function ebClear(){ebEditId=null;initEstimator(null);toast('Form cleared');}
+function editEstInPage(id){const est=db.estimates.find(e=>e.id===id);if(!est)return;go('estimator');setTimeout(()=>initEstimator(est),50);}
+function ebSave(mode){
+  const desc=(document.getElementById('eb-desc')?.value||'').trim();
+  if(!desc){toast('Please add an estimate name','t-error');return;}
+  const clientId=document.getElementById('eb-client-id')?.value||'';
+  const clientName=(document.getElementById('eb-client-search')?.value||'').trim();
+  const client=db.clients.find(c=>c.id===clientId);
+  const tax=+(document.getElementById('eb-tax')?.value||0);
+  const discount=+(document.getElementById('eb-discount')?.value||0);
+  const notes=document.getElementById('eb-notes')?.value||'';
+  const terms=document.getElementById('eb-terms')?.value||'';
+  const date=document.getElementById('eb-date')?.value||new Date().toISOString().split('T')[0];
+  const items=ebServices.filter(s=>s.name||s.price).map(s=>({desc:s.name||'Service',qty:s.qty||1,price:s.price||0,notes:s.desc||'',photos:s.photos||[]}));
+  if(!items.length){toast('Please add at least one service','t-error');return;}
+  if(ebEditId){const est=db.estimates.find(e=>e.id===ebEditId);if(est)Object.assign(est,{desc,clientName,clientEmail:client?client.email:'',clientId,items,tax,discount,notes,terms,date});}
+  else db.estimates.push({id:'e'+Date.now(),desc,clientName,clientEmail:client?client.email:'',clientId,items,tax,discount,notes,terms,date,status:'Draft',created:new Date().toISOString()});
+  save();toast((ebEditId?'Updated':'Created')+' successfully!','t-success');
+  const savedId=ebEditId||db.estimates[db.estimates.length-1]?.id;
+  ebEditId=null;
+  if(mode==='Send'){go('estimates');setTimeout(()=>{if(savedId)openEmailModal(savedId);},200);}
+  else go('estimates');
+}
+function ebRenderServices(){
+  const wrap=document.getElementById('eb-services-wrap');if(!wrap)return;
+  const catOpts='<option value="">Select a template...</option>'+(db.catalog||[]).map(c=>`<option value="${c.id}">${c.desc} — ${$f(c.price)}</option>`).join('');
+  wrap.innerHTML=ebServices.map((s,idx)=>{
+    const icon=ICONS[idx%ICONS.length];const total=(s.qty||1)*(s.price||0);
+    return`<div class="section-card" style="margin-bottom:10px" id="svc-${s.id}">
+      <div class="section-card-hd" style="cursor:pointer" onclick="ebToggleService('${s.id}')">
+        <div class="section-card-icon" style="background:var(--purple-bg);font-size:16px">${icon}</div>
+        <div style="flex:1"><div class="section-card-title">${s.name||'Service #'+(idx+1)}</div><div class="section-card-sub">${s.price?$f(total):'No price set'}</div></div>
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();ebRemoveService('${s.id}')">🗑</button>
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();ebToggleService('${s.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${s.collapsed?'<polyline points="6 9 12 15 18 9"/>':'<polyline points="18 15 12 9 6 15"/>'}</svg></button>
+      </div>
+      ${s.collapsed?'':`<div class="section-card-body">
+        <div class="form-row cols-2" style="margin-bottom:12px">
+          <div class="form-group"><label>Service Name</label>
+            <input type="text" value="${(s.name||'').replace(/"/g,'&quot;')}" placeholder="e.g. Patio Installation" oninput="ebUpdateService('${s.id}','name',this.value);document.querySelector('#svc-${s.id} .section-card-title').textContent=this.value||'Service #${idx+1}'"></div>
+          <div class="form-group"><label>Template</label>
+            <select onchange="ebApplyTemplate('${s.id}',this.value)" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:8px 10px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;width:100%">${catOpts}</select></div>
+        </div>
+        <div class="form-row cols-2" style="margin-bottom:12px">
+          <div class="form-group"><label>Quantity</label>
+            <input type="number" value="${s.qty||1}" min="0.01" step="0.01" oninput="ebUpdateService('${s.id}','qty',this.value)"></div>
+          <div class="form-group"><label>Unit Price ($)</label>
+            <input type="number" value="${s.price||0}" min="0" step="0.01" oninput="ebUpdateService('${s.id}','price',this.value)"></div>
+        </div>
+        <div class="form-group">
+          <label>Photos (${(s.photos||[]).length}/8)</label>
+          <div class="eb-photos-wrap" id="eb-photos-${s.id}">
+            ${(s.photos||[]).map((p,pi)=>`<div class="eb-photo-thumb" style="background-image:url(${p})"><button class="eb-photo-del" onclick="ebRemovePhoto('${s.id}',${pi})">×</button></div>`).join('')}
+            ${(s.photos||[]).length<8?`<label class="eb-photos-add"><input type="file" accept="image/*" multiple style="display:none" onchange="ebHandlePhotos('${s.id}',this)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><div style="font-size:10px;margin-top:3px">Add Photos</div></label>`:''}
+          </div>
+        </div>
+      </div>`}
+    </div>`;
+  }).join('');
+  ebCalcSummary();
 }
 
-function openCatalogPicker(){
-  const modal=document.getElementById('modal-picker');
-  if(!modal) return;
-  renderPicker();
-  open$('modal-picker');
+// ══════════════════════════════════════════════════════════
+// CALENDAR
+// ══════════════════════════════════════════════════════════
+let calDate=new Date(),calView='month',calAppts=[];
+function initCalendar(){calAppts=db.calAppts||[];calDate=new Date();renderCalendar();renderCalQueue();updateCalTopbar();}
+function updateCalTopbar(){
+  const jobs=(db.estimates||[]).filter(e=>e.status==='Signed'&&!e.scheduledDate).length;
+  const appts=(db.calAppts||[]).length;
+  const el=document.getElementById('topbar-sub');
+  if(el&&document.getElementById('page-calendar')?.classList.contains('active'))
+    el.textContent=`${jobs} job${jobs!==1?'s':''} in queue · ${appts} appointment${appts!==1?'s':''}`;
+}
+function calToday(){calDate=new Date();renderCalendar();}
+function calNav(dir){
+  if(calView==='month')calDate=new Date(calDate.getFullYear(),calDate.getMonth()+dir,1);
+  else{calDate=new Date(calDate);calDate.setDate(calDate.getDate()+(dir*7));}
+  renderCalendar();
+}
+function calSetView(v){
+  calView=v;
+  ['month','week','queue'].forEach(x=>{const b=document.getElementById('cal-view-'+x);if(b)b.className='btn '+(x===v?'btn-secondary':'btn-ghost')+' btn-sm';});
+  renderCalendar();
+}
+function renderCalendar(){
+  const grid=document.getElementById('cal-grid');if(!grid)return;
+  const now=new Date();
+  const mN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const titleEl=document.getElementById('cal-title');
+  if(calView==='month'){
+    if(titleEl)titleEl.textContent=mN[calDate.getMonth()]+' '+calDate.getFullYear();
+    const first=new Date(calDate.getFullYear(),calDate.getMonth(),1);
+    const last=new Date(calDate.getFullYear(),calDate.getMonth()+1,0);
+    const pad=first.getDay();
+    let html='<div class="cal-grid-month">';
+    ['SUN','MON','TUE','WED','THU','FRI','SAT'].forEach(d=>html+=`<div class="cal-day-header">${d}</div>`);
+    for(let i=0;i<pad;i++){const d=new Date(calDate.getFullYear(),calDate.getMonth(),-pad+i+1);html+=`<div class="cal-day other-month"><div class="cal-day-num">${d.getDate()}</div></div>`;}
+    for(let d=1;d<=last.getDate();d++){
+      const isTd=d===now.getDate()&&calDate.getMonth()===now.getMonth()&&calDate.getFullYear()===now.getFullYear();
+      const ds=`${calDate.getFullYear()}-${String(calDate.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const da=calAppts.filter(a=>a.date===ds);
+      const de=(db.estimates||[]).filter(e=>e.status==='Signed'&&e.scheduledDate===ds);
+      html+=`<div class="cal-day${isTd?' today':''}" onclick="calDayClick('${ds}')"><div class="cal-day-num">${d}</div>${da.map(a=>`<div class="cal-event" onclick="event.stopPropagation();editAppt('${a.id}')">${a.title||'Appt'}</div>`).join('')}${de.map(e=>`<div class="cal-event green">${e.clientName||e.desc||'Job'}</div>`).join('')}</div>`;
+    }
+    const rem=(7-(pad+last.getDate())%7)%7;
+    for(let i=1;i<=rem;i++)html+=`<div class="cal-day other-month"><div class="cal-day-num">${i}</div></div>`;
+    grid.innerHTML=html+'</div>';
+  } else if(calView==='week'){
+    const ws=new Date(calDate);ws.setDate(calDate.getDate()-calDate.getDay());
+    const we=new Date(ws);we.setDate(ws.getDate()+6);
+    if(titleEl)titleEl.textContent=mN[ws.getMonth()]+' '+ws.getDate()+' – '+mN[we.getMonth()]+' '+we.getDate();
+    let html='<div class="cal-grid-month">';
+    ['SUN','MON','TUE','WED','THU','FRI','SAT'].forEach((day,i)=>{
+      const d=new Date(ws);d.setDate(ws.getDate()+i);const isTd=d.toDateString()===now.toDateString();
+      html+=`<div class="cal-day-header">${day}<br><span style="font-size:14px;font-weight:700;color:${isTd?'var(--brand)':'var(--text)'}">${d.getDate()}</span></div>`;
+    });
+    ['SUN','MON','TUE','WED','THU','FRI','SAT'].forEach((_,i)=>{
+      const d=new Date(ws);d.setDate(ws.getDate()+i);const ds=d.toISOString().split('T')[0];const isTd=d.toDateString()===now.toDateString();
+      const da=calAppts.filter(a=>a.date===ds);
+      html+=`<div class="cal-day${isTd?' today':''}" style="min-height:160px" onclick="calDayClick('${ds}')">${da.map(a=>`<div class="cal-event" onclick="event.stopPropagation();editAppt('${a.id}')">${a.title||'Appt'}</div>`).join('')}</div>`;
+    });
+    grid.innerHTML=html+'</div>';
+  } else {
+    if(titleEl)titleEl.textContent='Queue View';
+    grid.innerHTML='<div style="padding:24px;color:var(--text3);text-align:center">Manage unscheduled jobs in the queue panel</div>';
+  }
+  updateCalTopbar();
+}
+function renderCalQueue(){
+  const el=document.getElementById('cal-queue-items');if(!el)return;
+  const q=(document.getElementById('cal-queue-search')?.value||'').toLowerCase();
+  const sort=document.getElementById('cal-sort')?.value||'signed';
+  let items=(db.estimates||[]).filter(e=>e.status==='Signed'&&!e.scheduledDate);
+  if(q)items=items.filter(e=>(e.clientName||'').toLowerCase().includes(q)||(e.desc||'').toLowerCase().includes(q));
+  if(sort==='amount')items.sort((a,b)=>calcEst(b).total-calcEst(a).total);
+  else if(sort==='client')items.sort((a,b)=>(a.clientName||'').localeCompare(b.clientName||''));
+  setText('cal-queue-count',items.length.toString());
+  if(!items.length){el.innerHTML=`<div class="cal-queue-empty"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin:0 auto 8px;display:block"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>No unscheduled jobs</div>`;return;}
+  el.innerHTML=items.map(e=>{const {total}=calcEst(e);return`<div class="cal-queue-item" onclick="calScheduleEst('${e.id}')"><div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px">${e.clientName||'No client'}</div><div style="font-size:11px;color:var(--text3)">${e.desc||'No description'}</div><div style="font-size:12px;color:var(--brand);font-weight:600;margin-top:4px">${$f(total)}</div></div>`;}).join('');
+}
+function calDayClick(ds){newApptModal(ds);}
+function calScheduleEst(estId){
+  const date=prompt('Schedule for date (YYYY-MM-DD):',new Date().toISOString().split('T')[0]);if(!date)return;
+  const est=(db.estimates||[]).find(e=>e.id===estId);
+  if(est){est.scheduledDate=date;save();renderCalendar();renderCalQueue();toast('Scheduled!','t-success');}
+}
+function newApptModal(date){
+  const d=date||new Date().toISOString().split('T')[0];
+  const title=prompt('Appointment title:','');if(!title)return;
+  const client=prompt('Client name (optional):','')||'';
+  if(!db.calAppts)db.calAppts=[];
+  db.calAppts.push({id:'a'+Date.now(),date:d,title,clientName:client,color:''});
+  calAppts=db.calAppts;save();renderCalendar();renderCalQueue();toast('Added!','t-success');
+}
+function editAppt(id){
+  const a=(db.calAppts||[]).find(x=>x.id===id);if(!a)return;
+  const action=prompt(`"${a.title}" on ${a.date}\n\nNew title or DELETE:`,'');if(action===null)return;
+  if(action.toUpperCase()==='DELETE'){db.calAppts=(db.calAppts||[]).filter(x=>x.id!==id);calAppts=db.calAppts;save();renderCalendar();toast('Removed');}
+  else if(action){a.title=action;save();renderCalendar();toast('Updated!','t-success');}
+}
+function toggleCalQueue(){const q=document.getElementById('cal-queue');if(q)q.style.display=q.style.display==='none'?'flex':'none';}
+
+// ══════════════════════════════════════════════════════════
+// RICH TEXT EDITOR
+// ══════════════════════════════════════════════════════════
+function reCmd(cmd,val){document.execCommand(cmd,false,val||null);}
+
+function initOverhead(){
+  // Restore saved settings
+  if(db.settings?.ohTeam && db.settings.ohTeam.length) ohTeam=JSON.parse(JSON.stringify(db.settings.ohTeam));
+  if(db.settings?.ohCats && db.settings.ohCats.length) ohCats=JSON.parse(JSON.stringify(db.settings.ohCats));
+  if(db.settings?.ohPeriod) ohSetPeriod(db.settings.ohPeriod);
+  setTimeout(()=>{
+    ohRenderTeam();
+    ohRenderCats();
+    if(db.settings?.ohProfitPct){const el=document.getElementById('oh-profit-pct');if(el)el.value=db.settings.ohProfitPct;}
+    if(db.settings?.ohWeeks){const el=document.getElementById('oh-weeks');if(el)el.value=db.settings.ohWeeks;}
+    if(db.settings?.ohRevTotal){const el=document.getElementById('oh-rev-total');if(el)el.value=db.settings.ohRevTotal;}
+    ohCalc();
+  },10);
 }
 
-// ── CLIENT MODAL ──
-function newClientModal(){ openClient(null); }
-
-// ── PHOTO UPLOAD ──
-function uploadPhoto(){
-  const input=document.getElementById('photo-file-input');
-  if(input) input.click();
-}
-
-// ── OVERHEAD FUNCTIONS (if not already defined) ──
-function ohAddTeam(){
-  if(typeof ohTeam==='undefined') return;
-  ohTeam.push({name:'',rate:0,hrs:40});
-  ohRenderTeam();ohCalc();
-}
-function ohSetPeriod(p){
-  if(typeof ohPeriod==='undefined') return;
-  ohPeriod=p;
-  ['monthly','annual'].forEach(x=>{
-    const btn=document.getElementById('oh-'+x+'-btn');
-    if(btn) btn.className='btn btn-'+(x===p?'primary':'ghost')+' btn-sm';
-  });
-  const hd=document.getElementById('oh-col-hd');
-  if(hd) hd.textContent=p==='annual'?'ANNUAL AMOUNT ($)':'MONTHLY AMOUNT ($)';
-  ohRenderCats();ohCalc();
-}
-function ohAddCat(){
-  if(typeof ohCats==='undefined') return;
-  ohCats.push({name:'Custom Expense',amt:0});
-  ohRenderCats();
-}
-function ohClearDefaults(){
-  if(typeof ohCats==='undefined') return;
-  if(confirm('Clear all overhead categories?')){ohCats=[];ohRenderCats();ohCalc();}
-}
-function ohRevMode(m){
-  const tg=document.getElementById('oh-rev-total-group');
-  const hg=document.getElementById('oh-rev-hrs-group');
-  if(tg) tg.style.display=m==='total'?'':'none';
-  if(hg) hg.style.display=m==='hours'?'':'none';
-  const tb=document.getElementById('oh-rev-total-btn');
-  const hb=document.getElementById('oh-rev-hrs-btn');
-  if(tb) tb.className='btn btn-'+(m==='total'?'primary':'ghost')+' btn-sm';
-  if(hb) hb.className='btn btn-'+(m==='hours'?'primary':'ghost')+' btn-sm';
-  if(typeof ohCalc==='function') ohCalc();
-}
 
 // ── INIT ───────────────────────────────────────────────────────────────
 try{
