@@ -1740,6 +1740,8 @@ function go(page){
     if(a) a.innerHTML=m.actions;
   }
   window.scrollTo(0,0);
+  // Mobile: update bottom nav + close drawers
+  try{updateMobNav(page);closeMobileSidebar();hideMobileMore();}catch(e){}
 }
 
 // ── DASHBOARD ──────────────────────────────────────────────────────────
@@ -3548,11 +3550,10 @@ function generateCalFeed(){
 function toggleMobileSidebar(){
   const sb=document.getElementById('sidebar');
   const ov=document.getElementById('sidebar-overlay');
-  if(sb){
-    const isOpen=sb.classList.contains('mobile-open');
-    sb.classList.toggle('mobile-open',!isOpen);
-    if(ov) ov.classList.toggle('visible',!isOpen);
-  }
+  if(!sb) return;
+  const isOpen=sb.classList.contains('mobile-open');
+  sb.classList.toggle('mobile-open',!isOpen);
+  if(ov) ov.classList.toggle('visible',!isOpen);
 }
 function closeMobileSidebar(){
   const sb=document.getElementById('sidebar');
@@ -3561,26 +3562,22 @@ function closeMobileSidebar(){
   if(ov) ov.classList.remove('visible');
 }
 function showMobileMore(){
-  document.getElementById('mob-more-sheet').style.display='';
-  document.getElementById('mob-more-overlay').style.display='';
+  const s=document.getElementById('mob-more-sheet');
+  const o=document.getElementById('mob-more-overlay');
+  if(s) s.style.display='';
+  if(o) o.style.display='';
 }
 function hideMobileMore(){
-  document.getElementById('mob-more-sheet').style.display='none';
-  document.getElementById('mob-more-overlay').style.display='none';
+  const s=document.getElementById('mob-more-sheet');
+  const o=document.getElementById('mob-more-overlay');
+  if(s) s.style.display='none';
+  if(o) o.style.display='none';
 }
-
-// Update mobile nav active state when go() is called
-const _origGo = go;
-function go(page){
-  _origGo(page);
-  // Update bottom nav active states
+function updateMobNav(page){
   ['dashboard','estimates','invoices'].forEach(p=>{
     const el=document.getElementById('mob-nav-'+p);
     if(el) el.classList.toggle('active', p===page);
   });
-  // Close sidebar on mobile after navigation
-  closeMobileSidebar();
-  hideMobileMore();
 }
 
 // ── INIT ───────────────────────────────────────────────────────────────
