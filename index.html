@@ -542,6 +542,10 @@ tr:last-child td{border-bottom:none}
   }
   @keyframes slideIn{from{transform:translateX(-100%)}to{transform:translateX(0)}}
 }
+.items-header{display:grid;grid-template-columns:1fr 60px 60px 90px 40px;gap:6px;padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:4px;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px}
+.item-row{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--border)}
+.item-row input{background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:6px 8px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px}
+.item-row input:focus{outline:none;border-color:var(--brand)}
 @media print{
   .sidebar,.mob-nav,.mob-fab,.btn,.x-btn,.overlay,.toast,.topbar{display:none!important}
   .main{margin-left:0}
@@ -1396,6 +1400,115 @@ tr:last-child td{border-bottom:none}
 </div>
 
 
+
+<!-- ESTIMATE MODAL -->
+<div class="overlay" id="modal-est" style="display:none" onclick="closeOverlay(event,'modal-est')">
+<div class="modal" style="max-width:860px" onclick="event.stopPropagation()">
+  <div class="modal-hd">
+    <h2 id="est-modal-title">New Estimate</h2>
+    <div class="flex-gap">
+      <button class="btn btn-secondary btn-sm" onclick="previewEst()">Preview</button>
+      <button class="x-btn" onclick="close$('modal-est')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="modal-body">
+    <input type="hidden" id="eid">
+    <!-- Client + Name -->
+    <div class="cols-2 mb-14">
+      <div class="form-group">
+        <label>Client</label>
+        <select id="e-client" onchange="fillClientFromSelect()">
+          <option value="">— Select Client —</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Client Name (override)</label>
+        <input id="e-cname" placeholder="Or type manually">
+      </div>
+    </div>
+    <div class="cols-2 mb-14">
+      <div class="form-group">
+        <label>Client Email</label>
+        <input id="e-cemail" type="email" placeholder="client@email.com">
+      </div>
+      <div class="form-group">
+        <label>Job Address</label>
+        <input id="e-addr" placeholder="Job site address">
+      </div>
+    </div>
+    <div class="form-group mb-14">
+      <label>Job Description / Title</label>
+      <input id="e-desc" placeholder="e.g. Kitchen Remodel, Roof Replacement…">
+    </div>
+    <div class="cols-3 mb-14">
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="e-date">
+      </div>
+      <div class="form-group">
+        <label>Valid Until</label>
+        <input type="date" id="e-valid">
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="e-status">
+          <option>Draft</option><option>Sent</option>
+          <option>Viewed</option><option>Signed</option><option>Declined</option>
+        </select>
+      </div>
+    </div>
+    <!-- Line items -->
+    <div class="items-header">
+      <span>Description</span><span>Qty</span><span>Unit</span>
+      <span style="text-align:right">Unit Price</span><span></span>
+    </div>
+    <div id="items-wrap" style="margin-bottom:8px"></div>
+    <div class="flex-gap" style="margin-bottom:14px">
+      <button class="btn btn-ghost btn-sm" onclick="addItem()">+ Line Item</button>
+      <button class="btn btn-ghost btn-sm" onclick="openCatalogPicker()">+ From Catalog</button>
+    </div>
+    <!-- Totals -->
+    <div class="cols-3 mb-14">
+      <div class="form-group">
+        <label>Tax (%)</label>
+        <input type="number" id="e-tax" placeholder="0" min="0" oninput="recalcEst()">
+      </div>
+      <div class="form-group">
+        <label>Discount ($)</label>
+        <input type="number" id="e-discount" placeholder="0" min="0" oninput="recalcEst()">
+      </div>
+      <div style="display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding-bottom:2px;font-size:13px">
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Subtotal</span><span id="est-subtotal" style="color:var(--text)">$0.00</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Tax</span><span id="est-tax-amt" style="color:var(--text)">$0.00</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Discount</span><span id="est-disc-amt" style="color:var(--text)">-$0.00</span></div>
+        <div style="display:flex;justify-content:space-between;font-weight:700;font-size:15px;border-top:1px solid var(--border);padding-top:4px"><span>Total</span><span id="est-total" style="color:var(--brand)">$0.00</span></div>
+      </div>
+    </div>
+    <!-- Notes -->
+    <div class="cols-2 mb-14">
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea id="e-notes" rows="3" placeholder="Notes for client…"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Payment Terms</label>
+        <textarea id="e-terms" rows="3" placeholder="e.g. Due on receipt"></textarea>
+      </div>
+    </div>
+    <!-- Follow-up -->
+    <div class="form-group mb-14">
+      <label>Follow-up Date (optional)</label>
+      <input type="date" id="e-followup">
+    </div>
+  </div>
+  <div class="modal-ft">
+    <button class="btn btn-ghost" onclick="close$('modal-est')">Cancel</button>
+    <button class="btn btn-primary" onclick="saveEst()">Save Estimate</button>
+  </div>
+</div>
+</div>
 
 <!-- PREVIEW MODAL -->
 <div class="overlay" id="modal-preview" style="display:none" onclick="closeOverlay(event,'modal-preview')">
